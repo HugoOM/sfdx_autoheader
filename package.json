@@ -15,12 +15,10 @@
     ],
     "main": "./extension",
     "contributes": {
-        "commands": [
-            {
-                "command": "extension.injectFileHeader",
-                "title": "Add File Header"
-            }
-        ]
+        "commands": [{
+            "command": "extension.injectFileHeader",
+            "title": "Add File Header"
+        }]
     },
     "scripts": {
         "postinstall": "node ./node_modules/vscode/bin/install",
