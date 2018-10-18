@@ -25,6 +25,7 @@ function prependFileHeader(textEditor, textEditorEdit) {
 
   if (isLineAComment(firstLine.text)) return;
 
+  //TODO: Make into a TextEdit for pre-save sync chaining
   textEditorEdit.insert(new Position(0, 0), `//Test String \n`);
 }
 
