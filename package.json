@@ -11,7 +11,9 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.injectFileHeader"
+        "onCommand:extension.injectFileHeader",
+        "onLanguage:apex",
+        "onLanguage:Visualforce"
     ],
     "main": "./extension",
     "contributes": {
