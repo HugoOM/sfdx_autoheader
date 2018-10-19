@@ -3,6 +3,7 @@ const {
   workspace,
   TextEdit
 } = require('vscode');
+
 const defaultTemplate = require('./templates/default_cls.js')
 
 function activate() {
@@ -14,13 +15,14 @@ function activate() {
 }
 
 exports.activate = activate;
+//TODO: Expose listener in "Global Scope" and Dispose upon deactivation
 exports.deactivate = function () {};
 
 function prependFileHeader(document) {
   return Promise.resolve([
     TextEdit.insert(
       new Position(0, 0),
-      defaultTemplate(document.fileName.split('/')[document.fileName.split('/').length - 1], 'hmonette@deloitte.ca', 'placeholder')
+      defaultTemplate(document.fileName.split(/\/|\\/g).pop(), 'hmonette@deloitte.ca', 'placeholder')
     )
   ])
 }
