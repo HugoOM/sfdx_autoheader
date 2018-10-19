@@ -2,31 +2,23 @@ const {
   commands,
   Position,
   languages,
-  workspace
+  workspace,
+  TextEdit
 } = require('vscode');
 
 function activate(context) {
-  let injectFileHeader = commands.registerTextEditorCommand(
-    'extension.injectFileHeader',
-    (textEditor, textEditorEdit) => prependFileHeader(textEditor, textEditorEdit)
-  )
-  context.subscriptions.push(injectFileHeader);
+  workspace.onWillSaveTextDocument(event => {
+    if (isLineAComment(event.document.lineAt(0).text)) return;
 
-  workspace.onWillSaveTextDocument(() => {
-    commands.executeCommand('extension.injectFileHeader');
+    event.waitUntil(prependFileHeader());
   });
 }
 
 exports.activate = activate;
 exports.deactivate = function () {};
 
-function prependFileHeader(textEditor, textEditorEdit) {
-  let firstLine = textEditor.document.lineAt(0);
-
-  if (isLineAComment(firstLine.text)) return;
-
-  //TODO: Make into a TextEdit for pre-save sync chaining
-  textEditorEdit.insert(new Position(0, 0), `//Test String \n`);
+function prependFileHeader() {
+  return Promise.resolve([TextEdit.insert(new Position(0, 0), `//Test String \n`)])
 }
 
 function isLineAComment(textContent) {
