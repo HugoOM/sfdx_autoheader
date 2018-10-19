@@ -11,17 +11,11 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.injectFileHeader",
         "onLanguage:apex",
         "onLanguage:Visualforce"
     ],
     "main": "./extension",
-    "contributes": {
-        "commands": [{
-            "command": "extension.injectFileHeader",
-            "title": "Add File Header"
-        }]
-    },
+    "contributes": {},
     "scripts": {
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "node ./node_modules/vscode/bin/test"
