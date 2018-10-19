@@ -18,13 +18,13 @@ exports.activate = activate;
 //TODO: Expose listener in "Global Scope" and Dispose upon deactivation
 exports.deactivate = function () {};
 
-function prependFileHeader(document) {
-  return Promise.resolve([
+async function prependFileHeader(document) {
+  return [
     TextEdit.insert(
       new Position(0, 0),
       defaultTemplate(document.fileName.split(/\/|\\/g).pop(), 'hmonette@deloitte.ca', 'placeholder')
     )
-  ])
+  ]
 }
 
 function isLineAComment(textContent) {
