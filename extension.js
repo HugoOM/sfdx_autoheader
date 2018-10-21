@@ -10,6 +10,7 @@ const defaultTemplate = require('./templates/default_cls.js')
 function activate(context) {
   const preSaveHookListener = workspace.onWillSaveTextDocument(event => {
     if (!isLanguageSFDC(event.document)) return;
+
     if (isLineAComment(event.document.lineAt(0).text))
       event.waitUntil(updateHeaderValues(event.document));
     else
@@ -26,12 +27,17 @@ async function prependFileHeader(document) {
   return [
     TextEdit.insert(
       new Position(0, 0),
-      defaultTemplate(document.fileName.split(/\/|\\/g).pop(), getConfiguredUsername(), getHeaderFormattedDateTime())
+      defaultTemplate(
+        document.fileName.split(/\/|\\/g).pop(),
+        getConfiguredUsername(),
+        getHeaderFormattedDateTime()
+      )
     )
   ]
 }
 
 function isLineAComment(textContent) {
+  //? May not need to check for single line comment as they do not represent a valid header ...
   const re = /(^\/\/)|(^\/\*)/g;
   return !!textContent.trim().match(re);
 }
@@ -69,6 +75,7 @@ function updateHeaderLastModifiedByAndDate(documentText) {
 }
 
 function updateHeaderValues(document) {
+  //* Find a way to get multiple TextEdit in the return Array and get them processed by waitUntil
   return [
     TextEdit.replace(
       getFullDocumentRange(document),
@@ -77,6 +84,7 @@ function updateHeaderValues(document) {
   ]
 }
 
+//* Find a way to select and replace ONLY the Header instead of the whole file
 function getFullDocumentRange(document) {
   return new Range(new Position(0, 0), new Position(document.lineCount, Number.MAX_SAFE_INTEGER))
 }
