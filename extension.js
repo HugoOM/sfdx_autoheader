@@ -2,35 +2,31 @@ const {
   Position,
   workspace,
   TextEdit,
-  Disposable
+  Range
 } = require('vscode');
 
 const defaultTemplate = require('./templates/default_cls.js')
 
-const disposables = []
-
 function activate(context) {
   const preSaveHookListener = workspace.onWillSaveTextDocument(event => {
     if (!isLanguageSFDC(event.document)) return;
-    if (isLineAComment(event.document.lineAt(0).text)) return;
-
-    event.waitUntil(prependFileHeader(event.document));
-    // event.waitUntil(updateLastModifiedBy(event.document.getText()));
+    if (isLineAComment(event.document.lineAt(0).text))
+      event.waitUntil(updateHeaderValues(event.document));
+    else
+      event.waitUntil(prependFileHeader(event.document));
   })
 
   context.subscriptions.push(preSaveHookListener);
 }
 
 exports.activate = activate;
-exports.deactivate = function () {
-  // disposables.forEach(disposable => disposable.dispose())
-};
+exports.deactivate = function () {}
 
 async function prependFileHeader(document) {
   return [
     TextEdit.insert(
       new Position(0, 0),
-      defaultTemplate(document.fileName.split(/\/|\\/g).pop(), 'hmonette@deloitte.ca', getHeaderFormattedDateTime())
+      defaultTemplate(document.fileName.split(/\/|\\/g).pop(), getConfiguredUsername(), getHeaderFormattedDateTime())
     )
   ]
 }
@@ -49,7 +45,38 @@ function getHeaderFormattedDateTime() {
   return currentDate.toLocaleString()
 }
 
-async function updateLastModifiedBy(fileContent) {
-  const re = /(?<=\s*\*\s*@Last\s*Modified\s*by\s*:\s*).*$/gim;
-  headerContent.replace(re, 'bamboo@lit.com')
+function getConfiguredUsername() {
+  const settingsUsername = workspace.getConfiguration().inspect('SFDX_Autoheader.username');
+  return settingsUsername.globalValue || settingsUsername.defaultValue
+}
+
+function updateHeaderLastModifiedByAndDate(documentText) {
+  return updateLastModifiedDateTime(updateLastModifiedBy(documentText))
+
+  function updateLastModifiedBy(fileContent) {
+    //! RegExp Lookbehind not supported in vscode runtime (It is based on ES5 specs)
+    //TODO https://github.com/Microsoft/vscode/issues/8635
+    // const re = /(?<=\s*\*\s*@Last\s*Modified\s*by\s*:\s*).*$/gm;
+    const re = /(\s*\*\s*@Last\s*Modified\s*by\s*:\s*).*$/gm;
+    return fileContent.replace(re, `$1${getConfiguredUsername()}`)
+  }
+
+  function updateLastModifiedDateTime(fileContent) {
+    // const re = /(?<=\s*\*\s*@Last\s*Modified\s*time\s*:\s*).*$/gm;
+    const re = /(\s*\*\s*@Last\s*Modified\s*time\s*:\s*).*$/gm;
+    return fileContent.replace(re, `$1${getHeaderFormattedDateTime()}`)
+  }
+}
+
+function updateHeaderValues(document) {
+  return [
+    TextEdit.replace(
+      getFullDocumentRange(document),
+      updateHeaderLastModifiedByAndDate(document.getText())
+    )
+  ]
+}
+
+function getFullDocumentRange(document) {
+  return new Range(new Position(0, 0), new Position(document.lineCount, Number.MAX_SAFE_INTEGER))
 }
