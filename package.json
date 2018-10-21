@@ -11,11 +11,22 @@
         "Other"
     ],
     "activationEvents": [
-        "onLanguage:apex",
-        "onLanguage:Visualforce"
+        "onLanguage:apex"
     ],
     "main": "./extension",
-    "contributes": {},
+    "contributes": {
+        "configuration": {
+            "type": "object",
+            "title": "SFDX Autoheader Config",
+            "properties": {
+                "SFDX_Autoheader.username": {
+                    "type": "string",
+                    "default": "phUser@phDomain.com",
+                    "description": "Sets the Username to be utilized in the SFDX File Header"
+                }
+            }
+        }
+    },
     "scripts": {
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "node ./node_modules/vscode/bin/test"
