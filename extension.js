@@ -11,7 +11,7 @@ function activate(context) {
   const preSaveHookListener = workspace.onWillSaveTextDocument(event => {
     if (!isLanguageSFDC(event.document)) return;
 
-    if (isLineAComment(event.document.lineAt(0).text))
+    if (isLineABlockComment(event.document.lineAt(0).text))
       event.waitUntil(updateHeaderValues(event.document));
     else
       event.waitUntil(prependFileHeader(event.document));
@@ -36,9 +36,8 @@ async function prependFileHeader(document) {
   ]
 }
 
-function isLineAComment(textContent) {
-  //? May not need to check for single line comment as they do not represent a valid header ...
-  const re = /(^\/\/)|(^\/\*)/g;
+function isLineABlockComment(textContent) {
+  const re = /^\/\*/g;
   return !!textContent.trim().match(re);
 }
 
@@ -61,7 +60,7 @@ function updateHeaderLastModifiedByAndDate(documentText) {
 
   function updateLastModifiedBy(fileContent) {
     //! RegExp Lookbehind not supported in vscode runtime (It is based on ES5 specs)
-    //TODO https://github.com/Microsoft/vscode/issues/8635
+    //https://github.com/Microsoft/vscode/issues/8635
     // const re = /(?<=\s*\*\s*@Last\s*Modified\s*by\s*:\s*).*$/gm;
     const re = /(\s*\*\s*@Last\s*Modified\s*by\s*:\s*).*$/gm;
     return fileContent.replace(re, `$1${getConfiguredUsername()}`)
