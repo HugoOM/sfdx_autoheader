@@ -2,7 +2,7 @@
   "name": "sfdx-autoheader",
   "displayName": "SFDX Autoheader",
   "description": "Automatic Template-Based File Header Generation for SFDX",
-  "version": "0.0.2-alpha",
+  "version": "0.0.2",
   "publisher": "HugoOM",
   "license": "MIT",
   "repository": {
