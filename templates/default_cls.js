@@ -3,12 +3,12 @@ module.exports = (fileName, userName, currentTime) => `/**
  * @Description        : 
  * @Author             : ${userName}
  * @Group              : 
- * @Last Modified by   : ${userName}
- * @Last Modified time : ${currentTime}
+ * @Last Modified By   : ${userName}
+ * @Last Modified On   : ${currentTime}
  * @Modification Log   : 
- *-------------------------------------------------------------------------------------
+ *------------------------------------------------------------------------------
  * Ver       	   Date           Author      		   Modification
- *-------------------------------------------------------------------------------------
+ *------------------------------------------------------------------------------
  * 1.0       ${currentTime}    ${userName}  Initial Version
  **/
 `
