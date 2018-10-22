@@ -3,9 +3,9 @@ const {
   workspace,
   TextEdit,
   Range
-} = require('vscode');
+} = require("vscode");
 
-const defaultTemplate = require('./templates/default_cls.js')
+const defaultTemplate = require("./templates/default_cls.js");
 
 function activate(context) {
   const preSaveHookListener = workspace.onWillSaveTextDocument(event => {
@@ -15,13 +15,13 @@ function activate(context) {
       event.waitUntil(updateHeaderValues(event.document));
     else
       event.waitUntil(prependFileHeader(event.document));
-  })
+  });
 
   context.subscriptions.push(preSaveHookListener);
 }
 
 exports.activate = activate;
-exports.deactivate = function () {}
+exports.deactivate = function () {};
 
 async function prependFileHeader(document) {
   return [
@@ -33,7 +33,7 @@ async function prependFileHeader(document) {
         getHeaderFormattedDateTime()
       )
     )
-  ]
+  ];
 }
 
 function isLineABlockComment(textContent) {
@@ -42,48 +42,48 @@ function isLineABlockComment(textContent) {
 }
 
 function isLanguageSFDC(document) {
-  return document.languageId === "apex"
+  return document.languageId === "apex";
 }
 
 function getHeaderFormattedDateTime() {
   const currentDate = new Date(Date.now());
-  return currentDate.toLocaleString()
+  return currentDate.toLocaleString();
 }
 
 function getConfiguredUsername() {
-  const settingsUsername = workspace.getConfiguration().inspect('SFDX_Autoheader.username');
-  return settingsUsername.globalValue || settingsUsername.defaultValue
-}
+  const settingsUsername = workspace
+    .getConfiguration()
+    .inspect("SFDX_Autoheader.username");
 
-function updateHeaderLastModifiedByAndDate(documentText) {
-  return updateLastModifiedDateTime(updateLastModifiedBy(documentText))
-
-  function updateLastModifiedBy(fileContent) {
-    //! RegExp Lookbehind not supported in vscode runtime (It is based on ES5 specs)
-    //https://github.com/Microsoft/vscode/issues/8635
-    // const re = /(?<=\s*\*\s*@Last\s*Modified\s*by\s*:\s*).*$/gm;
-    const re = /(\s*\*\s*@Last\s*Modified\s*by\s*:\s*).*$/gm;
-    return fileContent.replace(re, `$1${getConfiguredUsername()}`)
-  }
-
-  function updateLastModifiedDateTime(fileContent) {
-    // const re = /(?<=\s*\*\s*@Last\s*Modified\s*time\s*:\s*).*$/gm;
-    const re = /(\s*\*\s*@Last\s*Modified\s*time\s*:\s*).*$/gm;
-    return fileContent.replace(re, `$1${getHeaderFormattedDateTime()}`)
-  }
+  return settingsUsername.globalValue || settingsUsername.defaultValue;
 }
 
 function updateHeaderValues(document) {
-  //* Find a way to get multiple TextEdit in the return Array and get them processed by waitUntil
   return [
     TextEdit.replace(
       getFullDocumentRange(document),
       updateHeaderLastModifiedByAndDate(document.getText())
     )
-  ]
+  ];
 }
 
-//* Find a way to select and replace ONLY the Header instead of the whole file
+function updateHeaderLastModifiedByAndDate(documentText) {
+  return updateLastModifiedDateTime(updateLastModifiedBy(documentText));
+
+  function updateLastModifiedBy(fileContent) {
+    const re = /(\s*\*\s*@Last\s*Modified\s*By\s*:\s*).*$/gm;
+    return fileContent.replace(re, `$1${getConfiguredUsername()}`);
+  }
+
+  function updateLastModifiedDateTime(fileContent) {
+    const re = /(\s*\*\s*@Last\s*Modified\s*On\s*:\s*).*$/gm;
+    return fileContent.replace(re, `$1${getHeaderFormattedDateTime()}`);
+  }
+}
+
 function getFullDocumentRange(document) {
-  return new Range(new Position(0, 0), new Position(document.lineCount, Number.MAX_SAFE_INTEGER))
+  return new Range(
+    new Position(0, 0),
+    new Position(document.lineCount, Number.MAX_SAFE_INTEGER)
+  );
 }

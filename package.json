@@ -1,9 +1,13 @@
 {
     "name": "sfdx-autoheader",
-    "displayName": "sfdx_autoheader",
+    "displayName": "SFDX Autoheader",
     "description": "Automatic Template-Based File Header Generation for SFDX",
-    "version": "0.0.1",
+    "version": "0.0.1-alpha",
     "publisher": "HugoOM",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/HugoOM/sfdx_autoheader"
+    },
     "engines": {
         "vscode": "^1.28.0"
     },
