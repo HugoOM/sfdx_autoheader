@@ -13,8 +13,7 @@ function activate(context) {
 
     if (isLineABlockComment(event.document.lineAt(0).text))
       event.waitUntil(updateHeaderValues(event.document));
-    else
-      event.waitUntil(prependFileHeader(event.document));
+    else event.waitUntil(prependFileHeader(event.document));
   });
 
   context.subscriptions.push(preSaveHookListener);
