@@ -1,65 +1,28 @@
-# sfdx-autoheader README
+# 🔥 SFDX Autoheader ~ Alpha 🔥
 
-This is the README for your extension "sfdx-autoheader". After writing up a brief description, we recommend including the following sections.
+## **Important**
 
-## Features
+### _This extension depends on the official [Salesforce Extensions for VSCode](https://marketplace.visualstudio.com/items?itemName=salesforce.salesforcedx-vscode), for language support._ ☁️
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+# Features
 
-For example if there is an image subfolder under your extension project workspace:
+- #### Add a file header to any Apex-language files on save
+- #### Dynamically updates the "Last Updated By" and "Last Updated On" values on save
 
-\!\[feature X\]\(images/feature-x.png\)
+# Usage
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+Upon first saving any Apex files [ .cls | .apex ], a file header will be added at the beginning of the file.
+Further saves will update the "Last Modified By" and "Last Modified On" values to the current user and current time.
 
-## Requirements
+# Config
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+1.  Under "Settings" (Preferences > Open Settings), look for "SFDX".
+2.  Set the desired Username under "SFDX_Autoheader: Username".
 
-## Extension Settings
+# WIP, Roadmap & Ideas
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+- Full test coverage
+- Improve update logic so that the replacement is limited to the header
+- Programmatic improvements around the Pre-Save edits
+- Flexible templates and/or template options
+- Support for additional SFDX languages (Visualforce, Lightning)
