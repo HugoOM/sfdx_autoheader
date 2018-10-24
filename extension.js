@@ -1,3 +1,5 @@
+'use strict'
+
 const {
   Position,
   workspace,
@@ -7,82 +9,90 @@ const {
 
 const defaultTemplate = require("./templates/default_cls.js");
 
-function activate(context) {
-  const preSaveHookListener = workspace.onWillSaveTextDocument(event => {
-    if (!isLanguageSFDC(event.document)) return;
+class Extension {
 
-    if (isLineABlockComment(event.document.lineAt(0).text))
-      event.waitUntil(updateHeaderValues(event.document));
-    else event.waitUntil(prependFileHeader(event.document));
-  });
+  constructor() {}
 
-  context.subscriptions.push(preSaveHookListener);
-}
+  activate(context) {
+    const preSaveHookListener = workspace.onWillSaveTextDocument.bind(this)(event => {
+      if (!this.isLanguageSFDC(event.document)) return;
 
-exports.activate = activate;
-exports.deactivate = function () {};
+      if (this.isLineABlockComment(event.document.lineAt(0).text))
+        event.waitUntil(this.updateHeaderValues(event.document));
+      else event.waitUntil(this.prependFileHeader(event.document));
+    });
 
-async function prependFileHeader(document) {
-  return [
-    TextEdit.insert(
-      new Position(0, 0),
-      defaultTemplate(
-        document.fileName.split(/\/|\\/g).pop(),
-        getConfiguredUsername(),
-        getHeaderFormattedDateTime()
+    context.subscriptions.push(preSaveHookListener);
+  }
+
+  async prependFileHeader(document) {
+    return [
+      TextEdit.insert(
+        new Position(0, 0),
+        defaultTemplate(
+          document.fileName.split(/\/|\\/g).pop(),
+          this.getConfiguredUsername(),
+          this.getHeaderFormattedDateTime()
+        )
       )
-    )
-  ];
-}
+    ];
+  }
 
-function isLineABlockComment(textContent) {
-  const re = /^\/\*/g;
-  return !!textContent.trim().match(re);
-}
+  isLineABlockComment(textContent) {
+    const re = /^\/\*/g;
+    return !!textContent.trim().match(re);
+  }
 
-function isLanguageSFDC(document) {
-  return document.languageId === "apex";
-}
+  isLanguageSFDC(document) {
+    return document.languageId === "apex";
+  }
 
-function getHeaderFormattedDateTime() {
-  const currentDate = new Date(Date.now());
-  return currentDate.toLocaleString();
-}
+  getHeaderFormattedDateTime() {
+    const currentDate = new Date(Date.now());
+    return currentDate.toLocaleString();
+  }
 
-function getConfiguredUsername() {
-  const settingsUsername = workspace
-    .getConfiguration()
-    .inspect("SFDX_Autoheader.username");
+  getConfiguredUsername() {
+    const settingsUsername = workspace
+      .getConfiguration()
+      .inspect("SFDX_Autoheader.username");
 
-  return settingsUsername.globalValue || settingsUsername.defaultValue;
-}
+    return settingsUsername.globalValue || settingsUsername.defaultValue;
+  }
 
-function updateHeaderValues(document) {
-  return [
-    TextEdit.replace(
-      getFullDocumentRange(document),
-      updateHeaderLastModifiedByAndDate(document.getText())
-    )
-  ];
-}
+  async updateHeaderValues(document) {
+    return [
+      TextEdit.replace(
+        this.getFullDocumentRange(document),
+        this.updateHeaderLastModifiedByAndDate(document.getText())
+      )
+    ];
+  }
 
-function updateHeaderLastModifiedByAndDate(documentText) {
-  return updateLastModifiedDateTime(updateLastModifiedBy(documentText));
+  updateHeaderLastModifiedByAndDate(documentText) {
+    return this.updateLastModifiedDateTime(this.updateLastModifiedBy(documentText));
+  }
 
-  function updateLastModifiedBy(fileContent) {
+  updateLastModifiedBy(fileContent) {
     const re = /(\s*\*\s*@Last\s*Modified\s*By\s*:\s*).*$/gm;
-    return fileContent.replace(re, `$1${getConfiguredUsername()}`);
+    return fileContent.replace(re, `$1${this.getConfiguredUsername()}`);
   }
 
-  function updateLastModifiedDateTime(fileContent) {
+  updateLastModifiedDateTime(fileContent) {
     const re = /(\s*\*\s*@Last\s*Modified\s*On\s*:\s*).*$/gm;
-    return fileContent.replace(re, `$1${getHeaderFormattedDateTime()}`);
+    return fileContent.replace(re, `$1${this.getHeaderFormattedDateTime()}`);
+  }
+
+  getFullDocumentRange(document) {
+    return new Range(
+      new Position(0, 0),
+      new Position(document.lineCount, Number.MAX_SAFE_INTEGER)
+    );
   }
 }
 
-function getFullDocumentRange(document) {
-  return new Range(
-    new Position(0, 0),
-    new Position(document.lineCount, Number.MAX_SAFE_INTEGER)
-  );
-}
+const ext = new Extension();
+
+exports.ext = ext;
+exports.activate = ext.activate.bind(ext);
+exports.deactivate = function () {};
