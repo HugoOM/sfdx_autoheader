@@ -14,13 +14,14 @@ class Extension {
   constructor() {}
 
   activate(context) {
-    const preSaveHookListener = workspace.onWillSaveTextDocument.bind(this)(event => {
-      if (!this.isLanguageSFDC(event.document)) return;
+    const preSaveHookListener = workspace.onWillSaveTextDocument
+      .call(this, event => {
+        if (!this.isLanguageSFDC(event.document)) return;
 
-      if (this.isLineABlockComment(event.document.lineAt(0).text))
-        event.waitUntil(this.updateHeaderValues(event.document));
-      else event.waitUntil(this.prependFileHeader(event.document));
-    });
+        if (this.isLineABlockComment(event.document.lineAt(0).text))
+          event.waitUntil(this.updateHeaderValues(event.document));
+        else event.waitUntil(this.prependFileHeader(event.document));
+      });
 
     context.subscriptions.push(preSaveHookListener);
   }
