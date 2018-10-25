@@ -91,9 +91,9 @@ class Extension {
   }
 }
 
-exports.Extension = Extension;
 exports.activate = function (context) {
   const ext = new Extension();
   ext.setListenerOnPreSave(context);
 }
 exports.deactivate = function () {};
+exports.Extension = Extension;

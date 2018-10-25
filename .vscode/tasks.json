@@ -1,0 +1,9 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "tasks": [{
+    "type": "shell",
+    "label": "Install VSCode DX Suite",
+    "command": "code --install-extension salesforce.salesforcedx-vscode"
+  }]
+}
