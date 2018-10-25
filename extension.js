@@ -10,10 +10,9 @@ const {
 const defaultTemplate = require("./templates/default_cls.js");
 
 class Extension {
-
   constructor() {}
 
-  activate(context) {
+  setListenerOnPreSave(context) {
     const preSaveHookListener = workspace.onWillSaveTextDocument
       .call(this, event => {
         if (!this.isLanguageSFDC(event.document)) return;
@@ -92,8 +91,9 @@ class Extension {
   }
 }
 
-const ext = new Extension();
-
-exports.ext = ext;
-exports.activate = ext.activate.bind(ext);
+exports.Extension = Extension;
+exports.activate = function (context) {
+  const ext = new Extension();
+  ext.setListenerOnPreSave(context);
+}
 exports.deactivate = function () {};
