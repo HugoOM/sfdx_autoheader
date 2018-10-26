@@ -1,31 +1,51 @@
 const {
-    assert
+  assert
 } = require('chai');
 
 const {
-    Extension
+  Extension,
+  deactivate
 } = require('../extension');
 
 const ext = new Extension();
 
 const {
-    workspace
+  workspace,
+  TextEdit,
+  Position,
+  WorkspaceEdit,
+  Range
 } = require('vscode');
 
 const path = require('path');
 
 suite("Extension Tests", function () {
 
-    test('Testing PreSaveListener',
-        done => {
-            let t = __dirname;
+  test('Testing PreSaveListener',
+    done => {
+      workspace.openTextDocument(path.join(__dirname, 'test_files', 'testFile_Apex.apex'))
+        .then(async document => {
+          const edit = new WorkspaceEdit();
 
-            path.join()
+          edit.delete(
+            document.uri,
+            new Range(
+              new Position(0, 0),
+              new Position(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER)
+            )
+          );
 
-            assert.equal(true, true);
-            done()
-        }, err => {
-            return;
-        }
-    )
+          edit.set(edit);
+
+          await workspace.applyEdit(edit);
+
+          assert.strictEqual(document.getText(), "");
+
+          await document.save();
+
+          assert.notEqual(document.getText(), "");
+
+          done();
+        })
+    })
 });
