@@ -1,8 +1,13 @@
+language: node_js
+
 sudo: false
 
 os:
   - osx
   - linux
+
+node_js:
+  - "node"
 
 before_install:
   - if [ $TRAVIS_OS_NAME == "linux" ]; then
@@ -15,4 +20,4 @@ install:
   - npm install
 
 script:
-  - npm test --silent
+  - npm test
