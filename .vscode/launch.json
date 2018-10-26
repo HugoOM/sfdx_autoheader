@@ -20,7 +20,7 @@
         "--extensionDevelopmentPath=${workspaceFolder}",
         "--extensionTestsPath=${workspaceFolder}/test"
       ],
-      "preLaunchTask": "Install VSCode DX Suite"
+      "preLaunchTask": "Install_VSCode_DX_Suite"
     }
   ]
 }
