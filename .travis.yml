@@ -18,6 +18,7 @@ before_install:
 
 install:
   - npm install
+  - code --install-extension salesforce.salesforcedx-vscode
 
 script:
   - npm test
