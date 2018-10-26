@@ -94,6 +94,7 @@ class Extension {
 exports.activate = function (context) {
   const ext = new Extension();
   ext.setListenerOnPreSave(context);
+  console.log('Extension Activated');
 }
 exports.deactivate = function () {};
 exports.Extension = Extension;
