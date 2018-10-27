@@ -20,5 +20,4 @@ install:
   - npm install
 
 script:
-  - code --install-extension salesforce.salesforcedx-vscode
   - npm test --silent

@@ -31,7 +31,11 @@
           "description": "Sets the Username to be utilized in the SFDX File Header"
         }
       }
-    }
+    },
+    "languages": [{
+      "id": "apex",
+      "filenames": ["testFile_Apex_SFDXAutoheader.apex"]
+    }]
   },
   "scripts": {
     "postinstall": "node ./node_modules/vscode/bin/install",

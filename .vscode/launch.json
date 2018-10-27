@@ -17,10 +17,11 @@
       "request": "launch",
       "runtimeExecutable": "${execPath}",
       "args": [
+        "--disableExtensions",
         "--extensionDevelopmentPath=${workspaceFolder}",
         "--extensionTestsPath=${workspaceFolder}/test"
       ],
-      "preLaunchTask": "Install_VSCode_DX_Suite"
+      "preLaunchTask": ""
     }
   ]
 }
