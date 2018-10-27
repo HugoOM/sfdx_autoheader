@@ -34,7 +34,9 @@
     },
     "languages": [{
       "id": "apex",
-      "filenames": ["testFile_SFDXAutoheader.apex"]
+      "filenames": [
+        "testFile_SFDXAutoheader.apex"
+      ]
     }]
   },
   "scripts": {

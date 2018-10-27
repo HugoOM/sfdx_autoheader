@@ -54,10 +54,9 @@ class Extension {
 
   getConfiguredUsername() {
     const settingsUsername = workspace
-      .getConfiguration()
-      .inspect("SFDX_Autoheader.username");
+      .getConfiguration("SFDX_Autoheader");
 
-    return settingsUsername.globalValue || settingsUsername.defaultValue;
+    return settingsUsername.get('username');
   }
 
   async getUpdateHeaderValueEdit(document) {
