@@ -1,11 +1,11 @@
 const {
   assert
-} = require('chai');
+} = require("chai");
 
 const {
   Extension,
   deactivate
-} = require('../extension');
+} = require("../extension");
 
 const ext = new Extension();
 
@@ -14,38 +14,39 @@ const {
   TextEdit,
   Position,
   WorkspaceEdit,
-  Range
-} = require('vscode');
+  Range,
+  extensions
+} = require("vscode");
 
-const path = require('path');
+const path = require("path");
 
 suite("Extension Tests", function () {
+  test("Testing PreSaveListener", async () => {
+    const testExt = extensions.getExtension("HugoOM.sfdx-autoheader");
+    await testExt.activate();
+    const document = await workspace.openTextDocument(
+      path.join(__dirname, "test_files", "testFile_Apex_SFDXAutoheader.apex")
+    );
+    const edit = new WorkspaceEdit();
 
-  test('Testing PreSaveListener',
-    done => {
-      workspace.openTextDocument(path.join(__dirname, 'test_files', 'testFile_Apex.apex'))
-        .then(async document => {
-          const edit = new WorkspaceEdit();
+    edit.delete(
+      document.uri,
+      new Range(
+        new Position(0, 0),
+        new Position(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER)
+      )
+    );
 
-          edit.delete(
-            document.uri,
-            new Range(
-              new Position(0, 0),
-              new Position(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER)
-            )
-          );
+    edit.set(edit);
 
-          edit.set(edit);
+    await workspace.applyEdit(edit);
 
-          await workspace.applyEdit(edit);
+    assert.strictEqual(document.getText(), "");
 
-          assert.strictEqual(document.getText(), "");
+    await document.save();
 
-          await document.save();
+    assert.notEqual(document.getText(), "");
 
-          assert.notEqual(document.getText(), "");
-
-          done();
-        })
-    })
+    return;
+  });
 });
