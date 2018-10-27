@@ -15,17 +15,17 @@ class Extension {
   setListenerOnPreSave(context) {
     const preSaveHookListener = workspace.onWillSaveTextDocument
       .call(this, event => {
-        if (!this.isLanguageSFDC(event.document)) return;
+        if (!this.isLanguageSFDC(event.document.languageId)) return;
 
         if (this.isLineABlockComment(event.document.lineAt(0).text))
-          event.waitUntil(this.updateHeaderValues(event.document));
-        else event.waitUntil(this.prependFileHeader(event.document));
+          event.waitUntil(this.getUpdateHeaderValueEdit(event.document));
+        else event.waitUntil(this.getInsertFileHeaderEdit(event.document));
       });
 
     context.subscriptions.push(preSaveHookListener);
   }
 
-  async prependFileHeader(document) {
+  async getInsertFileHeaderEdit(document) {
     return [
       TextEdit.insert(
         new Position(0, 0),
@@ -43,8 +43,8 @@ class Extension {
     return !!textContent.trim().match(re);
   }
 
-  isLanguageSFDC(document) {
-    return document.languageId === "apex";
+  isLanguageSFDC(languageId) {
+    return languageId === "apex";
   }
 
   getHeaderFormattedDateTime() {
@@ -60,7 +60,7 @@ class Extension {
     return settingsUsername.globalValue || settingsUsername.defaultValue;
   }
 
-  async updateHeaderValues(document) {
+  async getUpdateHeaderValueEdit(document) {
     return [
       TextEdit.replace(
         this.getFullDocumentRange(document),
