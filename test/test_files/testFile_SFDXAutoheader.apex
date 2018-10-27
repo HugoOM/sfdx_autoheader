@@ -1,13 +1,13 @@
 /**
  * @File Name          : testFile_SFDXAutoheader.apex
  * @Description        : 
- * @Author             : phUser@phDomain.com
+ * @Author             : 
  * @Group              : 
- * @Last Modified By   : phUser@phDomain.com
- * @Last Modified On   : 10/26/2018, 11:29:50 PM
+ * @Last Modified By   : 
+ * @Last Modified On   : 10/27/2018, 11:40:12 AM
  * @Modification Log   : 
  *------------------------------------------------------------------------------
  * Ver       	   Date           Author      		   Modification
  *------------------------------------------------------------------------------
- * 1.0       10/26/2018, 11:29:50 PM    phUser@phDomain.com  Initial Version
+ * 1.0       10/27/2018, 11:40:12 AM      Initial Version
  **/

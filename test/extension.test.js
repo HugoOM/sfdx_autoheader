@@ -21,6 +21,8 @@ const {
 const path = require("path");
 
 suite("Extension Tests", function () {
+  this.timeout(10000);
+
   test("Testing PreSaveListener - Positive", async () => {
     await loadExtension();
 
@@ -49,6 +51,10 @@ suite("Extension Tests", function () {
     await document.save();
 
     assert.strictEqual(document.getText(), "");
+
+    await resetJSTestFile(document);
+
+    await document.save();
 
     return;
   })
@@ -91,31 +97,27 @@ suite("Extension Tests", function () {
   })
 
   test("Testing getHeaderFormattedDateTime", done => {
-    const headerFormattedDate = ext.getHeaderFormattedDateTime();
-
-    assert.typeOf(headerFormattedDate, "string");
-
+    assert.isString(ext.getHeaderFormattedDateTime());
     done();
   })
 
-  test("Testing getConfiguredUsername", async () => {
-    const settingsUsername = await workspace.getConfiguration("SFDX_Autoheader");
+  test("Testing getConfiguredUsername", done => {
+    /* Single VSCode package functionality, simply test that 
+         a value is returned and/or that default is leveraged from config */
+    assert.isString(ext.getConfiguredUsername());
+    done();
+  })
 
-    await settingsUsername.update("username", '', true);
+  test("Testing getUpdateHeaderValueEdit", async () => {
+    const document = await openTestDocumentByLanguageId('apex');
 
-    assert.strictEqual(
-      ext.getConfiguredUsername(),
-      settingsUsername.inspect("username").defaultValue
-    );
+    const insertFileHeaderEdit =
+      await ext.getInsertFileHeaderEdit(document);
 
-    const testUsername = 'HugoOM@github.com';
+    assert.exists(insertFileHeaderEdit);
+    assert.notEqual(insertFileHeaderEdit.newText, "");
 
-    await settingsUsername.update("username", testUsername, true);
 
-    assert.strictEqual(
-      ext.getConfiguredUsername(),
-      testUsername
-    );
 
     return;
   })
@@ -145,6 +147,20 @@ async function clearFile(document) {
       new Position(0, 0),
       new Position(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER)
     )
+  );
+
+  edit.set(edit);
+
+  return workspace.applyEdit(edit);
+}
+
+async function resetJSTestFile(document) {
+  const edit = new WorkspaceEdit();
+
+  edit.insert(
+    document.uri,
+    new Position(0, 0),
+    '// Test Javascript File'
   );
 
   edit.set(edit);
