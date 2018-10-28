@@ -1,3 +1,5 @@
+'use strict'
+
 const {
   Position,
   workspace,
@@ -7,82 +9,91 @@ const {
 
 const defaultTemplate = require("./templates/default_cls.js");
 
-function activate(context) {
-  const preSaveHookListener = workspace.onWillSaveTextDocument(event => {
-    if (!isLanguageSFDC(event.document)) return;
+class Extension {
+  constructor() {}
 
-    if (isLineABlockComment(event.document.lineAt(0).text))
-      event.waitUntil(updateHeaderValues(event.document));
-    else event.waitUntil(prependFileHeader(event.document));
-  });
+  setListenerOnPreSave(context) {
+    const preSaveHookListener = workspace.onWillSaveTextDocument
+      .call(this, event => {
+        if (!this.isLanguageSFDC(event.document.languageId)) return;
 
-  context.subscriptions.push(preSaveHookListener);
-}
+        if (this.isLineABlockComment(event.document.lineAt(0).text))
+          event.waitUntil(this.getUpdateHeaderValueEdit(event.document));
+        else event.waitUntil(this.getInsertFileHeaderEdit(event.document));
+      });
 
-exports.activate = activate;
-exports.deactivate = function () {};
+    context.subscriptions.push(preSaveHookListener);
+  }
 
-async function prependFileHeader(document) {
-  return [
-    TextEdit.insert(
-      new Position(0, 0),
-      defaultTemplate(
-        document.fileName.split(/\/|\\/g).pop(),
-        getConfiguredUsername(),
-        getHeaderFormattedDateTime()
+  async getInsertFileHeaderEdit(document) {
+    return [
+      TextEdit.insert(
+        new Position(0, 0),
+        defaultTemplate(
+          document.fileName.split(/\/|\\/g).pop(),
+          this.getConfiguredUsername(),
+          this.getHeaderFormattedDateTime()
+        )
       )
-    )
-  ];
-}
-
-function isLineABlockComment(textContent) {
-  const re = /^\/\*/g;
-  return !!textContent.trim().match(re);
-}
-
-function isLanguageSFDC(document) {
-  return document.languageId === "apex";
-}
-
-function getHeaderFormattedDateTime() {
-  const currentDate = new Date(Date.now());
-  return currentDate.toLocaleString();
-}
-
-function getConfiguredUsername() {
-  const settingsUsername = workspace
-    .getConfiguration()
-    .inspect("SFDX_Autoheader.username");
-
-  return settingsUsername.globalValue || settingsUsername.defaultValue;
-}
-
-function updateHeaderValues(document) {
-  return [
-    TextEdit.replace(
-      getFullDocumentRange(document),
-      updateHeaderLastModifiedByAndDate(document.getText())
-    )
-  ];
-}
-
-function updateHeaderLastModifiedByAndDate(documentText) {
-  return updateLastModifiedDateTime(updateLastModifiedBy(documentText));
-
-  function updateLastModifiedBy(fileContent) {
-    const re = /(\s*\*\s*@Last\s*Modified\s*By\s*:\s*).*$/gm;
-    return fileContent.replace(re, `$1${getConfiguredUsername()}`);
+    ];
   }
 
-  function updateLastModifiedDateTime(fileContent) {
-    const re = /(\s*\*\s*@Last\s*Modified\s*On\s*:\s*).*$/gm;
-    return fileContent.replace(re, `$1${getHeaderFormattedDateTime()}`);
+  isLineABlockComment(textContent) {
+    const re = /^\/\*/g;
+    return !!textContent.trim().match(re);
+  }
+
+  isLanguageSFDC(languageId) {
+    return languageId === "apex";
+  }
+
+  getHeaderFormattedDateTime() {
+    const currentDate = new Date(Date.now());
+    return currentDate.toLocaleString();
+  }
+
+  getConfiguredUsername() {
+    const settingsUsername = workspace
+      .getConfiguration("SFDX_Autoheader");
+
+    return settingsUsername.get('username') || settingsUsername.inspect('username').defaultValue;
+  }
+
+  async getUpdateHeaderValueEdit(document) {
+    return [
+      TextEdit.replace(
+        this.getFullDocumentRange(document),
+        this.updateHeaderLastModifiedByAndDate(document.getText())
+      )
+    ];
+  }
+
+  updateHeaderLastModifiedByAndDate(documentText) {
+    return this.updateLastModifiedDateTime(this.updateLastModifiedBy(documentText));
+  }
+
+  updateLastModifiedBy(fileContent) {
+    const re = /(@Last\s*Modified\s*By\s*:.*)/gim;
+    return fileContent.replace(re, `$1${this.getConfiguredUsername()}`);
+  }
+
+  updateLastModifiedDateTime(fileContent) {
+    const re = /(@Last\s*Modified\s*On\s*:.*)/gim;
+    return fileContent.replace(re, `$1${this.getHeaderFormattedDateTime()}`);
+  }
+
+  getFullDocumentRange(document) {
+    return new Range(
+      new Position(0, 0),
+      new Position(document.lineCount, Number.MAX_SAFE_INTEGER)
+    );
   }
 }
 
-function getFullDocumentRange(document) {
-  return new Range(
-    new Position(0, 0),
-    new Position(document.lineCount, Number.MAX_SAFE_INTEGER)
-  );
+exports.activate = function (context) {
+  const ext = new Extension();
+  ext.setListenerOnPreSave(context);
+  console.log('Extension Activated');
 }
+exports.deactivate = function () {};
+exports.Extension = Extension;

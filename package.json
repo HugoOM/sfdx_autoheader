@@ -28,20 +28,27 @@
         "SFDX_Autoheader.username": {
           "type": "string",
           "default": "phUser@phDomain.com",
-          "description": "Sets the Username to be utilized in the SFDX File Header"
+          "description": "Sets the SFDX File Header Username"
         }
       }
-    }
+    },
+    "languages": [{
+      "id": "apex",
+      "filenames": [
+        "testFile_SFDXAutoheader.apex"
+      ]
+    }]
   },
   "scripts": {
     "postinstall": "node ./node_modules/vscode/bin/install",
     "test": "node ./node_modules/vscode/bin/test"
   },
   "devDependencies": {
-    "typescript": "^2.6.1",
-    "vscode": "^1.1.21",
-    "eslint": "^4.11.0",
+    "@types/mocha": "^2.2.42",
     "@types/node": "^8.10.25",
-    "@types/mocha": "^2.2.42"
+    "chai": "^4.2.0",
+    "eslint": "^4.11.0",
+    "typescript": "^2.6.1",
+    "vscode": "^1.1.21"
   }
 }
