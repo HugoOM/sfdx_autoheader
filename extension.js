@@ -73,13 +73,13 @@ class Extension {
   }
 
   updateLastModifiedBy(fileContent) {
-    const re = /(@Last\s*Modified\s*By\s*:.*)/gim;
-    return fileContent.replace(re, `$1${this.getConfiguredUsername()}`);
+    const re = /^(\s*\*\s*@Last\s*Modified\s*By\s*:).*$/gm;
+    return fileContent.replace(re, `$1 ${this.getConfiguredUsername()}`);
   }
 
   updateLastModifiedDateTime(fileContent) {
-    const re = /(@Last\s*Modified\s*On\s*:.*)/gim;
-    return fileContent.replace(re, `$1${this.getHeaderFormattedDateTime()}`);
+    const re = /^(\s*\*\s*@Last\s*Modified\s*On\s*:).*$/gm;
+    return fileContent.replace(re, `$1 ${this.getHeaderFormattedDateTime()}`);
   }
 
   getFullDocumentRange(document) {
