@@ -28,7 +28,7 @@
         "SFDX_Autoheader.username": {
           "type": "string",
           "default": "phUser@phDomain.com",
-          "description": "Sets the Username to be utilized in the SFDX File Header"
+          "description": "Sets the SFDX File Header Username"
         }
       }
     },

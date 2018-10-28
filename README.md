@@ -1,8 +1,8 @@
-# 🔥 SFDX Autoheader ~ Alpha 🔥
+# 🔥 SFDX Autoheader ~ Beta 🔥
 
 ## **Important**
 
-### _This extension depends on the official [☁ Salesforce Extensions for VSCode ☁](https://marketplace.visualstudio.com/items?itemName=salesforce.salesforcedx-vscode), for language support._
+### _This extension depends on the official [☁ Salesforce Extensions for VSCode ☁](https://marketplace.visualstudio.com/items?itemName=salesforce.salesforcedx-vscode) for language support._
 
 # Features
 
@@ -29,8 +29,8 @@ Further saves will update the "Last Modified By" and "Last Modified On" values t
 
 # WIP, Roadmap & Ideas 🦄
 
-- Full test coverage
+- Support for additional SFDX languages (Visualforce, Lightning)
 - Improve update logic so that replacement is scoped to the header
 - Programmatic improvements around the Pre-Save edits
 - Flexible templates and/or template options
-- Support for additional SFDX languages (Visualforce, Lightning)
+- Test Quality Improvements
