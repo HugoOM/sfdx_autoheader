@@ -68,6 +68,7 @@ suite("Extension Tests", function () {
     assert.exists(insertFileHeaderEdit);
     assert.notEqual(insertFileHeaderEdit.newText, "");
 
+
     return;
   })
 
@@ -111,17 +112,76 @@ suite("Extension Tests", function () {
   test("Testing getUpdateHeaderValueEdit", async () => {
     const document = await openTestDocumentByLanguageId('apex');
 
-    const insertFileHeaderEdit =
-      await ext.getInsertFileHeaderEdit(document);
+    await clearFile(document);
 
-    assert.exists(insertFileHeaderEdit);
-    assert.notEqual(insertFileHeaderEdit.newText, "");
+    assert.strictEqual(document.getText(), "");
 
+    await document.save();
 
+    assert.notEqual(document.getText(), "");
+
+    const preUpdateHeader = document.getText();
+
+    await wait(2000);
+
+    await clearFile(document);
+
+    await document.save();
+
+    const postUpdateHeader = document.getText();
+
+    assert.notStrictEqual(postUpdateHeader, preUpdateHeader);
 
     return;
   })
+
+  test("Testing updateHeaderLastModifiedByAndDate", done => {
+    const testHeaderInitial = `/**
+     * @File Name          :
+     * @Description        : 
+     * @Author             : 
+     * @Group              : 
+     * @Last Modified By   : 
+     * @Last Modified On   : 
+     * @Modification Log   : 
+     *------------------------------------------------------------------------------
+     * Ver       	   Date           Author      		   Modification
+     *------------------------------------------------------------------------------
+     **/`
+    const lastModByRegex = /(@Last\s*Modified\s*By\s*:.*)/gim;
+    const lastModOnRegex = /(@Last\s*Modified\s*On\s*:.*)/gim;
+    const testHeaderUpdated = ext.updateHeaderLastModifiedByAndDate(testHeaderInitial);
+
+    assert.notStrictEqual(testHeaderUpdated.match(lastModByRegex).pop(), testHeaderInitial.match(lastModByRegex).pop())
+    assert.notStrictEqual(testHeaderUpdated.match(lastModOnRegex).pop(), testHeaderInitial.match(lastModOnRegex).pop())
+
+    done();
+  })
+
+  test("Testing updateLastModifiedBy", done => {
+    const testModByString = '* @Last Modified By: HugoOM@GitHub.com';
+    assert.notStrictEqual(ext.updateLastModifiedBy(testModByString), testModByString);
+    done();
+  })
+
+  test("Testing updateLastModifiedDateTime", done => {
+    const testModOnString = '* @Last Modified On: 02/02/2222 22:22';
+    assert.notStrictEqual(ext.updateLastModifiedDateTime(testModOnString), testModOnString);
+    done();
+  })
+
+  test("Testing getFullDocumentRange", async () => {
+    /* Single VSCode package functionality */
+    const document = await openTestDocumentByLanguageId('apex');
+    const testRange = ext.getFullDocumentRange(document);
+    assert.equal(testRange.end.line, document.lineCount);
+    return;
+  })
 });
+
+function wait(timeToWaitInMS) {
+  return new Promise(resolve => setTimeout(resolve, timeToWaitInMS))
+}
 
 function openTestDocumentByLanguageId(languageId) {
   return workspace.openTextDocument(
