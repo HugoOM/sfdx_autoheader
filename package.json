@@ -2,9 +2,14 @@
   "name": "sfdx-autoheader",
   "displayName": "SFDX Autoheader",
   "description": "Automatic Template-Based File Header Generation for SFDX",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "publisher": "HugoOM",
   "license": "MIT",
+  "badges": [{
+    "url": "https://travis-ci.org/HugoOM/sfdx_autoheader.svg?branch=master",
+    "href": "https://travis-ci.org/HugoOM/sfdx_autoheader",
+    "description": "Travis-CI Build Status for Master Branch (Current Release)"
+  }],
   "repository": {
     "type": "git",
     "url": "https://github.com/HugoOM/sfdx_autoheader"

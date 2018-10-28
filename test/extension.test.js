@@ -148,8 +148,8 @@ suite("Extension Tests", function () {
      * Ver       	   Date           Author      		   Modification
      *------------------------------------------------------------------------------
      **/`
-    const lastModByRegex = /(@Last\s*Modified\s*By\s*:.*)/gim;
-    const lastModOnRegex = /(@Last\s*Modified\s*On\s*:.*)/gim;
+    const lastModByRegex = /^(\s*\*\s*@Last\s*Modified\s*By\s*:).*/gm;
+    const lastModOnRegex = /^(\s*\*\s*@Last\s*Modified\s*On\s*:).*/gm;
     const testHeaderUpdated = ext.updateHeaderLastModifiedByAndDate(testHeaderInitial);
 
     assert.notStrictEqual(testHeaderUpdated.match(lastModByRegex).pop(), testHeaderInitial.match(lastModByRegex).pop())
