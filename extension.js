@@ -56,7 +56,7 @@ class Extension {
     const settingsUsername = workspace
       .getConfiguration("SFDX_Autoheader");
 
-    return settingsUsername.get('username');
+    return settingsUsername.get('username') || settingsUsername.inspect('username').defaultValue;
   }
 
   async getUpdateHeaderValueEdit(document) {
@@ -73,12 +73,12 @@ class Extension {
   }
 
   updateLastModifiedBy(fileContent) {
-    const re = /(\s*\*\s*@Last\s*Modified\s*By\s*:\s*).*$/gm;
+    const re = /(@Last\s*Modified\s*By\s*:.*)/gim;
     return fileContent.replace(re, `$1${this.getConfiguredUsername()}`);
   }
 
   updateLastModifiedDateTime(fileContent) {
-    const re = /(\s*\*\s*@Last\s*Modified\s*On\s*:\s*).*$/gm;
+    const re = /(@Last\s*Modified\s*On\s*:.*)/gim;
     return fileContent.replace(re, `$1${this.getHeaderFormattedDateTime()}`);
   }
 
