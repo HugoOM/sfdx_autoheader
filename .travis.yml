@@ -5,6 +5,7 @@ sudo: false
 os:
   - osx
   - linux
+  - windows
 
 node_js:
   - "node"

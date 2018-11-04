@@ -2,14 +2,17 @@
   "name": "sfdx-autoheader",
   "displayName": "SFDX Autoheader",
   "description": "Automatic Template-Based File Header Generation for SFDX",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "HugoOM",
   "license": "MIT",
-  "badges": [{
-    "url": "https://travis-ci.org/HugoOM/sfdx_autoheader.svg?branch=master",
-    "href": "https://travis-ci.org/HugoOM/sfdx_autoheader",
-    "description": "Travis-CI Build Status for Master Branch (Current Release)"
-  }],
+  "badges": [
+    {
+      "url": "https://travis-ci.org/HugoOM/sfdx_autoheader.svg?branch=master",
+      "href": "https://travis-ci.org/HugoOM/sfdx_autoheader",
+      "description": "Travis-CI Build Status for Master Branch (Current Release)"
+    }
+  ],
+  "preview": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/HugoOM/sfdx_autoheader"
@@ -20,7 +23,16 @@
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "apex",
+    "Salesforce",
+    "File Header",
+    "Code Comments"
+  ],
   "icon": "images/slds_action_follow_icon.png",
+  "galleryBanner": {
+    "theme": "dark"
+  },
   "activationEvents": [
     "onLanguage:apex"
   ],
@@ -37,12 +49,14 @@
         }
       }
     },
-    "languages": [{
-      "id": "apex",
-      "filenames": [
-        "testFile_SFDXAutoheader.apex"
-      ]
-    }]
+    "languages": [
+      {
+        "id": "apex",
+        "filenames": [
+          "testFile_SFDXAutoheader.apex"
+        ]
+      }
+    ]
   },
   "scripts": {
     "postinstall": "node ./node_modules/vscode/bin/install",

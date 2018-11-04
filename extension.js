@@ -7,7 +7,10 @@ const {
   Range
 } = require("vscode");
 
-const defaultTemplate = require("./templates/default_cls.js");
+const {
+  apexTemplate,
+  vfTemplate
+} = require("./templates/default.js");
 
 class Extension {
   constructor() {}
@@ -29,7 +32,7 @@ class Extension {
     return [
       TextEdit.insert(
         new Position(0, 0),
-        defaultTemplate(
+        apexTemplate(
           document.fileName.split(/\/|\\/g).pop(),
           this.getConfiguredUsername(),
           this.getHeaderFormattedDateTime()
@@ -38,13 +41,21 @@ class Extension {
     ];
   }
 
-  isLineABlockComment(textContent) {
+  isLineABlockComment(lineContent) {
     const re = /^\/\*/g;
-    return !!textContent.trim().match(re);
+    return !!lineContent.trim().match(re);
+  }
+
+  isLineAnXMLComment(lineContent) {
+    const re = /<!--/g;
+    return !!lineContent.trim().match(re);
   }
 
   isLanguageSFDC(languageId) {
-    return languageId === "apex";
+    if (languageId === "apex") return true;
+    if (languageId === "visualforce") return true;
+
+    return false;
   }
 
   getHeaderFormattedDateTime() {
@@ -53,8 +64,7 @@ class Extension {
   }
 
   getConfiguredUsername() {
-    const settingsUsername = workspace
-      .getConfiguration("SFDX_Autoheader");
+    const settingsUsername = workspace.getConfiguration("SFDX_Autoheader");
 
     return settingsUsername.get('username') || settingsUsername.inspect('username').defaultValue;
   }
@@ -73,12 +83,12 @@ class Extension {
   }
 
   updateLastModifiedBy(fileContent) {
-    const re = /^(\s*\*\s*@Last\s*Modified\s*By\s*:).*$/gm;
+    const re = /^(\s*[\*\s]*@Last\s*Modified\s*By\s*:).*$/gm;
     return fileContent.replace(re, `$1 ${this.getConfiguredUsername()}`);
   }
 
   updateLastModifiedDateTime(fileContent) {
-    const re = /^(\s*\*\s*@Last\s*Modified\s*On\s*:).*$/gm;
+    const re = /^(\s*[\*\s]*@Last\s*Modified\s*On\s*:).*$/gm;
     return fileContent.replace(re, `$1 ${this.getHeaderFormattedDateTime()}`);
   }
 
