@@ -2,13 +2,17 @@
 
 ## [Unreleased - WIP]
 
-- Test Coverage for 0.1.1+
+- Test Coverage for 0.2.0+
 
-## [0.1.2]
+## [0.2.2]
+
+- Marketplace color theme hotfix
+
+## [0.2.1]
 
 - Fixed the "Jumping Cursor" issue
 
-## [0.1.1]
+## [0.2.0]
 
 - Visualforce Support
 

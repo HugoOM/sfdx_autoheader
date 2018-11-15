@@ -2,7 +2,7 @@
   "name": "sfdx-autoheader",
   "displayName": "SFDX Autoheader",
   "description": "Automatic Template-Based File Header Generation for SFDX",
-  "version": "0.1.2",
+  "version": "0.2.2",
   "publisher": "HugoOM",
   "license": "MIT",
   "badges": [{
@@ -30,7 +30,8 @@
   ],
   "icon": "images/slds_action_follow_icon.png",
   "galleryBanner": {
-    "theme": "dark"
+    "theme": "dark",
+    "color": "#232323"
   },
   "activationEvents": [
     "onLanguage:apex",
