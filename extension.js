@@ -4,47 +4,90 @@ const {
   Position,
   workspace,
   TextEdit,
-  Range
+  Range,
+  window,
+  Selection
 } = require("vscode");
 
-const defaultTemplate = require("./templates/default_cls.js");
+const defaultTemplates = require("./templates/default.js");
 
 class Extension {
-  constructor() {}
+  constructor() {
+    this.cursorPosition = null;
+  }
 
   setListenerOnPreSave(context) {
     const preSaveHookListener = workspace.onWillSaveTextDocument
       .call(this, event => {
+        if (!event.document.isDirty) return;
         if (!this.isLanguageSFDC(event.document.languageId)) return;
 
-        if (this.isLineABlockComment(event.document.lineAt(0).text))
-          event.waitUntil(this.getUpdateHeaderValueEdit(event.document));
-        else event.waitUntil(this.getInsertFileHeaderEdit(event.document));
+        const firstLine = event.document.lineAt(0).text;
+
+        /* Prevent capturing the Cursor position when saving from script */
+        if (window.activeTextEditor)
+          this.cursorPosition = window.activeTextEditor.selection.active;
+
+        if (this.isLineABlockComment(firstLine) || this.isLineAnXMLComment(firstLine))
+          event.waitUntil(this.getUpdateHeaderValueEdit(event.document))
+        else
+          event.waitUntil(this.getInsertFileHeaderEdit(event.document))
       });
 
     context.subscriptions.push(preSaveHookListener);
+  }
+
+  setListenerOnPostSave(context) {
+    const postSaveHookListener = workspace.onDidSaveTextDocument
+      .call(this, () => {
+        if (!this.cursorPosition) return;
+
+        window.activeTextEditor.selection = this.getCursorPositionSelection(
+          this.getLastSavedCursorPosition(),
+          this.getLastSavedCursorPosition()
+        );
+      });
+
+    context.subscriptions.push(postSaveHookListener);
+  }
+
+  //TODO Improve for initial insertion (extension flag)
+  getCursorPositionSelection(startPos, endPos) {
+    return new Selection(startPos, endPos);
+  }
+
+  getLastSavedCursorPosition() {
+    return new Position(this.cursorPosition.line, this.cursorPosition.character);
   }
 
   async getInsertFileHeaderEdit(document) {
     return [
       TextEdit.insert(
         new Position(0, 0),
-        defaultTemplate(
+        defaultTemplates[document.languageId](
           document.fileName.split(/\/|\\/g).pop(),
           this.getConfiguredUsername(),
           this.getHeaderFormattedDateTime()
         )
       )
-    ];
+    ]
   }
 
-  isLineABlockComment(textContent) {
+  isLineABlockComment(lineContent) {
     const re = /^\/\*/g;
-    return !!textContent.trim().match(re);
+    return !!lineContent.trim().match(re);
+  }
+
+  isLineAnXMLComment(lineContent) {
+    const re = /<!--/g;
+    return !!lineContent.trim().match(re);
   }
 
   isLanguageSFDC(languageId) {
-    return languageId === "apex";
+    if (languageId === "apex") return true;
+    if (languageId === "visualforce") return true;
+
+    return false;
   }
 
   getHeaderFormattedDateTime() {
@@ -53,8 +96,7 @@ class Extension {
   }
 
   getConfiguredUsername() {
-    const settingsUsername = workspace
-      .getConfiguration("SFDX_Autoheader");
+    const settingsUsername = workspace.getConfiguration("SFDX_Autoheader");
 
     return settingsUsername.get('username') || settingsUsername.inspect('username').defaultValue;
   }
@@ -65,7 +107,7 @@ class Extension {
         this.getFullDocumentRange(document),
         this.updateHeaderLastModifiedByAndDate(document.getText())
       )
-    ];
+    ]
   }
 
   updateHeaderLastModifiedByAndDate(documentText) {
@@ -73,12 +115,12 @@ class Extension {
   }
 
   updateLastModifiedBy(fileContent) {
-    const re = /^(\s*\*\s*@Last\s*Modified\s*By\s*:).*$/gm;
+    const re = /^(\s*[\*\s]*@Last\s*Modified\s*By\s*:).*$/gm;
     return fileContent.replace(re, `$1 ${this.getConfiguredUsername()}`);
   }
 
   updateLastModifiedDateTime(fileContent) {
-    const re = /^(\s*\*\s*@Last\s*Modified\s*On\s*:).*$/gm;
+    const re = /^(\s*[\*\s]*@Last\s*Modified\s*On\s*:).*$/gm;
     return fileContent.replace(re, `$1 ${this.getHeaderFormattedDateTime()}`);
   }
 
@@ -93,7 +135,8 @@ class Extension {
 exports.activate = function (context) {
   const ext = new Extension();
   ext.setListenerOnPreSave(context);
-  console.log('Extension Activated');
+  ext.setListenerOnPostSave(context);
+  console.log('SFDX Autoheader - Extension Activated');
 }
 exports.deactivate = function () {};
 exports.Extension = Extension;

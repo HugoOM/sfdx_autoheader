@@ -23,10 +23,10 @@ const path = require("path");
 suite("Extension Tests", function () {
   this.timeout(10000);
 
-  test("Testing PreSaveListener - Positive", async () => {
+  test("Testing PreSaveListener - Apex Positive", async () => {
     await loadExtension();
 
-    const document = await openTestDocumentByLanguageId('apex');
+    const document = await openTestDocumentByFileExt('apex');
 
     await clearFile(document);
 
@@ -36,13 +36,33 @@ suite("Extension Tests", function () {
 
     assert.notEqual(document.getText(), "");
 
+    //TODO Test for content
+
+    return;
+  });
+
+  test("Testing PreSaveListener - Visualforce Positive", async () => {
+    await loadExtension();
+
+    const document = await openTestDocumentByFileExt('page');
+
+    await clearFile(document);
+
+    assert.strictEqual(document.getText(), "");
+
+    await document.save();
+
+    assert.notEqual(document.getText(), "");
+
+    //TODO Test for content
+
     return;
   });
 
   test("Testing PreSaveListener - Negative", async () => {
     await loadExtension();
 
-    const document = await openTestDocumentByLanguageId('js');
+    const document = await openTestDocumentByFileExt('js');
 
     await clearFile(document);
 
@@ -59,8 +79,12 @@ suite("Extension Tests", function () {
     return;
   })
 
+  test("Testing PostSaveListener", async () => {
+    //TODO Implement
+  })
+
   test("Testing getInsertFileHeaderEdit", async () => {
-    const document = await openTestDocumentByLanguageId('apex');
+    const document = await openTestDocumentByFileExt('apex');
 
     const insertFileHeaderEdit =
       await ext.getInsertFileHeaderEdit(document);
@@ -68,6 +92,7 @@ suite("Extension Tests", function () {
     assert.exists(insertFileHeaderEdit);
     assert.notEqual(insertFileHeaderEdit.newText, "");
 
+    //TODO Test for content for both Apex and Visualforce
 
     return;
   })
@@ -87,12 +112,29 @@ suite("Extension Tests", function () {
     done();
   })
 
-  test("Testing isLanguageSFDC", done => {
-    const sfdcLanguageId = 'apex';
-    const nonSFDXLanguageId = 'JavaScript';
+  test("Testing isLineAnXMLComment", done => {
+    const xmlCommentString =
+      `<!--
+     Block Comment 
+    -->`;
+    const blockCommentString = '/* blockComment */';
+    const notACommentString = 'HugoOM';
 
-    assert.isTrue(ext.isLanguageSFDC(sfdcLanguageId));
-    assert.isFalse(ext.isLanguageSFDC(nonSFDXLanguageId));
+    assert.isTrue(ext.isLineAnXMLComment(xmlCommentString));
+    assert.isFalse(ext.isLineAnXMLComment(blockCommentString));
+    assert.isFalse(ext.isLineAnXMLComment(notACommentString));
+
+    done();
+  })
+
+  test("Testing isLanguageSFDC", done => {
+    const sfdcLanguageIdApex = 'apex';
+    const sfdcLanguageIdVisualforce = 'visualforce';
+    const languageIdJS = 'JavaScript';
+
+    assert.isTrue(ext.isLanguageSFDC(sfdcLanguageIdApex));
+    assert.isTrue(ext.isLanguageSFDC(sfdcLanguageIdVisualforce));
+    assert.isFalse(ext.isLanguageSFDC(languageIdJS));
 
     done();
   })
@@ -110,7 +152,7 @@ suite("Extension Tests", function () {
   })
 
   test("Testing getUpdateHeaderValueEdit", async () => {
-    const document = await openTestDocumentByLanguageId('apex');
+    const document = await openTestDocumentByFileExt('apex');
 
     await clearFile(document);
 
@@ -172,23 +214,25 @@ suite("Extension Tests", function () {
 
   test("Testing getFullDocumentRange", async () => {
     /* Single VSCode package functionality */
-    const document = await openTestDocumentByLanguageId('apex');
+    const document = await openTestDocumentByFileExt('apex');
     const testRange = ext.getFullDocumentRange(document);
     assert.equal(testRange.end.line, document.lineCount);
     return;
   })
 });
 
+
+
 function wait(timeToWaitInMS) {
   return new Promise(resolve => setTimeout(resolve, timeToWaitInMS))
 }
 
-function openTestDocumentByLanguageId(languageId) {
+function openTestDocumentByFileExt(ext) {
   return workspace.openTextDocument(
     path.join(
       __dirname,
       "test_files",
-      `testFile_SFDXAutoheader.${languageId}`
+      `testFile_SFDXAutoheader.${ext}`
     )
   );
 }
