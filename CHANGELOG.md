@@ -1,7 +1,24 @@
 # Change Log
-All notable changes to the "sfdx-autoheader" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## [Unreleased - WIP]
 
-## [Unreleased]
-- Initial release
+- Test Coverage for 0.1.1+
+
+## [0.1.2]
+
+- Fixed the "Jumping Cursor" issue
+
+## [0.1.1]
+
+- Visualforce Support
+
+## [0.1.0]
+
+- Beta Version
+- Apex Support
+- Full MochaChai Unit Testing Coverage - Current Features
+- Travis CI Sanity Check
+
+## [0.0.1]
+
+- Alpha Version
