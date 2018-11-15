@@ -24,7 +24,7 @@ A well configured and maintained VCS should provide most of the functionalities 
 
 # Usage
 
-Upon first saving any Apex and/or Visualforce file [ .cls | .apex | .page], a file header will be added at the beginning of the file.
+Upon first saving any Apex and/or Visualforce file [ .cls | .apex | .page ], a file header will be added at the beginning of the file.
 Further saves will update the "Last Modified By" and "Last Modified On" values to the current user and time.
 
 # Config
