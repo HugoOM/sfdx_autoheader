@@ -4,6 +4,10 @@
 
 - Test Coverage for 0.2.0+
 
+## [0.2.3] 
+
+- Fixed cursor being sent to EOF for Non-SFDC files in SFDC workspaces
+
 ## [0.2.2]
 
 - Marketplace color theme hotfix
