@@ -1,4 +1,5 @@
-exports.apexTemplate = (fileName, userName, currentTime) => `/**
+module.exports = {
+  apex: (fileName, userName, currentTime) => `/**
  * @File Name          : ${fileName}
  * @Description        : 
  * @Author             : ${userName}
@@ -7,13 +8,12 @@ exports.apexTemplate = (fileName, userName, currentTime) => `/**
  * @Last Modified On   : ${currentTime}
  * @Modification Log   : 
  *==============================================================================
- * Ver       	   Date           Author      		   Modification
+ * Ver         Date                     Author      		      Modification
  *==============================================================================
- * 1.0       ${currentTime}    ${userName}  Initial Version
+ * 1.0    ${currentTime}   ${userName}     Initial Version
  **/
-`
-
-exports.vfTemplate = (fileName, userName, currentTime) => `<!--
+`,
+  visualforce: (fileName, userName, currentTime) => `<!--
   @Page Name          : ${fileName}
   @Description        : 
   @Author             : ${userName}
@@ -22,8 +22,9 @@ exports.vfTemplate = (fileName, userName, currentTime) => `<!--
   @Last Modified On   : ${currentTime}
   @Modification Log   : 
   ==============================================================================
-  Ver       	   Date           Author      		   Modification
+  Ver         Date                     Author      		      Modification
   ==============================================================================
-  1.0       	   ${currentTime}           ${userName}      		   Initial Version
+  1.0    ${currentTime}   ${userName}     Initial Version
  -->
 `
+}

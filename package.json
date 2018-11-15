@@ -2,16 +2,14 @@
   "name": "sfdx-autoheader",
   "displayName": "SFDX Autoheader",
   "description": "Automatic Template-Based File Header Generation for SFDX",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "HugoOM",
   "license": "MIT",
-  "badges": [
-    {
-      "url": "https://travis-ci.org/HugoOM/sfdx_autoheader.svg?branch=master",
-      "href": "https://travis-ci.org/HugoOM/sfdx_autoheader",
-      "description": "Travis-CI Build Status for Master Branch (Current Release)"
-    }
-  ],
+  "badges": [{
+    "url": "https://travis-ci.org/HugoOM/sfdx_autoheader.svg?branch=master",
+    "href": "https://travis-ci.org/HugoOM/sfdx_autoheader",
+    "description": "Travis-CI Build Status for Master Branch (Current Release)"
+  }],
   "preview": true,
   "repository": {
     "type": "git",
@@ -34,7 +32,8 @@
     "theme": "dark"
   },
   "activationEvents": [
-    "onLanguage:apex"
+    "onLanguage:apex",
+    "onLanguage:visualforce"
   ],
   "main": "./extension",
   "contributes": {
@@ -49,14 +48,12 @@
         }
       }
     },
-    "languages": [
-      {
-        "id": "apex",
-        "filenames": [
-          "testFile_SFDXAutoheader.apex"
-        ]
-      }
-    ]
+    "languages": [{
+      "id": "apex",
+      "filenames": [
+        "testFile_SFDXAutoheader.apex"
+      ]
+    }]
   },
   "scripts": {
     "postinstall": "node ./node_modules/vscode/bin/install",

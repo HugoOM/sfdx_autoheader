@@ -4,41 +4,61 @@ const {
   Position,
   workspace,
   TextEdit,
-  Range
+  Range,
+  window,
+  Selection
 } = require("vscode");
 
-const {
-  apexTemplate,
-  vfTemplate
-} = require("./templates/default.js");
+const defaultTemplates = require("./templates/default.js");
 
 class Extension {
-  constructor() {}
+  constructor() {
+    this.cursorPosition = null;
+  }
 
   setListenerOnPreSave(context) {
     const preSaveHookListener = workspace.onWillSaveTextDocument
       .call(this, event => {
         if (!this.isLanguageSFDC(event.document.languageId)) return;
 
-        if (this.isLineABlockComment(event.document.lineAt(0).text))
-          event.waitUntil(this.getUpdateHeaderValueEdit(event.document));
-        else event.waitUntil(this.getInsertFileHeaderEdit(event.document));
+        const firstLine = event.document.lineAt(0).text;
+        this.cursorPosition = window.activeTextEditor.selection.active;
+
+        if (this.isLineABlockComment(firstLine) || this.isLineAnXMLComment(firstLine))
+          event.waitUntil(this.getUpdateHeaderValueEdit(event.document))
+        else
+          event.waitUntil(this.getInsertFileHeaderEdit(event.document))
       });
 
     context.subscriptions.push(preSaveHookListener);
   }
 
+  setListenerOnPostSave(context) {
+    const postSaveHookListener = workspace.onDidSaveTextDocument
+      .call(this, () => {
+        if (!this.cursorPosition) return;
+
+        window.activeTextEditor.selection = new Selection(new Position(this.cursorPosition.line, this.cursorPosition.character), new Position(this.cursorPosition.line, this.cursorPosition.character));
+      });
+
+    context.subscriptions.push(postSaveHookListener);
+  }
+
+  // restorePreSaveCursorPosition(selection) {
+
+  // }
+
   async getInsertFileHeaderEdit(document) {
     return [
       TextEdit.insert(
         new Position(0, 0),
-        apexTemplate(
+        defaultTemplates[document.languageId](
           document.fileName.split(/\/|\\/g).pop(),
           this.getConfiguredUsername(),
           this.getHeaderFormattedDateTime()
         )
       )
-    ];
+    ]
   }
 
   isLineABlockComment(lineContent) {
@@ -75,7 +95,7 @@ class Extension {
         this.getFullDocumentRange(document),
         this.updateHeaderLastModifiedByAndDate(document.getText())
       )
-    ];
+    ]
   }
 
   updateHeaderLastModifiedByAndDate(documentText) {
@@ -103,6 +123,7 @@ class Extension {
 exports.activate = function (context) {
   const ext = new Extension();
   ext.setListenerOnPreSave(context);
+  ext.setListenerOnPostSave(context);
   console.log('Extension Activated');
 }
 exports.deactivate = function () {};
