@@ -39,8 +39,10 @@ class Extension {
 
   setListenerOnPostSave(context) {
     const postSaveHookListener = workspace.onDidSaveTextDocument
-      .call(this, () => {
+      .call(this, event => {
         if (!this.cursorPosition) return;
+        if (!this.isLanguageSFDC(event.languageId)) return;
+        if (!window.activeTextEditor) return;
 
         window.activeTextEditor.selection = this.getCursorPositionSelection(
           this.getLastSavedCursorPosition(),
