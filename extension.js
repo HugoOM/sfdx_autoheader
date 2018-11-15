@@ -19,10 +19,14 @@ class Extension {
   setListenerOnPreSave(context) {
     const preSaveHookListener = workspace.onWillSaveTextDocument
       .call(this, event => {
+        if (!event.document.isDirty) return;
         if (!this.isLanguageSFDC(event.document.languageId)) return;
 
         const firstLine = event.document.lineAt(0).text;
-        this.cursorPosition = window.activeTextEditor.selection.active;
+
+        /* Prevent capturing the Cursor position when saving from script */
+        if (window.activeTextEditor)
+          this.cursorPosition = window.activeTextEditor.selection.active;
 
         if (this.isLineABlockComment(firstLine) || this.isLineAnXMLComment(firstLine))
           event.waitUntil(this.getUpdateHeaderValueEdit(event.document))
@@ -38,15 +42,23 @@ class Extension {
       .call(this, () => {
         if (!this.cursorPosition) return;
 
-        window.activeTextEditor.selection = new Selection(new Position(this.cursorPosition.line, this.cursorPosition.character), new Position(this.cursorPosition.line, this.cursorPosition.character));
+        window.activeTextEditor.selection = this.getCursorPositionSelection(
+          this.getLastSavedCursorPosition(),
+          this.getLastSavedCursorPosition()
+        );
       });
 
     context.subscriptions.push(postSaveHookListener);
   }
 
-  // restorePreSaveCursorPosition(selection) {
+  //TODO Improve for initial insertion (extension flag)
+  getCursorPositionSelection(startPos, endPos) {
+    return new Selection(startPos, endPos);
+  }
 
-  // }
+  getLastSavedCursorPosition() {
+    return new Position(this.cursorPosition.line, this.cursorPosition.character);
+  }
 
   async getInsertFileHeaderEdit(document) {
     return [
@@ -124,7 +136,7 @@ exports.activate = function (context) {
   const ext = new Extension();
   ext.setListenerOnPreSave(context);
   ext.setListenerOnPostSave(context);
-  console.log('Extension Activated');
+  console.log('SFDX Autoheader - Extension Activated');
 }
 exports.deactivate = function () {};
 exports.Extension = Extension;

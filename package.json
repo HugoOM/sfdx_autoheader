@@ -23,9 +23,10 @@
   ],
   "keywords": [
     "apex",
+    "visualforce",
     "Salesforce",
     "File Header",
-    "Code Comments"
+    "Comments"
   ],
   "icon": "images/slds_action_follow_icon.png",
   "galleryBanner": {
@@ -52,6 +53,11 @@
       "id": "apex",
       "filenames": [
         "testFile_SFDXAutoheader.apex"
+      ]
+    }, {
+      "id": "visualforce",
+      "filenames": [
+        "testFile_SFDXAutoheader.page"
       ]
     }]
   },

@@ -11,7 +11,7 @@
 
 # Features
 
-- #### Add a file header to any Apex-language files on save
+- #### Add a file header to any Apex and/or Visualforce files on save
 - #### Dynamically updates the "Last Updated By" and "Last Updated On" values on save
 
 # Thoughts & Recommendation 🧠
@@ -24,8 +24,8 @@ A well configured and maintained VCS should provide most of the functionalities 
 
 # Usage
 
-Upon first saving any Apex files [ .cls | .apex ], a file header will be added at the beginning of the file.
-Further saves will update the "Last Modified By" and "Last Modified On" values to the current user and current time.
+Upon first saving any Apex and/or Visualforce file [ .cls | .apex | .page], a file header will be added at the beginning of the file.
+Further saves will update the "Last Modified By" and "Last Modified On" values to the current user and time.
 
 # Config
 
@@ -34,8 +34,8 @@ Further saves will update the "Last Modified By" and "Last Modified On" values t
 
 # WIP, Roadmap & Ideas 🦄
 
-- Support for additional SFDX languages (Visualforce, Lightning)
-- Improve update logic so that replacement is scoped to the header
-- Programmatic improvements around the Pre-Save edits
-- Flexible templates and/or template options
-- Test Quality Improvements
+- Test improvements (coverage & quality)
+- Support for additional SFDX languages (Lightning)
+- Improvements to the update logic so that text replacement is limited to the header
+- On-Demand header generation (extension commands)
+- Constructs comments generation (classes, methods)
