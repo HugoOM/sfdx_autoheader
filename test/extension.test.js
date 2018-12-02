@@ -15,7 +15,9 @@ const {
   Position,
   WorkspaceEdit,
   Range,
-  extensions
+  extensions,
+  window,
+  Selection
 } = require("vscode");
 
 const path = require("path");
@@ -24,8 +26,6 @@ suite("Extension Tests", function () {
   this.timeout(10000);
 
   test("Testing PreSaveListener - Apex Positive", async () => {
-    await loadExtension();
-
     const document = await openTestDocumentByFileExt('apex');
 
     await clearFile(document);
@@ -36,14 +36,10 @@ suite("Extension Tests", function () {
 
     assert.notEqual(document.getText(), "");
 
-    //TODO Test for content
-
     return;
   });
 
   test("Testing PreSaveListener - Visualforce Positive", async () => {
-    await loadExtension();
-
     const document = await openTestDocumentByFileExt('page');
 
     await clearFile(document);
@@ -54,14 +50,10 @@ suite("Extension Tests", function () {
 
     assert.notEqual(document.getText(), "");
 
-    //TODO Test for content
-
     return;
   });
 
   test("Testing PreSaveListener - Negative", async () => {
-    await loadExtension();
-
     const document = await openTestDocumentByFileExt('js');
 
     await clearFile(document);
@@ -80,7 +72,7 @@ suite("Extension Tests", function () {
   })
 
   test("Testing PostSaveListener", async () => {
-    //TODO Implement
+    const document = await openTestDocumentByFileExt('apex');
   })
 
   test("Testing getInsertFileHeaderEdit", async () => {
@@ -221,20 +213,24 @@ suite("Extension Tests", function () {
   })
 });
 
-
-
 function wait(timeToWaitInMS) {
   return new Promise(resolve => setTimeout(resolve, timeToWaitInMS))
 }
 
-function openTestDocumentByFileExt(ext) {
-  return workspace.openTextDocument(
+async function openTestDocumentByFileExt(ext) {
+  await loadExtension();
+
+  const doc = await workspace.openTextDocument(
     path.join(
       __dirname,
       "test_files",
       `testFile_SFDXAutoheader.${ext}`
     )
   );
+
+  await window.showTextDocument(doc);
+
+  return doc;
 }
 
 function loadExtension() {
