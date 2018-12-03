@@ -1,6 +1,6 @@
 {
   "name": "sfdx-autoheader",
-  "displayName": "SFDX Autoheader",
+  "displayName": "Salesforce Autoheader",
   "description": "Automatic Template-Based File Header Generation for SFDX",
   "version": "0.3.0",
   "publisher": "HugoOM",

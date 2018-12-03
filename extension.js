@@ -14,6 +14,7 @@ const defaultTemplates = require("./templates/default.js");
 class Extension {
   constructor() {
     this.cursorPosition = null;
+    this.isFirstInsert = null;
   }
 
   setListenerOnPreSave(context) {
@@ -42,7 +43,8 @@ class Extension {
       .call(this, () => {
         if (!this.cursorPosition) return;
 
-        window.activeTextEditor.selection = this.getCursorPositionSelection(
+        //TODO Improve for initial insertion (extension flag)
+        window.activeTextEditor.selection = new Selection(
           this.getLastSavedCursorPosition(),
           this.getLastSavedCursorPosition()
         );
@@ -51,11 +53,6 @@ class Extension {
     this.cursorPosition = null;
 
     context.subscriptions.push(postSaveHookListener);
-  }
-
-  //TODO Improve for initial insertion (extension flag)
-  getCursorPositionSelection(startPos, endPos) {
-    return new Selection(startPos, endPos);
   }
 
   getLastSavedCursorPosition() {
