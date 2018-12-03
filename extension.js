@@ -11,10 +11,12 @@ const {
 
 const defaultTemplates = require("./templates/default.js");
 
+const HEADER_LENGTH_LINES = 13;
+
 class Extension {
   constructor() {
     this.cursorPosition = null;
-    this.isFirstInsert = null;
+    this.isHeaderExistsOnFile = null;
   }
 
   setListenerOnPreSave(context) {
@@ -23,16 +25,18 @@ class Extension {
         if (!event.document.isDirty) return;
         if (!this.isValidLanguage(event.document)) return;
 
-        const firstLine = event.document.lineAt(0).text;
+        const firstLineText = event.document.lineAt(0).text;
+        
+        this.checkForHeader(firstLineText);
 
         //* Prevent capturing the Cursor position when saving from script
         if (window.activeTextEditor)
           this.cursorPosition = window.activeTextEditor.selection.active;
 
-        if (this.isLineABlockComment(firstLine) || this.isLineAnXMLComment(firstLine))
-          event.waitUntil(this.getUpdateHeaderValueEdit(event.document))
-        else
+        if (!this.isHeaderExistsOnFile)
           event.waitUntil(this.getInsertFileHeaderEdit(event.document))
+        else
+          event.waitUntil(this.getUpdateHeaderValueEdit(event.document))
       });
 
     context.subscriptions.push(preSaveHookListener);
@@ -43,20 +47,27 @@ class Extension {
       .call(this, () => {
         if (!this.cursorPosition) return;
 
-        //TODO Improve for initial insertion (extension flag)
         window.activeTextEditor.selection = new Selection(
           this.getLastSavedCursorPosition(),
           this.getLastSavedCursorPosition()
         );
-      });
 
-    this.cursorPosition = null;
+        this.cursorPosition = null;
+      });
 
     context.subscriptions.push(postSaveHookListener);
   }
 
+  checkForHeader(firstLineText) {  
+    this.isHeaderExistsOnFile = 
+      this.isLineABlockComment(firstLineText) || this.isLineAnXMLComment(firstLineText);
+  } 
+
   getLastSavedCursorPosition() {
-    return new Position(this.cursorPosition.line, this.cursorPosition.character);
+    return new Position(
+      this.cursorPosition.line + (!this.isHeaderExistsOnFile ? HEADER_LENGTH_LINES : 0), 
+      this.cursorPosition.character
+    );
   }
 
   async getInsertFileHeaderEdit(document) {
@@ -93,8 +104,8 @@ class Extension {
 
     if (lang === "apex" && enabledForApex) return true;
     if (lang === "visualforce" && enabledForVf) return true;
-    if (lang === "html") return enabledForAllWebFiles || (enabledForLightMarkup ? this.isLightning(document) : false);
-    if (lang === "javascript") return enabledForAllWebFiles || (enabledForLightJavaScript ? this.isLightning(document) : false);
+    if (lang === "html") return enabledForAllWebFiles || (enabledForLightMarkup && this.isLightning(document));
+    if (lang === "javascript") return enabledForAllWebFiles || (enabledForLightJavaScript && this.isLightning(document));
 
     return false;
   }
