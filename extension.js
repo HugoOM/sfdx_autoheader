@@ -20,11 +20,11 @@ class Extension {
     const preSaveHookListener = workspace.onWillSaveTextDocument
       .call(this, event => {
         if (!event.document.isDirty) return;
-        if (!this.isLanguageSFDC(event.document.languageId)) return;
+        if (!this.isValidLanguage(event.document)) return;
 
         const firstLine = event.document.lineAt(0).text;
 
-        /* Prevent capturing the Cursor position when saving from script */
+        //* Prevent capturing the Cursor position when saving from script
         if (window.activeTextEditor)
           this.cursorPosition = window.activeTextEditor.selection.active;
 
@@ -39,16 +39,16 @@ class Extension {
 
   setListenerOnPostSave(context) {
     const postSaveHookListener = workspace.onDidSaveTextDocument
-      .call(this, event => {
+      .call(this, () => {
         if (!this.cursorPosition) return;
-        if (!this.isLanguageSFDC(event.languageId)) return;
-        if (!window.activeTextEditor) return;
 
         window.activeTextEditor.selection = this.getCursorPositionSelection(
           this.getLastSavedCursorPosition(),
           this.getLastSavedCursorPosition()
         );
       });
+
+    this.cursorPosition = null;
 
     context.subscriptions.push(postSaveHookListener);
   }
@@ -85,11 +85,39 @@ class Extension {
     return !!lineContent.trim().match(re);
   }
 
-  isLanguageSFDC(languageId) {
-    if (languageId === "apex") return true;
-    if (languageId === "visualforce") return true;
+  isValidLanguage(document) {
+    const lang = document.languageId;
+    const configs = workspace.getConfiguration("SFDX_Autoheader");
+    const enabledForAllWebFiles = configs.get("EnableForAllWebFiles");
+    const enabledForApex = configs.get("EnableForApex");
+    const enabledForVf = configs.get("EnableForVisualforce");
+    const enabledForLightMarkup = configs.get("EnableForLightningMarkup");
+    const enabledForLightJavaScript = configs.get("EnableForLightningJavascript");
+
+    if (lang === "apex" && enabledForApex) return true;
+    if (lang === "visualforce" && enabledForVf) return true;
+    if (lang === "html") return enabledForAllWebFiles || (enabledForLightMarkup ? this.isLightning(document) : false);
+    if (lang === "javascript") return enabledForAllWebFiles || (enabledForLightJavaScript ? this.isLightning(document) : false);
 
     return false;
+  }
+
+  isLightning(document) {
+    const validExtensions = ['cmp', 'js'];
+    const pathTokens = document.uri.path.split('/');
+    const documentFolder = pathTokens[pathTokens.length - 2];
+    const lightningJavaScriptFileRegex = /Controller|Helper/gi;
+    const [fileName, fileExtension] = pathTokens[pathTokens.length - 1].split('.');
+    const processedFileName =
+      document.languageId === 'javascript' ?
+      fileName.replace(lightningJavaScriptFileRegex, '') :
+      fileName;
+
+    //* Lightning Components' files should have the same name as their parent folder
+    if (processedFileName !== documentFolder) return false;
+    if (!validExtensions.includes(fileExtension)) return false;
+
+    return true;
   }
 
   getHeaderFormattedDateTime() {
