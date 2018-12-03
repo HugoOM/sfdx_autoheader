@@ -15,7 +15,9 @@ const {
   Position,
   WorkspaceEdit,
   Range,
-  extensions
+  extensions,
+  window,
+  Selection
 } = require("vscode");
 
 const path = require("path");
@@ -24,8 +26,6 @@ suite("Extension Tests", function () {
   this.timeout(10000);
 
   test("Testing PreSaveListener - Apex Positive", async () => {
-    await loadExtension();
-
     const document = await openTestDocumentByFileExt('apex');
 
     await clearFile(document);
@@ -36,14 +36,10 @@ suite("Extension Tests", function () {
 
     assert.notEqual(document.getText(), "");
 
-    //TODO Test for content
-
     return;
   });
 
   test("Testing PreSaveListener - Visualforce Positive", async () => {
-    await loadExtension();
-
     const document = await openTestDocumentByFileExt('page');
 
     await clearFile(document);
@@ -54,14 +50,10 @@ suite("Extension Tests", function () {
 
     assert.notEqual(document.getText(), "");
 
-    //TODO Test for content
-
     return;
   });
 
   test("Testing PreSaveListener - Negative", async () => {
-    await loadExtension();
-
     const document = await openTestDocumentByFileExt('js');
 
     await clearFile(document);
@@ -79,11 +71,31 @@ suite("Extension Tests", function () {
     return;
   })
 
-  test("Testing PostSaveListener", async () => {
-    //TODO Implement
+  test("Testing PostSaveListener - Cursor Reset", async () => {
+    const document = await openTestDocumentByFileExt('apex');
+    const edit = new WorkspaceEdit();
+    const initialCursorSelection = new Selection(14, 12, 14, 12);
+
+    edit.insert(
+      document.uri,
+      getEOFPosition(document),
+      `public class testContent {
+  //Cursor Position Test
+}`
+    );
+
+    edit.set(edit);
+
+    await workspace.applyEdit(edit);
+
+    window.activeTextEditor.selection = initialCursorSelection;
+
+    await document.save();
+
+    assert.deepEqual(initialCursorSelection, window.activeTextEditor.selection);
   })
 
-  test("Testing getInsertFileHeaderEdit", async () => {
+  test("Testing getInsertFileHeaderEdit - Apex", async () => {
     const document = await openTestDocumentByFileExt('apex');
 
     const insertFileHeaderEdit =
@@ -91,10 +103,18 @@ suite("Extension Tests", function () {
 
     assert.exists(insertFileHeaderEdit);
     assert.notEqual(insertFileHeaderEdit.newText, "");
+    assert.strictEqual(document.lineAt(0).text, '/**');
+  })
 
-    //TODO Test for content for both Apex and Visualforce
+  test("Testing getInsertFileHeaderEdit - Visualforce", async () => {
+    const document = await openTestDocumentByFileExt('page');
 
-    return;
+    const insertFileHeaderEdit =
+      await ext.getInsertFileHeaderEdit(document);
+
+    assert.exists(insertFileHeaderEdit);
+    assert.notEqual(insertFileHeaderEdit.newText, "");
+    assert.strictEqual(document.lineAt(0).text, '<!--');
   })
 
   test("Testing isLineABlockComment", done => {
@@ -221,20 +241,24 @@ suite("Extension Tests", function () {
   })
 });
 
-
-
 function wait(timeToWaitInMS) {
   return new Promise(resolve => setTimeout(resolve, timeToWaitInMS))
 }
 
-function openTestDocumentByFileExt(ext) {
-  return workspace.openTextDocument(
+async function openTestDocumentByFileExt(ext) {
+  await loadExtension();
+
+  const doc = await workspace.openTextDocument(
     path.join(
       __dirname,
       "test_files",
       `testFile_SFDXAutoheader.${ext}`
     )
   );
+
+  await window.showTextDocument(doc);
+
+  return doc;
 }
 
 function loadExtension() {
@@ -270,4 +294,11 @@ async function resetJSTestFile(document) {
   edit.set(edit);
 
   return workspace.applyEdit(edit);
+}
+
+function getEOFPosition(document) {
+  const lastLineNumber = document.lineCount - 1;
+  const lastLineLastChar = document.lineAt(lastLineNumber).length - 1;
+
+  return new Position(lastLineNumber, lastLineLastChar);
 }

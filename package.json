@@ -5,13 +5,11 @@
   "version": "0.2.3",
   "publisher": "HugoOM",
   "license": "MIT",
-  "badges": [
-    {
-      "url": "https://travis-ci.org/HugoOM/sfdx_autoheader.svg?branch=master",
-      "href": "https://travis-ci.org/HugoOM/sfdx_autoheader",
-      "description": "Travis-CI Build Status for Master Branch (Current Release)"
-    }
-  ],
+  "badges": [{
+    "url": "https://travis-ci.org/HugoOM/sfdx_autoheader.svg?branch=master",
+    "href": "https://travis-ci.org/HugoOM/sfdx_autoheader",
+    "description": "Travis-CI Build Status for Master Branch (Current Release)"
+  }],
   "preview": true,
   "repository": {
     "type": "git",
@@ -52,8 +50,7 @@
         }
       }
     },
-    "languages": [
-      {
+    "languages": [{
         "id": "apex",
         "filenames": [
           "testFile_SFDXAutoheader.apex"
