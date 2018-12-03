@@ -71,11 +71,31 @@ suite("Extension Tests", function () {
     return;
   })
 
-  test("Testing PostSaveListener", async () => {
+  test("Testing PostSaveListener - Cursor Reset", async () => {
     const document = await openTestDocumentByFileExt('apex');
+    const edit = new WorkspaceEdit();
+    const initialCursorSelection = new Selection(14, 12, 14, 12);
+
+    edit.insert(
+      document.uri,
+      getEOFPosition(document),
+      `public class testContent {
+  //Cursor Position Test
+}`
+    );
+
+    edit.set(edit);
+
+    await workspace.applyEdit(edit);
+
+    window.activeTextEditor.selection = initialCursorSelection;
+
+    await document.save();
+
+    assert.deepEqual(initialCursorSelection, window.activeTextEditor.selection);
   })
 
-  test("Testing getInsertFileHeaderEdit", async () => {
+  test("Testing getInsertFileHeaderEdit - Apex", async () => {
     const document = await openTestDocumentByFileExt('apex');
 
     const insertFileHeaderEdit =
@@ -83,10 +103,18 @@ suite("Extension Tests", function () {
 
     assert.exists(insertFileHeaderEdit);
     assert.notEqual(insertFileHeaderEdit.newText, "");
+    assert.strictEqual(document.lineAt(0).text, '/**');
+  })
 
-    //TODO Test for content for both Apex and Visualforce
+  test("Testing getInsertFileHeaderEdit - Visualforce", async () => {
+    const document = await openTestDocumentByFileExt('page');
 
-    return;
+    const insertFileHeaderEdit =
+      await ext.getInsertFileHeaderEdit(document);
+
+    assert.exists(insertFileHeaderEdit);
+    assert.notEqual(insertFileHeaderEdit.newText, "");
+    assert.strictEqual(document.lineAt(0).text, '<!--');
   })
 
   test("Testing isLineABlockComment", done => {
@@ -266,4 +294,11 @@ async function resetJSTestFile(document) {
   edit.set(edit);
 
   return workspace.applyEdit(edit);
+}
+
+function getEOFPosition(document) {
+  const lastLineNumber = document.lineCount - 1;
+  const lastLineLastChar = document.lineAt(lastLineNumber).length - 1;
+
+  return new Position(lastLineNumber, lastLineLastChar);
 }
