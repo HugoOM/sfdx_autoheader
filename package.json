@@ -2,7 +2,7 @@
   "name": "sfdx-autoheader",
   "displayName": "SFDX Autoheader",
   "description": "Automatic Template-Based File Header Generation for SFDX",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "publisher": "HugoOM",
   "license": "MIT",
   "badges": [{
@@ -35,7 +35,9 @@
   },
   "activationEvents": [
     "onLanguage:apex",
-    "onLanguage:visualforce"
+    "onLanguage:visualforce",
+    "onLanguage:javascript",
+    "onLanguage:html"
   ],
   "main": "./extension",
   "contributes": {
@@ -47,6 +49,31 @@
           "type": "string",
           "default": "phUser@phDomain.com",
           "description": "Sets the SFDX File Header Username"
+        },
+        "SFDX_Autoheader.EnableForAllWebFiles": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable Automatic File Headers on ALL JavaScript and HTML files. NOT just those that are part of a Lightning Component."
+        },
+        "SFDX_Autoheader.EnableForApex": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Automatic File Headers on Apex Files"
+        },
+        "SFDX_Autoheader.EnableForVisualforce": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Automatic File Headers on Visualforce Pages"
+        },
+        "SFDX_Autoheader.EnableForLightningMarkup": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Automatic File Headers on Lightning Components Markup File"
+        },
+        "SFDX_Autoheader.EnableForLightningJavascript": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable Automatic File Headers on Lightning Components Javascript Files"
         }
       }
     },

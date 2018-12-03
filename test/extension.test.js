@@ -147,17 +147,17 @@ suite("Extension Tests", function () {
     done();
   })
 
-  test("Testing isLanguageSFDC", done => {
-    const sfdcLanguageIdApex = 'apex';
-    const sfdcLanguageIdVisualforce = 'visualforce';
-    const languageIdJS = 'JavaScript';
+  // test("Testing isLanguageSFDC", done => {
+  //   const sfdcLanguageIdApex = 'apex';
+  //   const sfdcLanguageIdVisualforce = 'visualforce';
+  //   const languageIdJS = 'JavaScript';
 
-    assert.isTrue(ext.isLanguageSFDC(sfdcLanguageIdApex));
-    assert.isTrue(ext.isLanguageSFDC(sfdcLanguageIdVisualforce));
-    assert.isFalse(ext.isLanguageSFDC(languageIdJS));
+  //   assert.isTrue(ext.isLanguageSFDC(sfdcLanguageIdApex));
+  //   assert.isTrue(ext.isLanguageSFDC(sfdcLanguageIdVisualforce));
+  //   assert.isFalse(ext.isLanguageSFDC(languageIdJS));
 
-    done();
-  })
+  //   done();
+  // })
 
   test("Testing getHeaderFormattedDateTime", done => {
     assert.isString(ext.getHeaderFormattedDateTime());
