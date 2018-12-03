@@ -11,7 +11,7 @@ module.exports = {
  * Ver         Date                     Author      		      Modification
  *==============================================================================
  * 1.0    ${currentTime}   ${userName}     Initial Version
- **/
+**/
 `,
   visualforce: (fileName, userName, currentTime) => `<!--
   @Page Name          : ${fileName}
@@ -25,7 +25,7 @@ module.exports = {
   Ver         Date                     Author      		      Modification
   ==============================================================================
   1.0    ${currentTime}   ${userName}     Initial Version
- -->
+-->
 `,
   html: (fileName, userName, currentTime) => `<!--
   @Component Name     : ${fileName}
@@ -39,7 +39,7 @@ module.exports = {
   Ver         Date                     Author      		      Modification
   ==============================================================================
   1.0    ${currentTime}   ${userName}     Initial Version
- -->
+-->
 `,
   javascript: (fileName, userName, currentTime) => `/**
  * @File Name          : ${fileName}
@@ -53,6 +53,6 @@ module.exports = {
  * Ver         Date                     Author      		      Modification
  *==============================================================================
  * 1.0    ${currentTime}   ${userName}     Initial Version
- **/
+**/
 `
 }
