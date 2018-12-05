@@ -88,6 +88,12 @@
         "filenames": [
           "testFile_SFDXAutoheader.page"
         ]
+      },
+      {
+        "id": "html",
+        "filenames": [
+          "testFile_SFDXAutoheader.cmp"
+        ]
       }
     ]
   },

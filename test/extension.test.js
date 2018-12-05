@@ -17,13 +17,14 @@ const {
   Range,
   extensions,
   window,
-  Selection
+  Selection,
+  Uri
 } = require("vscode");
 
 const path = require("path");
 
 suite("Extension Tests", function () {
-  this.timeout(10000);
+  this.timeout(60000);
 
   test("Testing PreSaveListener - Apex Positive", async () => {
     const document = await openTestDocumentByFileExt('apex');
@@ -53,8 +54,42 @@ suite("Extension Tests", function () {
     return;
   });
 
-  test("Testing PreSaveListener - Negative", async () => {
+  test("Testing PreSaveListener - Lightning Component Positive (Default)", async () => {
+    const document = await openTestDocumentByFileExt('cmp');
+
+    await clearFile(document);
+
+    assert.strictEqual(document.getText(), "");
+
+    await document.save();
+
+    assert.notEqual(document.getText(), "");
+
+    return;
+  });
+
+  test("Testing PreSaveListener - Lightning JavaScript Negative (Default)", async () => {
     const document = await openTestDocumentByFileExt('js');
+    const docConfigs = workspace.getConfiguration('SFDX_Autoheader', document.uri);
+
+    await docConfigs.update("EnableForLightningJavascript", true, 2);
+
+    await clearFile(document);
+
+    assert.isEmpty(document.getText());
+    assert.isTrue(document.isDirty);
+
+    await document.save();
+
+    assert.isEmpty(document.getText());
+
+    await resetTestFile(document);
+
+    await document.save();
+  });
+
+  test("Testing PreSaveListener - Negative", async () => {
+    const document = await openTestDocumentByFileExt('java');
 
     await clearFile(document);
 
@@ -64,7 +99,9 @@ suite("Extension Tests", function () {
 
     assert.strictEqual(document.getText(), "");
 
-    await resetJSTestFile(document);
+    await document.save();
+
+    await resetTestFile(document);
 
     await document.save();
 
@@ -147,17 +184,37 @@ suite("Extension Tests", function () {
     done();
   })
 
-  // test("Testing isLanguageSFDC", done => {
-  //   const sfdcLanguageIdApex = 'apex';
-  //   const sfdcLanguageIdVisualforce = 'visualforce';
-  //   const languageIdJS = 'JavaScript';
+  test("Testing checkForHeader", done => {
+    const blockComment = '/**';
+    const xmlComment = '<!--';
+    const notAComment = 'abc';
 
-  //   assert.isTrue(ext.isLanguageSFDC(sfdcLanguageIdApex));
-  //   assert.isTrue(ext.isLanguageSFDC(sfdcLanguageIdVisualforce));
-  //   assert.isFalse(ext.isLanguageSFDC(languageIdJS));
 
-  //   done();
-  // })
+    ext.checkForHeader(blockComment);
+    assert.isTrue(ext.isHeaderExistsOnFile);
+
+    ext.checkForHeader(xmlComment)
+    assert.isTrue(ext.isHeaderExistsOnFile);
+
+    ext.checkForHeader(notAComment)
+    assert.isFalse(ext.isHeaderExistsOnFile);
+
+    done();
+  })
+
+  test("Testing getLastSavedCursorPosition", done => {
+    const testPosition = new Position(15, 15);
+    ext.cursorPosition = testPosition;
+    ext.isHeaderExistsOnFile = true;
+
+    assert.deepEqual(testPosition, ext.getLastSavedCursorPosition());
+
+    ext.isHeaderExistsOnFile = false;
+
+    assert.equal(testPosition.line + ext.HEADER_LENGTH_LINES, ext.getLastSavedCursorPosition().line);
+
+    done();
+  })
 
   test("Testing getHeaderFormattedDateTime", done => {
     assert.isString(ext.getHeaderFormattedDateTime());
@@ -248,11 +305,16 @@ function wait(timeToWaitInMS) {
 async function openTestDocumentByFileExt(ext) {
   await loadExtension();
 
+  workspace.updateWorkspaceFolders(0, 0, {
+    name: "testFile_SFDXAutoheader",
+    uri: Uri.file(path.join(__dirname, "testFile_SFDXAutoheader"))
+  });
+
   const doc = await workspace.openTextDocument(
     path.join(
       __dirname,
-      "test_files",
-      `testFile_SFDXAutoheader.${ext}`
+      "testFile_SFDXAutoheader",
+      `testFile_SFDXAutoheader${ext === 'js' ? 'Controller' : ''}.${ext}`
     )
   );
 
@@ -282,13 +344,17 @@ async function clearFile(document) {
   return workspace.applyEdit(edit);
 }
 
-async function resetJSTestFile(document) {
+async function resetTestFile(document) {
   const edit = new WorkspaceEdit();
 
   edit.insert(
     document.uri,
     new Position(0, 0),
-    '// Test Javascript File'
+    `({
+  test: function(cmp, evt, helper) {
+    //This Is A Test File
+  }
+})`
   );
 
   edit.set(edit);

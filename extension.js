@@ -11,12 +11,11 @@ const {
 
 const defaultTemplates = require("./templates/default.js");
 
-const HEADER_LENGTH_LINES = 13;
-
 class Extension {
   constructor() {
     this.cursorPosition = null;
     this.isHeaderExistsOnFile = null;
+    this.HEADER_LENGTH_LINES = 13
   }
 
   setListenerOnPreSave(context) {
@@ -26,7 +25,7 @@ class Extension {
         if (!this.isValidLanguage(event.document)) return;
 
         const firstLineText = event.document.lineAt(0).text;
-        
+
         this.checkForHeader(firstLineText);
 
         //* Prevent capturing the Cursor position when saving from script
@@ -58,14 +57,14 @@ class Extension {
     context.subscriptions.push(postSaveHookListener);
   }
 
-  checkForHeader(firstLineText) {  
-    this.isHeaderExistsOnFile = 
+  checkForHeader(firstLineText) {
+    this.isHeaderExistsOnFile =
       this.isLineABlockComment(firstLineText) || this.isLineAnXMLComment(firstLineText);
-  } 
+  }
 
   getLastSavedCursorPosition() {
     return new Position(
-      this.cursorPosition.line + (!this.isHeaderExistsOnFile ? HEADER_LENGTH_LINES : 0), 
+      this.cursorPosition.line + (!this.isHeaderExistsOnFile ? this.HEADER_LENGTH_LINES : 0),
       this.cursorPosition.character
     );
   }
@@ -114,8 +113,8 @@ class Extension {
     const validExtensions = ['cmp', 'js'];
     const pathTokens = document.uri.path.split('/');
     const documentFolder = pathTokens[pathTokens.length - 2];
-    const lightningJavaScriptFileRegex = /Controller|Helper/gi;
     const [fileName, fileExtension] = pathTokens[pathTokens.length - 1].split('.');
+    const lightningJavaScriptFileRegex = /Controller|Helper/gi;
     const processedFileName =
       document.languageId === 'javascript' ?
       fileName.replace(lightningJavaScriptFileRegex, '') :
@@ -163,9 +162,11 @@ class Extension {
   }
 
   getFullDocumentRange(document) {
+    const lastChar = document.lineAt(document.lineCount - 1).length;
+
     return new Range(
       new Position(0, 0),
-      new Position(document.lineCount, Number.MAX_SAFE_INTEGER)
+      new Position(document.lineCount, lastChar)
     );
   }
 }
