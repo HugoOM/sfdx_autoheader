@@ -1,13 +1,13 @@
 /**
  * @File Name          : testFile_SFDXAutoheader.apex
  * @Description        : 
- * @Author             : phUser@phDomain.com
+ * @Author             : HugoOM@GitHub.com
  * @Group              : 
- * @Last Modified By   : phUser@phDomain.com
- * @Last Modified On   : 12/5/2018, 12:07:40 AM
+ * @Last Modified By   : HugoOM@GitHub.com
+ * @Last Modified On   : 12/5/2018, 9:31:39 PM
  * @Modification Log   : 
  *==============================================================================
  * Ver         Date                     Author      		      Modification
  *==============================================================================
- * 1.0    12/5/2018, 12:07:40 AM   phUser@phDomain.com     Initial Version
+ * 1.0    12/5/2018, 9:31:39 PM   HugoOM@GitHub.com     Initial Version
 **/

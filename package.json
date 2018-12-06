@@ -1,7 +1,7 @@
 {
   "name": "sfdx-autoheader",
   "displayName": "Salesforce Autoheader",
-  "description": "Automatic Template-Based File Header Generation for SFDX",
+  "description": "Automatic Template-Based File Header Generation for Salesforce DX",
   "version": "0.3.0",
   "publisher": "HugoOM",
   "license": "MIT",
@@ -53,27 +53,27 @@
         "SFDX_Autoheader.EnableForAllWebFiles": {
           "type": "boolean",
           "default": false,
-          "description": "Enable Automatic File Headers on ALL JavaScript and HTML files. NOT just those that are part of a Lightning Component."
+          "description": "Enable On-Save File Headers on ALL JavaScript and HTML files. NOT just those that are part of a Lightning Component. \n WARNING: This Setting Has Priority Over Lightning Settings When Enabled"
         },
         "SFDX_Autoheader.EnableForApex": {
           "type": "boolean",
           "default": true,
-          "description": "Enable Automatic File Headers on Apex Files"
+          "description": "Enable On-Save File Headers on Apex Files"
         },
         "SFDX_Autoheader.EnableForVisualforce": {
           "type": "boolean",
           "default": true,
-          "description": "Enable Automatic File Headers on Visualforce Pages"
+          "description": "Enable On-Save File Headers on Visualforce Pages"
         },
         "SFDX_Autoheader.EnableForLightningMarkup": {
           "type": "boolean",
           "default": true,
-          "description": "Enable Automatic File Headers on Lightning Components Markup File"
+          "description": "Enable On-Save File Headers on Lightning Components Markup File"
         },
         "SFDX_Autoheader.EnableForLightningJavascript": {
           "type": "boolean",
           "default": false,
-          "description": "Enable Automatic File Headers on Lightning Components Javascript Files"
+          "description": "Enable On-Save File Headers on Lightning Components Javascript Files"
         }
       }
     },
@@ -93,6 +93,12 @@
         "id": "html",
         "filenames": [
           "testFile_SFDXAutoheader.cmp"
+        ]
+      },
+      {
+        "id": "javascript",
+        "filenames": [
+          "testFile_SFDXAutoheaderController.js"
         ]
       }
     ]
