@@ -14,6 +14,7 @@ const {
   workspace,
   Position,
   WorkspaceEdit,
+  TextEdit,
   Range,
   extensions,
   window,
@@ -36,8 +37,6 @@ suite("Extension Tests", function () {
     await document.save();
 
     assert.notEqual(document.getText(), "");
-
-    return;
   });
 
   test("Testing PreSaveListener - Visualforce Positive", async () => {
@@ -50,8 +49,6 @@ suite("Extension Tests", function () {
     await document.save();
 
     assert.notEqual(document.getText(), "");
-
-    return;
   });
 
   test("Testing PreSaveListener - Lightning Component Positive (Default)", async () => {
@@ -64,15 +61,35 @@ suite("Extension Tests", function () {
     await document.save();
 
     assert.notEqual(document.getText(), "");
+  });
 
-    return;
+  test("Testing PreSaveListener - Lightning JavaScript Positive", async function () {
+    const document = await openTestDocumentByFileExt('js');
+    const docConfigs = await workspace.getConfiguration('SFDX_Autoheader', document.uri);
+
+    await docConfigs.update("EnableForAllWebFiles", false, 1);
+    await docConfigs.update("EnableForLightningJavascript", true, 1);
+
+    await clearFile(document);
+
+    assert.isEmpty(document.getText());
+    assert.isTrue(document.isDirty);
+
+    await document.save();
+
+    assert.isNotEmpty(document.getText());
+
+    await resetTestFile(document);
+
+    await document.save();
   });
 
   test("Testing PreSaveListener - Lightning JavaScript Negative (Default)", async () => {
     const document = await openTestDocumentByFileExt('js');
-    const docConfigs = workspace.getConfiguration('SFDX_Autoheader', document.uri);
+    const docConfigs = await workspace.getConfiguration('SFDX_Autoheader', document.uri);
 
-    await docConfigs.update("EnableForLightningJavascript", true, 2);
+    await docConfigs.update("EnableForAllWebFiles", false, 1);
+    await docConfigs.update("EnableForLightningJavascript", false, 1);
 
     await clearFile(document);
 
@@ -99,13 +116,9 @@ suite("Extension Tests", function () {
 
     assert.strictEqual(document.getText(), "");
 
-    await document.save();
-
     await resetTestFile(document);
 
     await document.save();
-
-    return;
   })
 
   test("Testing PostSaveListener - Cursor Reset", async () => {
@@ -184,11 +197,148 @@ suite("Extension Tests", function () {
     done();
   })
 
+  test("Testing isValidLanguage - Apex Setting Off", async () => {
+    const document = await openTestDocumentByFileExt('apex');
+    const docConfigs = await workspace.getConfiguration('SFDX_Autoheader', document.uri);
+    await docConfigs.update("EnableForApex", false, 1);
+
+    assert.isFalse(ext.isValidLanguage(document));
+  })
+
+  test("Testing isValidLanguage - Apex Setting On", async () => {
+    const document = await openTestDocumentByFileExt('apex');
+    const docConfigs = await workspace.getConfiguration('SFDX_Autoheader', document.uri);
+    await docConfigs.update("EnableForApex", true, 1);
+
+    assert.isTrue(ext.isValidLanguage(document));
+  })
+
+  test("Testing isValidLanguage - Visalforce Setting Off", async () => {
+    const document = await openTestDocumentByFileExt('page');
+    const docConfigs = await workspace.getConfiguration('SFDX_Autoheader', document.uri);
+    await docConfigs.update("EnableForVisualforce", false, 1);
+
+    assert.isFalse(ext.isValidLanguage(document));
+  })
+
+  test("Testing isValidLanguage - Visalforce Setting On", async () => {
+    const document = await openTestDocumentByFileExt('page');
+    const docConfigs = await workspace.getConfiguration('SFDX_Autoheader', document.uri);
+    await docConfigs.update("EnableForVisualforce", true, 1);
+
+    assert.isTrue(ext.isValidLanguage(document));
+  })
+
+  test("Testing isValidLanguage - Lightning Component Setting Off", async () => {
+    const document = await openTestDocumentByFileExt('cmp');
+    const docConfigs = await workspace.getConfiguration('SFDX_Autoheader', document.uri);
+    await docConfigs.update("EnableForLightningMarkup", false, 1);
+
+    assert.isFalse(ext.isValidLanguage(document));
+  })
+
+  test("Testing isValidLanguage - Lightning Component Setting On", async () => {
+    const document = await openTestDocumentByFileExt('cmp');
+    const docConfigs = await workspace.getConfiguration('SFDX_Autoheader', document.uri);
+    await docConfigs.update("EnableForLightningMarkup", true, 1);
+
+    assert.isTrue(ext.isValidLanguage(document));
+  })
+
+  test("Testing isValidLanguage - Lightning JavaScript Setting Off", async () => {
+    const document = await openTestDocumentByFileExt('js');
+    const docConfigs = await workspace.getConfiguration('SFDX_Autoheader', document.uri);
+    await docConfigs.update("EnableForLightningJavascript", false, 1);
+
+    assert.isFalse(ext.isValidLanguage(document));
+  })
+
+  test("Testing isValidLanguage - Lightning JavaScript Setting On", async () => {
+    const document = await openTestDocumentByFileExt('js');
+    const docConfigs = await workspace.getConfiguration('SFDX_Autoheader', document.uri);
+    await docConfigs.update("EnableForLightningJavascript", true, 1);
+
+    assert.isTrue(ext.isValidLanguage(document));
+  })
+
+  test("Testing isValidLanguage - Lightning Component Web Setting On", async () => {
+    const document = await openTestDocumentByFileExt('cmp');
+    const docConfigs = await workspace.getConfiguration('SFDX_Autoheader', document.uri);
+    await docConfigs.update("EnableForLightningMarkup", false, 1);
+    await docConfigs.update("EnableForLightningJavascript", false, 1);
+    await docConfigs.update("EnableForAllWebFiles", true, 1);
+
+    assert.isTrue(ext.isValidLanguage(document));
+
+    await docConfigs.update("EnableForLightningMarkup", true, 1);
+    await docConfigs.update("EnableForLightningJavascript", true, 1);
+    await docConfigs.update("EnableForAllWebFiles", false, 1);
+  })
+
+  test("Testing isValidLanguage - Lightning JavaScript Web Setting On", async () => {
+    const document = await openTestDocumentByFileExt('js');
+    const docConfigs = await workspace.getConfiguration('SFDX_Autoheader', document.uri);
+    await docConfigs.update("EnableForLightningMarkup", false, 1);
+    await docConfigs.update("EnableForLightningJavascript", false, 1);
+    await docConfigs.update("EnableForAllWebFiles", true, 1);
+
+    assert.isTrue(ext.isValidLanguage(document));
+
+    await docConfigs.update("EnableForLightningMarkup", true, 1);
+    await docConfigs.update("EnableForLightningJavascript", true, 1);
+    await docConfigs.update("EnableForAllWebFiles", false, 1);
+  })
+
+  test("Testing isValidLanguage - Lightning Component Web Setting Off", async () => {
+    const document = await openTestDocumentByFileExt('cmp');
+    const docConfigs = await workspace.getConfiguration('SFDX_Autoheader', document.uri);
+    await docConfigs.update("EnableForLightningMarkup", false, 1);
+    await docConfigs.update("EnableForLightningJavascript", false, 1);
+    await docConfigs.update("EnableForAllWebFiles", false, 1);
+
+    assert.isFalse(ext.isValidLanguage(document));
+
+    await docConfigs.update("EnableForLightningMarkup", true, 1);
+    await docConfigs.update("EnableForLightningJavascript", true, 1);
+  })
+
+  test("Testing isValidLanguage - Lightning JavaScript Web Setting Off", async () => {
+    const document = await openTestDocumentByFileExt('js');
+    const docConfigs = await workspace.getConfiguration('SFDX_Autoheader', document.uri);
+    await docConfigs.update("EnableForLightningMarkup", false, 1);
+    await docConfigs.update("EnableForLightningJavascript", false, 1);
+    await docConfigs.update("EnableForAllWebFiles", false, 1);
+
+    assert.isFalse(ext.isValidLanguage(document));
+
+    await docConfigs.update("EnableForLightningMarkup", true, 1);
+    await docConfigs.update("EnableForLightningJavascript", true, 1);
+  })
+
+  test("Testing isLightning - Invalid File", async () => {
+    const document = await openTestDocumentByFileExt('java');
+
+    assert.isFalse(ext.isLightning(document));
+  })
+
+  test("Testing isLightning - Lightning Component", async () => {
+    const document = await openTestDocumentByFileExt('cmp');
+
+    assert.isTrue(ext.isLightning(document));
+  })
+
+  test("Testing isLightning - Lightning Controller", async () => {
+    const document = await openTestDocumentByFileExt('js');
+
+    assert.isTrue(ext.isLightning(document));
+
+    //TODO Test for Helper & Invalid JS File
+  })
+
   test("Testing checkForHeader", done => {
     const blockComment = '/**';
     const xmlComment = '<!--';
     const notAComment = 'abc';
-
 
     ext.checkForHeader(blockComment);
     assert.isTrue(ext.isHeaderExistsOnFile);
@@ -250,8 +400,6 @@ suite("Extension Tests", function () {
     const postUpdateHeader = document.getText();
 
     assert.notStrictEqual(postUpdateHeader, preUpdateHeader);
-
-    return;
   })
 
   test("Testing updateHeaderLastModifiedByAndDate", done => {
@@ -278,7 +426,7 @@ suite("Extension Tests", function () {
   })
 
   test("Testing updateLastModifiedBy", done => {
-    const testModByString = '* @Last Modified By: HugoOM@GitHub.com';
+    const testModByString = '* @Last Modified By: NotHugoOM@GitHub.com';
     assert.notStrictEqual(ext.updateLastModifiedBy(testModByString), testModByString);
     done();
   })
@@ -305,7 +453,7 @@ function wait(timeToWaitInMS) {
 async function openTestDocumentByFileExt(ext) {
   await loadExtension();
 
-  workspace.updateWorkspaceFolders(0, 0, {
+  await workspace.updateWorkspaceFolders(0, 0, {
     name: "testFile_SFDXAutoheader",
     uri: Uri.file(path.join(__dirname, "testFile_SFDXAutoheader"))
   });
@@ -329,22 +477,19 @@ function loadExtension() {
 }
 
 async function clearFile(document) {
-  const edit = new WorkspaceEdit();
+  const wEdit = new WorkspaceEdit();
 
-  edit.delete(
-    document.uri,
-    new Range(
-      new Position(0, 0),
-      new Position(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER)
-    )
-  );
+  wEdit.set(document.uri, [TextEdit.delete(new Range(0, 0, 100, 100))]);
 
-  edit.set(edit);
+  await workspace.applyEdit(wEdit);
 
-  return workspace.applyEdit(edit);
+  //! Hack since workspace.applyEdit(...) seems to resolve too early
+  return wait(2000);
 }
 
 async function resetTestFile(document) {
+  await clearFile(document);
+
   const edit = new WorkspaceEdit();
 
   edit.insert(

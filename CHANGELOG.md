@@ -1,10 +1,16 @@
 # Change Log
 
-## [Unreleased - WIP]
+## [0.3.0]
 
-- Test Coverage for 0.2.0+
+- Lightning Support!
+- On/Off Toggle Settings for On-Save Headers
+- Document Range Perf Improvement
+- First save (insert) Cursor Bug Fix
+- Default Templates Indent Fix
+- Unit Test Coverage Update - Complete & Current
+- New _fancier_ name
 
-## [0.2.3] 
+## [0.2.3]
 
 - Fixed cursor being sent to EOF for Non-SFDC files in SFDC workspaces
 
