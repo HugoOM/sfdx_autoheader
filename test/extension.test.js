@@ -163,7 +163,7 @@ suite("Extension Tests", function() {
     );
 
     await docConfigs.update("EnableForAllWebFiles", false, 1);
-    await docConfigs.update("EnableForLightningJavascript", false, 1);
+    await docConfigs.update("EnableForLightningMarkup", true, 1);
 
     await clearFile(document);
 
@@ -187,7 +187,7 @@ suite("Extension Tests", function() {
     );
 
     await docConfigs.update("EnableForAllWebFiles", false, 1);
-    await docConfigs.update("EnableForLightningJavascript", false, 1);
+    await docConfigs.update("EnableForLightningMarkup", false, 1);
 
     await clearFile(document);
 
@@ -601,11 +601,11 @@ async function openTestDocumentByFileIdentifier(ext) {
   const fileIdentifierAssociation = {
     apex: "testFile_SFDXAutoheader.apex",
     page: "testFile_SFDXAutoheader.page",
-    cmp: "testFile_SFDXAutoheader.cmp",
+    cmp: "aura/testFile_SFDXAutoheader/testFile_SFDXAutoheader.cmp",
     java: "testFile_SFDXAutoheader.java",
-    jsCtrl: "testFile_SFDXAutoheaderController.js",
-    js: "testFile_SFDXAutoheader.js",
-    html: "testFile_SFDXAutoheader.html"
+    jsCtrl: "aura/testFile_SFDXAutoheader/testFile_SFDXAutoheaderController.js",
+    js: "lwc/testFile_SFDXAutoheader/testFile_SFDXAutoheader.js",
+    html: "lwc/testFile_SFDXAutoheader/testFile_SFDXAutoheader.html"
   };
 
   await loadExtension();

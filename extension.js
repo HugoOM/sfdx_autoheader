@@ -125,21 +125,26 @@ class Extension {
   }
 
   isLightning(document) {
-    const validExtensions = ["html", "cmp", "js"];
+    const validExtensions = ["htm", "html", "cmp", "js"];
+    const validSalesforceFolderNames = ["aura", "lwc"];
     const pathTokens = document.uri.path.split("/");
-    const documentFolder = pathTokens[pathTokens.length - 2];
+    const folderName = pathTokens[pathTokens.length - 2];
+    const parentFolderName =
+      pathTokens.length >= 3 ? pathTokens[pathTokens.length - 3] : null;
+
     const [fileName, fileExtension] = pathTokens[pathTokens.length - 1].split(
       "."
     );
     const lightningJavaScriptFileRegex = /Controller|Helper/gi;
+    const folderNameMatchRegex = new RegExp(`^${folderName}$`);
     const processedFileName =
       document.languageId === "javascript"
         ? fileName.replace(lightningJavaScriptFileRegex, "")
         : fileName;
 
-    //* Lightning Components' files should have the same name as their parent folder
-    if (processedFileName !== documentFolder) return false;
+    if (!folderNameMatchRegex.test(processedFileName)) return false;
     if (!validExtensions.includes(fileExtension)) return false;
+    if (!validSalesforceFolderNames.includes(parentFolderName)) return false;
 
     return true;
   }
@@ -174,12 +179,12 @@ class Extension {
   }
 
   updateLastModifiedBy(fileContent) {
-    const re = /^(\s*\*\s*@Last\s*Modified\s*By\s*:).*/gm;
+    const re = /^(\s*[\*\s]*@Last\s*Modified\s*By\s*:).*/gm;
     return fileContent.replace(re, `$1 ${this.getConfiguredUsername()}`);
   }
 
   updateLastModifiedDateTime(fileContent) {
-    const re = /^(\s*\*\s*@Last\s*Modified\s*On\s*:).*/gm;
+    const re = /^(\s*[\*\s]*@Last\s*Modified\s*On\s*:).*/gm;
     return fileContent.replace(re, `$1 ${this.getHeaderFormattedDateTime()}`);
   }
 

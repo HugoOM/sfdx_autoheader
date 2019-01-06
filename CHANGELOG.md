@@ -4,6 +4,7 @@
 
 - Regex and Header analysis improvements
 - Tests improvements
+- Prettier code formatting
 
 ## [0.4.0]
 
