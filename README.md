@@ -3,7 +3,6 @@
 [![Build Status](https://travis-ci.org/HugoOM/sfdx_autoheader.svg?branch=master)](https://travis-ci.org/HugoOM/sfdx_autoheader)
 [![Maintainability](https://api.codeclimate.com/v1/badges/64c16d2180411eb66da5/maintainability)](https://codeclimate.com/github/HugoOM/sfdx_autoheader/maintainability)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/HugoOM/sfdx_autoheader)
 
 ## **Important**
 
@@ -11,7 +10,7 @@
 
 # Features
 
-- #### Add a file header to any Apex, Visualforce or Lightning file on save
+- #### Add a file header to any Apex, Visualforce or Lightning (Aura & LWC) file on save
 - #### Dynamically updates the "Last Updated By" and "Last Updated On" values on save
 
 # Thoughts & Recommendation 🧠

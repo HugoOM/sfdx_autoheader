@@ -1,5 +1,14 @@
 # Change Log
 
+## [0.4.1]
+
+- Regex and Header analysis improvements
+- Tests improvements
+
+## [0.4.0]
+
+- LWC Support
+
 ## [0.3.0]
 
 - Lightning Support!
