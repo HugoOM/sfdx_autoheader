@@ -126,9 +126,9 @@ suite("Extension Tests", function() {
 
     assert.isNotEmpty(document.getText());
 
-    // await resetTestFile(document);
+    await resetTestFile(document);
 
-    // await document.save();
+    await document.save();
   });
 
   test("Testing PreSaveListener - Lightning LWC JavaScript Negative", async () => {
@@ -150,9 +150,9 @@ suite("Extension Tests", function() {
 
     assert.isEmpty(document.getText());
 
-    // await resetTestFile(document);
+    await resetTestFile(document);
 
-    // await document.save();
+    await document.save();
   });
 
   test("Testing PreSaveListener - Lightning LWC Markup Positive", async () => {
@@ -174,9 +174,9 @@ suite("Extension Tests", function() {
 
     assert.isNotEmpty(document.getText());
 
-    // await resetTestFile(document);
+    await resetTestFile(document);
 
-    // await document.save();
+    await document.save();
   });
 
   test("Testing PreSaveListener - Lightning LWC Markup Negative", async () => {
@@ -198,9 +198,9 @@ suite("Extension Tests", function() {
 
     assert.isEmpty(document.getText());
 
-    // await resetTestFile(document);
+    await resetTestFile(document);
 
-    // await document.save();
+    await document.save();
   });
 
   test("Testing PreSaveListener - Negative", async () => {
