@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.4.2]
+
+- More accurate logic to identify Lightning files
+
 ## [0.4.1]
 
 - Regex and Header analysis improvements

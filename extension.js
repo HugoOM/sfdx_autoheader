@@ -131,7 +131,6 @@ class Extension {
     const folderName = pathTokens[pathTokens.length - 2];
     const parentFolderName =
       pathTokens.length >= 3 ? pathTokens[pathTokens.length - 3] : null;
-
     const [fileName, fileExtension] = pathTokens[pathTokens.length - 1].split(
       "."
     );

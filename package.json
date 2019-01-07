@@ -1,8 +1,8 @@
 {
   "name": "sfdx-autoheader",
-  "displayName": "Salesforce Documenter",
-  "description": "Automated Code Comment / Documentation Generation for Salesforce",
-  "version": "0.4.1",
+  "displayName": "Salesforce Autoheader",
+  "description": "Automated Code Comments / Documentation (File Headers) Generation for Salesforce",
+  "version": "0.4.2",
   "publisher": "HugoOM",
   "license": "MIT",
   "badges": [
