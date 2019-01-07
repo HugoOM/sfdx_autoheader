@@ -1,15 +1,17 @@
 {
   "name": "sfdx-autoheader",
   "displayName": "Salesforce Autoheader",
-  "description": "Automatic Template-Based File Header Generation for Salesforce DX",
-  "version": "0.3.0",
+  "description": "Automated Code Comments / Documentation (File Headers) Generation for Salesforce",
+  "version": "0.4.2",
   "publisher": "HugoOM",
   "license": "MIT",
-  "badges": [{
-    "url": "https://travis-ci.org/HugoOM/sfdx_autoheader.svg?branch=master",
-    "href": "https://travis-ci.org/HugoOM/sfdx_autoheader",
-    "description": "Travis-CI Build Status for Master Branch (Current Release)"
-  }],
+  "badges": [
+    {
+      "url": "https://travis-ci.org/HugoOM/sfdx_autoheader.svg?branch=master",
+      "href": "https://travis-ci.org/HugoOM/sfdx_autoheader",
+      "description": "Travis-CI Build Status for Master Branch (Current Release)"
+    }
+  ],
   "preview": true,
   "repository": {
     "type": "git",
@@ -26,7 +28,8 @@
     "visualforce",
     "Salesforce",
     "File Header",
-    "Comments"
+    "Comments",
+    "Documentation"
   ],
   "icon": "images/slds_action_follow_icon.png",
   "galleryBanner": {
@@ -68,16 +71,17 @@
         "SFDX_Autoheader.EnableForLightningMarkup": {
           "type": "boolean",
           "default": true,
-          "description": "Enable On-Save File Headers on Lightning Components Markup File"
+          "description": "Enable On-Save File Headers on Lightning Markup File (Aura & LWC)"
         },
         "SFDX_Autoheader.EnableForLightningJavascript": {
           "type": "boolean",
           "default": false,
-          "description": "Enable On-Save File Headers on Lightning Components Javascript Files"
+          "description": "Enable On-Save File Headers on Lightning Javascript Files (Aura & LWC)"
         }
       }
     },
-    "languages": [{
+    "languages": [
+      {
         "id": "apex",
         "filenames": [
           "testFile_SFDXAutoheader.apex"
@@ -98,7 +102,8 @@
       {
         "id": "javascript",
         "filenames": [
-          "testFile_SFDXAutoheaderController.js"
+          "testFile_SFDXAutoheaderController.js",
+          "testFile_SFDXAutoheader.js"
         ]
       }
     ]

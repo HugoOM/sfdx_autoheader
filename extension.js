@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 
 const {
   Position,
@@ -15,12 +15,13 @@ class Extension {
   constructor() {
     this.cursorPosition = null;
     this.isHeaderExistsOnFile = null;
-    this.HEADER_LENGTH_LINES = 13
+    this.HEADER_LENGTH_LINES = 13;
   }
 
   setListenerOnPreSave(context) {
-    const preSaveHookListener = workspace.onWillSaveTextDocument
-      .call(this, event => {
+    const preSaveHookListener = workspace.onWillSaveTextDocument.call(
+      this,
+      event => {
         if (!event.document.isDirty) return;
         if (!this.isValidLanguage(event.document)) return;
 
@@ -33,17 +34,18 @@ class Extension {
           this.cursorPosition = window.activeTextEditor.selection.active;
 
         if (!this.isHeaderExistsOnFile)
-          event.waitUntil(this.getInsertFileHeaderEdit(event.document))
-        else
-          event.waitUntil(this.getUpdateHeaderValueEdit(event.document))
-      });
+          event.waitUntil(this.getInsertFileHeaderEdit(event.document));
+        else event.waitUntil(this.getUpdateHeaderValueEdit(event.document));
+      }
+    );
 
     context.subscriptions.push(preSaveHookListener);
   }
 
   setListenerOnPostSave(context) {
-    const postSaveHookListener = workspace.onDidSaveTextDocument
-      .call(this, () => {
+    const postSaveHookListener = workspace.onDidSaveTextDocument.call(
+      this,
+      () => {
         if (!this.cursorPosition) return;
 
         window.activeTextEditor.selection = new Selection(
@@ -52,19 +54,22 @@ class Extension {
         );
 
         this.cursorPosition = null;
-      });
+      }
+    );
 
     context.subscriptions.push(postSaveHookListener);
   }
 
   checkForHeader(firstLineText) {
     this.isHeaderExistsOnFile =
-      this.isLineABlockComment(firstLineText) || this.isLineAnXMLComment(firstLineText);
+      this.isLineABlockComment(firstLineText) ||
+      this.isLineAnXMLComment(firstLineText);
   }
 
   getLastSavedCursorPosition() {
     return new Position(
-      this.cursorPosition.line + (!this.isHeaderExistsOnFile ? this.HEADER_LENGTH_LINES : 0),
+      this.cursorPosition.line +
+        (!this.isHeaderExistsOnFile ? this.HEADER_LENGTH_LINES : 0),
       this.cursorPosition.character
     );
   }
@@ -79,17 +84,17 @@ class Extension {
           this.getHeaderFormattedDateTime()
         )
       )
-    ]
+    ];
   }
 
   isLineABlockComment(lineContent) {
-    const re = /^\/\*/g;
-    return !!lineContent.trim().match(re);
+    const re = /^\s*\/\*/g;
+    return re.test(lineContent);
   }
 
   isLineAnXMLComment(lineContent) {
-    const re = /<!--/g;
-    return !!lineContent.trim().match(re);
+    const re = /^\s*<!--/g;
+    return re.test(lineContent);
   }
 
   isValidLanguage(document) {
@@ -99,30 +104,46 @@ class Extension {
     const enabledForApex = configs.get("EnableForApex");
     const enabledForVf = configs.get("EnableForVisualforce");
     const enabledForLightMarkup = configs.get("EnableForLightningMarkup");
-    const enabledForLightJavaScript = configs.get("EnableForLightningJavascript");
+    const enabledForLightJavaScript = configs.get(
+      "EnableForLightningJavascript"
+    );
 
     if (lang === "apex" && enabledForApex) return true;
     if (lang === "visualforce" && enabledForVf) return true;
-    if (lang === "html") return enabledForAllWebFiles || (enabledForLightMarkup && this.isLightning(document));
-    if (lang === "javascript") return enabledForAllWebFiles || (enabledForLightJavaScript && this.isLightning(document));
+    if (lang === "html")
+      return (
+        enabledForAllWebFiles ||
+        (enabledForLightMarkup && this.isLightning(document))
+      );
+    if (lang === "javascript")
+      return (
+        enabledForAllWebFiles ||
+        (enabledForLightJavaScript && this.isLightning(document))
+      );
 
     return false;
   }
 
   isLightning(document) {
-    const validExtensions = ['cmp', 'js'];
-    const pathTokens = document.uri.path.split('/');
-    const documentFolder = pathTokens[pathTokens.length - 2];
-    const [fileName, fileExtension] = pathTokens[pathTokens.length - 1].split('.');
+    const validExtensions = ["htm", "html", "cmp", "js"];
+    const validSalesforceFolderNames = ["aura", "lwc"];
+    const pathTokens = document.uri.path.split("/");
+    const folderName = pathTokens[pathTokens.length - 2];
+    const parentFolderName =
+      pathTokens.length >= 3 ? pathTokens[pathTokens.length - 3] : null;
+    const [fileName, fileExtension] = pathTokens[pathTokens.length - 1].split(
+      "."
+    );
     const lightningJavaScriptFileRegex = /Controller|Helper/gi;
+    const folderNameMatchRegex = new RegExp(`^${folderName}$`);
     const processedFileName =
-      document.languageId === 'javascript' ?
-      fileName.replace(lightningJavaScriptFileRegex, '') :
-      fileName;
+      document.languageId === "javascript"
+        ? fileName.replace(lightningJavaScriptFileRegex, "")
+        : fileName;
 
-    //* Lightning Components' files should have the same name as their parent folder
-    if (processedFileName !== documentFolder) return false;
+    if (!folderNameMatchRegex.test(processedFileName)) return false;
     if (!validExtensions.includes(fileExtension)) return false;
+    if (!validSalesforceFolderNames.includes(parentFolderName)) return false;
 
     return true;
   }
@@ -135,7 +156,10 @@ class Extension {
   getConfiguredUsername() {
     const settingsUsername = workspace.getConfiguration("SFDX_Autoheader");
 
-    return settingsUsername.get('username') || settingsUsername.inspect('username').defaultValue;
+    return (
+      settingsUsername.get("username") ||
+      settingsUsername.inspect("username").defaultValue
+    );
   }
 
   async getUpdateHeaderValueEdit(document) {
@@ -144,20 +168,22 @@ class Extension {
         this.getFullDocumentRange(document),
         this.updateHeaderLastModifiedByAndDate(document.getText())
       )
-    ]
+    ];
   }
 
   updateHeaderLastModifiedByAndDate(documentText) {
-    return this.updateLastModifiedDateTime(this.updateLastModifiedBy(documentText));
+    return this.updateLastModifiedDateTime(
+      this.updateLastModifiedBy(documentText)
+    );
   }
 
   updateLastModifiedBy(fileContent) {
-    const re = /^(\s*[\*\s]*@Last\s*Modified\s*By\s*:).*$/gm;
+    const re = /^(\s*[\*\s]*@Last\s*Modified\s*By\s*:).*/gm;
     return fileContent.replace(re, `$1 ${this.getConfiguredUsername()}`);
   }
 
   updateLastModifiedDateTime(fileContent) {
-    const re = /^(\s*[\*\s]*@Last\s*Modified\s*On\s*:).*$/gm;
+    const re = /^(\s*[\*\s]*@Last\s*Modified\s*On\s*:).*/gm;
     return fileContent.replace(re, `$1 ${this.getHeaderFormattedDateTime()}`);
   }
 
@@ -171,11 +197,11 @@ class Extension {
   }
 }
 
-exports.activate = function (context) {
+exports.activate = function(context) {
   const ext = new Extension();
   ext.setListenerOnPreSave(context);
   ext.setListenerOnPostSave(context);
-  console.log('SFDX Autoheader - Extension Activated');
-}
-exports.deactivate = function () {};
+  console.log("SFDX Autoheader - Extension Activated");
+};
+exports.deactivate = function() {};
 exports.Extension = Extension;
