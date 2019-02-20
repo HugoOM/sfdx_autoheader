@@ -42,7 +42,7 @@
     "onLanguage:javascript",
     "onLanguage:html"
   ],
-  "main": "./out/extension.js",
+  "main": "./out/documenter.js",
   "contributes": {
     "configuration": {
       "type": "object",

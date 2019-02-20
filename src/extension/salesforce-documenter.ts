@@ -1,5 +1,3 @@
-"use strict";
-
 import {
   Disposable,
   ExtensionContext,
@@ -14,11 +12,17 @@ import {
   WorkspaceConfiguration
 } from "vscode";
 
-const defaultTemplates = require("./templates/default.js");
+const defaultTemplates = require("../templates/default.js");
 
-class Extension {
+export default class SalesforceDocumenter {
   private cursorPosition: Position | null = null;
   private readonly HEADER_LENGTH_LINES: number = 13;
+
+  constructor(context: ExtensionContext) {
+    this.setListenerOnPreSave(context);
+
+    this.setListenerOnPostSave(context);
+  }
 
   setListenerOnPreSave(context: ExtensionContext): void {
     const preSaveHookListener: Disposable = workspace.onWillSaveTextDocument.call(
@@ -31,7 +35,7 @@ class Extension {
         if (window.activeTextEditor)
           this.cursorPosition = window.activeTextEditor.selection.active;
 
-        if (this.checkForHeaderOnDoc(event.document))
+        if (!this.checkForHeaderOnDoc(event.document))
           event.waitUntil(this.getInsertFileHeaderEdit(event.document));
         else event.waitUntil(this.getUpdateHeaderValueEdit(event.document));
       }
@@ -208,12 +212,3 @@ class Extension {
     );
   }
 }
-
-exports.activate = function(context: ExtensionContext): void {
-  const ext = new Extension();
-  ext.setListenerOnPreSave(context);
-  ext.setListenerOnPostSave(context);
-  console.log("Salesforce Autoheader - Extension Activated");
-};
-exports.deactivate = function() {};
-exports.Extension = Extension;
