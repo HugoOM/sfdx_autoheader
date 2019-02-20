@@ -2,7 +2,8 @@
 
 const { assert } = require("chai");
 
-const { Extension } = require("../extension");
+// const { Extension } = require("../extension");
+const { Extension } = require("../extension.js");
 
 const ext = new Extension();
 
@@ -20,7 +21,7 @@ const {
 
 const path = require("path");
 
-suite("Extension Tests", function() {
+suite("Extension s", function() {
   this.timeout(60000);
 
   test("Testing PreSaveListener - Apex Positive", async () => {
@@ -612,12 +613,15 @@ async function openTestDocumentByFileIdentifier(ext) {
 
   await workspace.updateWorkspaceFolders(0, 0, {
     name: "testFile_SFDXAutoheader",
-    uri: Uri.file(path.join(__dirname, "testFile_SFDXAutoheader"))
+    uri: Uri.file(
+      path.join(__dirname, "../../test_files/", "testFile_SFDXAutoheader")
+    )
   });
 
   const doc = await workspace.openTextDocument(
     path.join(
       __dirname,
+      "../../test_files/",
       "testFile_SFDXAutoheader",
       fileIdentifierAssociation[ext]
     )
