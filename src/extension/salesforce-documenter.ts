@@ -17,10 +17,10 @@ const defaultTemplates = require("../templates/default.js");
 export default class SalesforceDocumenter {
   private cursorPosition: Position | null = null;
   private readonly HEADER_LENGTH_LINES: number = 13;
+  private isHeaderBeingInserted: boolean = false;
 
   constructor(context: ExtensionContext) {
     this.setListenerOnPreSave(context);
-
     this.setListenerOnPostSave(context);
   }
 
@@ -31,39 +31,42 @@ export default class SalesforceDocumenter {
         if (!event.document.isDirty) return;
         if (!this.isValidLanguage(event.document)) return;
 
-        //* Prevent capturing the Cursor position when saving from script
-        if (window.activeTextEditor)
-          this.cursorPosition = window.activeTextEditor.selection.active;
-
-        if (!this.checkForHeaderOnDoc(event.document))
-          event.waitUntil(this.getInsertFileHeaderEdit(event.document));
-        else event.waitUntil(this.getUpdateHeaderValueEdit(event.document));
+        event.waitUntil(this.insertOrUpdateHeader(event.document));
       }
     );
-
     context.subscriptions.push(preSaveHookListener);
   }
 
   setListenerOnPostSave(context: ExtensionContext): void {
     const postSaveHookListener = workspace.onDidSaveTextDocument.call(
       this,
-      (document: TextDocument) => {
-        if (!this.cursorPosition) return;
+      this.replaceCursor
+    );
+    context.subscriptions.push(postSaveHookListener);
+  }
 
-        const isHeaderOnDoc = this.checkForHeaderOnDoc(document);
+  replaceCursor(): void {
+    if (!this.cursorPosition) return;
+    if (!window.activeTextEditor) return;
 
-        if (!window.activeTextEditor) return;
-
-        window.activeTextEditor.selection = new Selection(
-          this.getLastSavedCursorPosition(isHeaderOnDoc),
-          this.getLastSavedCursorPosition(isHeaderOnDoc)
-        );
-
-        this.cursorPosition = null;
-      }
+    window.activeTextEditor.selection = new Selection(
+      this.getLastSavedCursorPosition(),
+      this.getLastSavedCursorPosition()
     );
 
-    context.subscriptions.push(postSaveHookListener);
+    this.cursorPosition = null;
+  }
+
+  insertOrUpdateHeader(document: TextDocument): Thenable<TextEdit[]> {
+    //* Prevent capturing the Cursor position when saving from script
+    if (window.activeTextEditor)
+      this.cursorPosition = window.activeTextEditor.selection.active;
+
+    this.isHeaderBeingInserted = this.checkForHeaderOnDoc(document);
+
+    return this.isHeaderBeingInserted
+      ? this.getUpdateHeaderValueEdit(document)
+      : this.getInsertFileHeaderEdit(document);
   }
 
   checkForHeaderOnDoc(document: TextDocument): boolean {
@@ -75,13 +78,16 @@ export default class SalesforceDocumenter {
     );
   }
 
-  getLastSavedCursorPosition(isHeaderOnFile: boolean): Position {
+  getLastSavedCursorPosition(): Position {
     if (!this.cursorPosition)
-      return new Position(isHeaderOnFile ? 0 : this.HEADER_LENGTH_LINES, 0);
+      return new Position(
+        this.isHeaderBeingInserted ? 0 : this.HEADER_LENGTH_LINES,
+        0
+      );
 
     return new Position(
       this.cursorPosition.line +
-        (isHeaderOnFile ? 0 : this.HEADER_LENGTH_LINES),
+        (this.isHeaderBeingInserted ? 0 : this.HEADER_LENGTH_LINES),
       this.cursorPosition.character
     );
   }

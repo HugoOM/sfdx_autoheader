@@ -2,10 +2,6 @@
 
 const { assert } = require("chai");
 
-import Extension from "../extension/salesforce-documenter";
-
-const ext = new Extension();
-
 const {
   workspace,
   Position,
@@ -20,8 +16,17 @@ const {
 
 const path = require("path");
 
-suite("Extension s", function() {
+suite("Salesforce Documenter - Extension Suite", function() {
   this.timeout(60000);
+
+  let ext;
+
+  suiteSetup(function(done) {
+    loadExtension().then(function(api) {
+      ext = api;
+      done();
+    });
+  });
 
   test("Testing PreSaveListener - Apex Positive", async () => {
     const document = await openTestDocumentByFileIdentifier("apex");
@@ -466,40 +471,40 @@ suite("Extension s", function() {
   });
 
   /* Update following rework
-  test("Testing checkForHeader", done => {
-    const blockComment = "/*";
-    const xmlComment = "<!--";
-    const notAComment = "abc";
-
-    ext.checkForHeader(blockComment);
-    assert.isTrue(ext.isHeaderExistsOnFile);
-
-    ext.checkForHeader(xmlComment);
-    assert.isTrue(ext.isHeaderExistsOnFile);
-
-    ext.checkForHeader(notAComment);
-    assert.isFalse(ext.isHeaderExistsOnFile);
-
-    done();
-  });
-
-  test("Testing getLastSavedCursorPosition", done => {
-    const testPosition = new Position(15, 15);
-    ext.cursorPosition = testPosition;
-    ext.isHeaderExistsOnFile = true;
-
-    assert.deepEqual(testPosition, ext.getLastSavedCursorPosition());
-
-    ext.isHeaderExistsOnFile = false;
-
-    assert.equal(
-      testPosition.line + ext.HEADER_LENGTH_LINES,
-      ext.getLastSavedCursorPosition().line
-    );
-
-    done();
-  });
-  */
+    test("Testing checkForHeader", done => {
+      const blockComment = "/*";
+      const xmlComment = "<!--";
+      const notAComment = "abc";
+  
+      ext.checkForHeader(blockComment);
+      assert.isTrue(ext.isHeaderExistsOnFile);
+  
+      ext.checkForHeader(xmlComment);
+      assert.isTrue(ext.isHeaderExistsOnFile);
+  
+      ext.checkForHeader(notAComment);
+      assert.isFalse(ext.isHeaderExistsOnFile);
+  
+      done();
+    });
+  
+    test("Testing getLastSavedCursorPosition", done => {
+      const testPosition = new Position(15, 15);
+      ext.cursorPosition = testPosition;
+      ext.isHeaderExistsOnFile = true;
+  
+      assert.deepEqual(testPosition, ext.getLastSavedCursorPosition());
+  
+      ext.isHeaderExistsOnFile = false;
+  
+      assert.equal(
+        testPosition.line + ext.HEADER_LENGTH_LINES,
+        ext.getLastSavedCursorPosition().line
+      );
+  
+      done();
+    });
+    */
 
   test("Testing getHeaderFormattedDateTime", done => {
     assert.isString(ext.getHeaderFormattedDateTime());
@@ -508,7 +513,7 @@ suite("Extension s", function() {
 
   test("Testing getConfiguredUsername", done => {
     /* Single VSCode package functionality, simply test that 
-         a value is returned and/or that default is leveraged from config */
+           a value is returned and/or that default is leveraged from config */
     assert.isString(ext.getConfiguredUsername());
     done();
   });
@@ -610,7 +615,7 @@ async function openTestDocumentByFileIdentifier(ext) {
     html: "lwc/testFile_SFDXAutoheader/testFile_SFDXAutoheader.html"
   };
 
-  await loadExtension();
+  // await loadExtension();
 
   await workspace.updateWorkspaceFolders(0, 0, {
     name: "testFile_SFDXAutoheader",
@@ -633,9 +638,10 @@ async function openTestDocumentByFileIdentifier(ext) {
   return doc;
 }
 
-function loadExtension() {
+async function loadExtension() {
   const testExt = extensions.getExtension("HugoOM.sfdx-autoheader");
-  return testExt.activate();
+
+  return await testExt.activate();
 }
 
 async function clearFile(document) {

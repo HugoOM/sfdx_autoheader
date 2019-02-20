@@ -2,7 +2,7 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "ES2018",
-    "outDir": "./out",
+    "outDir": "out",
     "lib": ["es7"],
     "sourceMap": false,
     "rootDir": "./src",
@@ -12,5 +12,5 @@
     "noUnusedParameters": true,
     "allowJs": true
   },
-  "exclude": ["node_modules", ".vscode-test", "test_files"]
+  "exclude": ["node_modules", ".vscode-test", "test_files", "out"]
 }
