@@ -1,5 +1,5 @@
 import SalesforceDocumenter from "./extension/salesforce-documenter";
-import { ExtensionContext, extensions } from "vscode";
+import { ExtensionContext } from "vscode";
 
 exports.activate = function(context: ExtensionContext): any {
   const documenter = new SalesforceDocumenter(context);

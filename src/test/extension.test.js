@@ -17,7 +17,7 @@ const {
 const path = require("path");
 
 suite("Salesforce Documenter - Extension Suite", function() {
-  this.timeout(60000);
+  this.timeout(0);
 
   let ext;
 
@@ -615,8 +615,6 @@ async function openTestDocumentByFileIdentifier(ext) {
     html: "lwc/testFile_SFDXAutoheader/testFile_SFDXAutoheader.html"
   };
 
-  // await loadExtension();
-
   await workspace.updateWorkspaceFolders(0, 0, {
     name: "testFile_SFDXAutoheader",
     uri: Uri.file(
@@ -638,10 +636,12 @@ async function openTestDocumentByFileIdentifier(ext) {
   return doc;
 }
 
-async function loadExtension() {
+function loadExtension() {
   const testExt = extensions.getExtension("HugoOM.sfdx-autoheader");
 
-  return await testExt.activate();
+  if (testExt.isActive) return testExt.exports;
+
+  return testExt.activate();
 }
 
 async function clearFile(document) {

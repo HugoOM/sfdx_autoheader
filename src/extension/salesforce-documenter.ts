@@ -38,9 +38,8 @@ export default class SalesforceDocumenter {
   }
 
   setListenerOnPostSave(context: ExtensionContext): void {
-    const postSaveHookListener = workspace.onDidSaveTextDocument.call(
-      this,
-      this.replaceCursor
+    const postSaveHookListener = workspace.onDidSaveTextDocument(
+      this.replaceCursor.bind(this)
     );
     context.subscriptions.push(postSaveHookListener);
   }
