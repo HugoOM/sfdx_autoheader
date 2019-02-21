@@ -18,7 +18,7 @@
     "url": "https://github.com/HugoOM/sfdx_autoheader"
   },
   "engines": {
-    "vscode": "^1.28.0"
+    "vscode": "^1.31.1"
   },
   "categories": [
     "Other"

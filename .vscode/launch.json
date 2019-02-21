@@ -20,6 +20,7 @@
       "request": "launch",
       "runtimeExecutable": "${execPath}",
       "args": [
+        "${workspaceFolder}/test_files/testFile_SFDXAutoheader",
         "--disableExtensions",
         "--extensionDevelopmentPath=${workspaceFolder}",
         // "--extensionTestsPath=${workspaceFolder}/out/test/extension.test.js"

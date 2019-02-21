@@ -22,7 +22,14 @@ suite("Salesforce Documenter - Extension Suite", function() {
   let ext;
 
   suiteSetup(function(done) {
-    loadExtension().then(function(api) {
+    workspace.updateWorkspaceFolders(0, null, {
+      name: "testFile_SFDXAutoheader",
+      uri: Uri.file(
+        path.join(__dirname, "../../test_files/", "testFile_SFDXAutoheader")
+      )
+    });
+
+    loadExtension().then(api => {
       ext = api;
       done();
     });
@@ -614,13 +621,6 @@ async function openTestDocumentByFileIdentifier(ext) {
     js: "lwc/testFile_SFDXAutoheader/testFile_SFDXAutoheader.js",
     html: "lwc/testFile_SFDXAutoheader/testFile_SFDXAutoheader.html"
   };
-
-  await workspace.updateWorkspaceFolders(0, 0, {
-    name: "testFile_SFDXAutoheader",
-    uri: Uri.file(
-      path.join(__dirname, "../../test_files/", "testFile_SFDXAutoheader")
-    )
-  });
 
   const doc = await workspace.openTextDocument(
     path.join(
