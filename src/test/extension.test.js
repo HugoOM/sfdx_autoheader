@@ -22,12 +22,13 @@ suite("Salesforce Documenter - Extension Suite", function() {
   let ext;
 
   suiteSetup(function(done) {
-    workspace.updateWorkspaceFolders(0, null, {
-      name: "testFile_SFDXAutoheader",
-      uri: Uri.file(
-        path.join(__dirname, "../../test_files/", "testFile_SFDXAutoheader")
-      )
-    });
+    //? updateWorkspaceFolders broken in 1.31.1 for Extension Tests
+    // workspace.updateWorkspaceFolders(0, null, {
+    //   name: "testFile_SFDXAutoheader",
+    //   uri: Uri.file(
+    //     path.join(__dirname, "../../test_files/", "testFile_SFDXAutoheader")
+    //   )
+    // });
 
     loadExtension().then(api => {
       ext = api;
