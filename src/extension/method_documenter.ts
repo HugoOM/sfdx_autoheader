@@ -1,4 +1,5 @@
 import { window } from "vscode";
+import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from "constants";
 
 type Method = {
   text: string;
@@ -17,8 +18,12 @@ export default class MethodDocumenter {
   generateMethodHeader(): void {
     if (!window.activeTextEditor) return;
 
+    const document = window.activeTextEditor.document;
+    const re_methodDeclarationStart = /\{/gi;
+    let currentLineId = window.activeTextEditor.selection.anchor.line;
+
     const method: Method = {
-      text: "",
+      text: document.lineAt(currentLineId).text,
       signature: "",
       parameters: "",
       signatureTokens: [],
@@ -29,11 +34,6 @@ export default class MethodDocumenter {
       isStatic: false,
       isOverride: false
     };
-
-    const document = window.activeTextEditor.document;
-    const re_methodDeclarationStart = /\{/gi;
-    let currentLineId = window.activeTextEditor.selection.anchor.line;
-    method.text = document.lineAt(currentLineId).text;
 
     while (!re_methodDeclarationStart.test(method.text)) {
       if (currentLineId >= window.activeTextEditor.document.lineCount) return;
@@ -75,9 +75,26 @@ export default class MethodDocumenter {
       (token: string) => token.toLowerCase() === "override"
     );
 
+    let collectionCount: number = 0;
     method.parameterTokens = method.parameters
-      .replace(/\)|\{|\}|\s*/gi, "")
+      .replace(/\s+/gi, " ")
+      .replace(/\)|\{|\}/gi, "")
       .split(",")
-      .map((token: string) => token.trim());
+      .map((token: string) => token.trim())
+      .reduce((processedTokens: any, currentToken: string) => {
+        if (/list|map|set/gi.test(currentToken)) collectionCount++;
+
+        const collectionClosingTags = currentToken.match(/>/gi);
+
+        if (collectionCount > 1)
+          processedTokens[processedTokens.length - 1] += ", " + currentToken;
+        else processedTokens.push(currentToken);
+
+        if (collectionClosingTags && collectionClosingTags.length)
+          collectionCount -= collectionClosingTags.length;
+
+        return processedTokens;
+      }, []);
+    debugger;
   }
 }
