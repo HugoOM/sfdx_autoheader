@@ -19,10 +19,10 @@ const path = require("path");
 suite("Salesforce Documenter - Extension Suite", function() {
   this.timeout(0);
 
-  let ext;
+  let fileDocumenter, methodDocumenter;
 
   suiteSetup(function(done) {
-    //? updateWorkspaceFolders broken in 1.31.1 for Extension Tests
+    //? updateWorkspaceFolders broken in 1.31.1 for Extension Tests ran from outside ('npm t')
     // workspace.updateWorkspaceFolders(0, null, {
     //   name: "testFile_SFDXAutoheader",
     //   uri: Uri.file(
@@ -31,7 +31,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
     // });
 
     loadExtension().then(api => {
-      ext = api;
+      ({ fileDocumenter, methodDocumenter } = api);
       done();
     });
   });
@@ -259,7 +259,9 @@ suite("Salesforce Documenter - Extension Suite", function() {
   test("Testing getInsertFileHeaderEdit - Javalike", async () => {
     const document = await openTestDocumentByFileIdentifier("apex");
 
-    const insertFileHeaderEdit = await ext.getInsertFileHeaderEdit(document);
+    const insertFileHeaderEdit = await fileDocumenter.getInsertFileHeaderEdit(
+      document
+    );
 
     assert.exists(insertFileHeaderEdit);
     assert.notEqual(insertFileHeaderEdit.newText, "");
@@ -269,7 +271,9 @@ suite("Salesforce Documenter - Extension Suite", function() {
   test("Testing getInsertFileHeaderEdit - Markup", async () => {
     const document = await openTestDocumentByFileIdentifier("page");
 
-    const insertFileHeaderEdit = await ext.getInsertFileHeaderEdit(document);
+    const insertFileHeaderEdit = await fileDocumenter.getInsertFileHeaderEdit(
+      document
+    );
 
     assert.exists(insertFileHeaderEdit);
     assert.notEqual(insertFileHeaderEdit.newText, "");
@@ -283,9 +287,9 @@ suite("Salesforce Documenter - Extension Suite", function() {
     const singleCommentString = "// Single Comment";
     const notACommentString = "HugoOM";
 
-    assert.isTrue(ext.isLineABlockComment(blockCommentString));
-    assert.isFalse(ext.isLineABlockComment(singleCommentString));
-    assert.isFalse(ext.isLineABlockComment(notACommentString));
+    assert.isTrue(fileDocumenter.isLineABlockComment(blockCommentString));
+    assert.isFalse(fileDocumenter.isLineABlockComment(singleCommentString));
+    assert.isFalse(fileDocumenter.isLineABlockComment(notACommentString));
 
     done();
   });
@@ -297,9 +301,9 @@ suite("Salesforce Documenter - Extension Suite", function() {
     const blockCommentString = "/* blockComment */";
     const notACommentString = "HugoOM";
 
-    assert.isTrue(ext.isLineAnXMLComment(xmlCommentString));
-    assert.isFalse(ext.isLineAnXMLComment(blockCommentString));
-    assert.isFalse(ext.isLineAnXMLComment(notACommentString));
+    assert.isTrue(fileDocumenter.isLineAnXMLComment(xmlCommentString));
+    assert.isFalse(fileDocumenter.isLineAnXMLComment(blockCommentString));
+    assert.isFalse(fileDocumenter.isLineAnXMLComment(notACommentString));
 
     done();
   });
@@ -312,7 +316,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
     );
     await docConfigs.update("EnableForApex", false, 1);
 
-    assert.isFalse(ext.isValidLanguage(document));
+    assert.isFalse(fileDocumenter.isValidLanguage(document));
   });
 
   test("Testing isValidLanguage - Apex Setting On", async () => {
@@ -323,7 +327,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
     );
     await docConfigs.update("EnableForApex", true, 1);
 
-    assert.isTrue(ext.isValidLanguage(document));
+    assert.isTrue(fileDocumenter.isValidLanguage(document));
   });
 
   test("Testing isValidLanguage - Visalforce Setting Off", async () => {
@@ -334,7 +338,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
     );
     await docConfigs.update("EnableForVisualforce", false, 1);
 
-    assert.isFalse(ext.isValidLanguage(document));
+    assert.isFalse(fileDocumenter.isValidLanguage(document));
   });
 
   test("Testing isValidLanguage - Visalforce Setting On", async () => {
@@ -345,7 +349,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
     );
     await docConfigs.update("EnableForVisualforce", true, 1);
 
-    assert.isTrue(ext.isValidLanguage(document));
+    assert.isTrue(fileDocumenter.isValidLanguage(document));
   });
 
   test("Testing isValidLanguage - Lightning Component Setting Off", async () => {
@@ -356,7 +360,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
     );
     await docConfigs.update("EnableForLightningMarkup", false, 1);
 
-    assert.isFalse(ext.isValidLanguage(document));
+    assert.isFalse(fileDocumenter.isValidLanguage(document));
   });
 
   test("Testing isValidLanguage - Lightning Component Setting On", async () => {
@@ -367,7 +371,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
     );
     await docConfigs.update("EnableForLightningMarkup", true, 1);
 
-    assert.isTrue(ext.isValidLanguage(document));
+    assert.isTrue(fileDocumenter.isValidLanguage(document));
   });
 
   test("Testing isValidLanguage - Lightning JavaScript Setting Off", async () => {
@@ -378,7 +382,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
     );
     await docConfigs.update("EnableForLightningJavascript", false, 1);
 
-    assert.isFalse(ext.isValidLanguage(document));
+    assert.isFalse(fileDocumenter.isValidLanguage(document));
   });
 
   test("Testing isValidLanguage - Lightning JavaScript Setting On", async () => {
@@ -389,7 +393,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
     );
     await docConfigs.update("EnableForLightningJavascript", true, 1);
 
-    assert.isTrue(ext.isValidLanguage(document));
+    assert.isTrue(fileDocumenter.isValidLanguage(document));
   });
 
   test("Testing isValidLanguage - Lightning Component Web Setting On", async () => {
@@ -402,7 +406,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
     await docConfigs.update("EnableForLightningJavascript", false, 1);
     await docConfigs.update("EnableForAllWebFiles", true, 1);
 
-    assert.isTrue(ext.isValidLanguage(document));
+    assert.isTrue(fileDocumenter.isValidLanguage(document));
 
     await docConfigs.update("EnableForLightningMarkup", true, 1);
     await docConfigs.update("EnableForLightningJavascript", true, 1);
@@ -419,7 +423,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
     await docConfigs.update("EnableForLightningJavascript", false, 1);
     await docConfigs.update("EnableForAllWebFiles", true, 1);
 
-    assert.isTrue(ext.isValidLanguage(document));
+    assert.isTrue(fileDocumenter.isValidLanguage(document));
 
     await docConfigs.update("EnableForLightningMarkup", true, 1);
     await docConfigs.update("EnableForLightningJavascript", true, 1);
@@ -436,7 +440,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
     await docConfigs.update("EnableForLightningJavascript", false, 1);
     await docConfigs.update("EnableForAllWebFiles", false, 1);
 
-    assert.isFalse(ext.isValidLanguage(document));
+    assert.isFalse(fileDocumenter.isValidLanguage(document));
 
     await docConfigs.update("EnableForLightningMarkup", true, 1);
     await docConfigs.update("EnableForLightningJavascript", true, 1);
@@ -452,7 +456,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
     await docConfigs.update("EnableForLightningJavascript", false, 1);
     await docConfigs.update("EnableForAllWebFiles", false, 1);
 
-    assert.isFalse(ext.isValidLanguage(document));
+    assert.isFalse(fileDocumenter.isValidLanguage(document));
 
     await docConfigs.update("EnableForLightningMarkup", true, 1);
     await docConfigs.update("EnableForLightningJavascript", true, 1);
@@ -461,19 +465,19 @@ suite("Salesforce Documenter - Extension Suite", function() {
   test("Testing isLightning - Invalid File", async () => {
     const document = await openTestDocumentByFileIdentifier("java");
 
-    assert.isFalse(ext.isLightning(document));
+    assert.isFalse(fileDocumenter.isLightning(document));
   });
 
   test("Testing isLightning - Lightning Component", async () => {
     const document = await openTestDocumentByFileIdentifier("cmp");
 
-    assert.isTrue(ext.isLightning(document));
+    assert.isTrue(fileDocumenter.isLightning(document));
   });
 
   test("Testing isLightning - Lightning Controller", async () => {
     const document = await openTestDocumentByFileIdentifier("jsCtrl");
 
-    assert.isTrue(ext.isLightning(document));
+    assert.isTrue(fileDocumenter.isLightning(document));
 
     //TODO Test for Helper & Invalid JS File
   });
@@ -515,14 +519,14 @@ suite("Salesforce Documenter - Extension Suite", function() {
     */
 
   test("Testing getHeaderFormattedDateTime", done => {
-    assert.isString(ext.getHeaderFormattedDateTime());
+    assert.isString(fileDocumenter.getHeaderFormattedDateTime());
     done();
   });
 
   test("Testing getConfiguredUsername", done => {
     /* Single VSCode package functionality, simply test that 
            a value is returned and/or that default is leveraged from config */
-    assert.isString(ext.getConfiguredUsername());
+    assert.isString(fileDocumenter.getConfiguredUsername());
     done();
   });
 
@@ -565,7 +569,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
      **/`;
     const lastModByRegex = /^(\s*\*\s*@Last\s*Modified\s*By\s*:).*/gm;
     const lastModOnRegex = /^(\s*\*\s*@Last\s*Modified\s*On\s*:).*/gm;
-    const testHeaderUpdated = ext.updateHeaderLastModifiedByAndDate(
+    const testHeaderUpdated = fileDocumenter.updateHeaderLastModifiedByAndDate(
       testHeaderInitial
     );
 
@@ -584,7 +588,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
   test("Testing updateLastModifiedBy", done => {
     const testModByString = "* @Last Modified By: NotHugoOM@GitHub.com";
     assert.notStrictEqual(
-      ext.updateLastModifiedBy(testModByString),
+      fileDocumenter.updateLastModifiedBy(testModByString),
       testModByString
     );
     done();
@@ -593,7 +597,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
   test("Testing updateLastModifiedDateTime", done => {
     const testModOnString = "* @Last Modified On: 02/02/2222 22:22";
     assert.notStrictEqual(
-      ext.updateLastModifiedDateTime(testModOnString),
+      fileDocumenter.updateLastModifiedDateTime(testModOnString),
       testModOnString
     );
     done();
@@ -602,7 +606,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
   test("Testing getFullDocumentRange", async () => {
     /* Single VSCode package functionality */
     const document = await openTestDocumentByFileIdentifier("apex");
-    const testRange = ext.getFullDocumentRange(document);
+    const testRange = fileDocumenter.getFullDocumentRange(document);
     assert.equal(testRange.end.line, document.lineCount);
     return;
   });
@@ -640,7 +644,7 @@ async function openTestDocumentByFileIdentifier(ext) {
 function loadExtension() {
   const testExt = extensions.getExtension("HugoOM.sfdx-autoheader");
 
-  if (testExt.isActive) return testExt.exports;
+  if (testExt.isActive) return Promise.resolve(testExt.exports);
 
   return testExt.activate();
 }

@@ -14,7 +14,7 @@ import {
 
 const defaultTemplates = require("../templates/default.js");
 
-export default class SalesforceDocumenter {
+export default class FileDocumenter {
   private cursorPosition: Position | null = null;
   private readonly HEADER_LENGTH_LINES: number = 13;
   private isHeaderBeingInserted: boolean = false;
@@ -48,6 +48,7 @@ export default class SalesforceDocumenter {
     if (!this.cursorPosition) return;
     if (!window.activeTextEditor) return;
 
+    // TODO: Change to "All Visible Text Editors" and manage through a map
     window.activeTextEditor.selection = new Selection(
       this.getLastSavedCursorPosition(),
       this.getLastSavedCursorPosition()
