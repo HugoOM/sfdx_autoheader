@@ -4,7 +4,7 @@
     "target": "ES2018",
     "outDir": "out",
     "lib": ["es7"],
-    "sourceMap": false,
+    "sourceMap": true,
     "rootDir": "./src",
     "strict": true,
     "noImplicitReturns": true,

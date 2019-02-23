@@ -1,5 +1,4 @@
 import { window } from "vscode";
-import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from "constants";
 
 type Method = {
   text: string;
@@ -75,26 +74,78 @@ export default class MethodDocumenter {
       (token: string) => token.toLowerCase() === "override"
     );
 
-    let collectionCount: number = 0;
-    method.parameterTokens = method.parameters
-      .replace(/\s+/gi, " ")
-      .replace(/\)|\{|\}/gi, "")
-      .split(",")
-      .map((token: string) => token.trim())
-      .reduce((processedTokens: any, currentToken: string) => {
-        if (/list|map|set/gi.test(currentToken)) collectionCount++;
+    method.parameterTokens = getParametersAsTokens(method.parameters);
 
-        const collectionClosingTags = currentToken.match(/>/gi);
+    function getParametersAsTokens(parametersString: string): string[] {
+      const tokens = parametersString
+        .split(/\(|\)|,|<|>|\s|\{|\}/gi)
+        .filter(token => !!token);
 
-        if (collectionCount > 1)
-          processedTokens[processedTokens.length - 1] += ", " + currentToken;
-        else processedTokens.push(currentToken);
+      const processedTokens: string[] = [];
+      let currentIndex = -1;
 
-        if (collectionClosingTags && collectionClosingTags.length)
-          collectionCount -= collectionClosingTags.length;
+      if (!tokens || !tokens.length) return processedTokens;
 
-        return processedTokens;
-      }, []);
-    debugger;
+      while (currentIndex < tokens.length) {
+        processedTokens.push(
+          recursiveProcessToken(tokens[(currentIndex += 1)], false, false)
+        );
+      }
+
+      return processedTokens
+        .filter(token => token !== "")
+        .map(token => token.trim());
+
+      function recursiveProcessToken(
+        token: string,
+        isNextValue: boolean,
+        isWithinCollection: boolean
+      ): string {
+        let currentProcessedToken = "";
+
+        if (!token || currentIndex > tokens.length)
+          return currentProcessedToken;
+
+        if (token.toLowerCase() === "map")
+          currentProcessedToken =
+            token +
+            "<" +
+            recursiveProcessToken(tokens[(currentIndex += 1)], true, true) +
+            ", " +
+            recursiveProcessToken(tokens[(currentIndex += 1)], true, true) +
+            ">" +
+            (isWithinCollection
+              ? ""
+              : recursiveProcessToken(
+                  tokens[(currentIndex += 1)],
+                  true,
+                  false
+                ));
+        else if (
+          token.toLowerCase() === "list" ||
+          token.toLowerCase() === "set"
+        )
+          currentProcessedToken =
+            token +
+            "<" +
+            recursiveProcessToken(tokens[(currentIndex += 1)], true, true) +
+            ">" +
+            (isWithinCollection
+              ? ""
+              : recursiveProcessToken(
+                  tokens[(currentIndex += 1)],
+                  true,
+                  false
+                ));
+        else if (!isNextValue)
+          currentProcessedToken =
+            token +
+            " " +
+            recursiveProcessToken(tokens[(currentIndex += 1)], true, false);
+        else currentProcessedToken = (isWithinCollection ? "" : " ") + token;
+
+        return currentProcessedToken;
+      }
+    }
   }
 }
