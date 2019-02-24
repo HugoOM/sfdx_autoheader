@@ -7,6 +7,7 @@ import {
   TextDocument,
   TextDocumentWillSaveEvent,
   TextEdit,
+  TextEditor,
   window,
   workspace,
   WorkspaceConfiguration
@@ -15,7 +16,7 @@ import {
 const defaultTemplates = require("../templates/templates.file.js");
 
 export default class FileDocumenter {
-  private cursorPosition: Position | null = null;
+  private cursorPositions: { [fileURI: string]: Position } = {};
   private readonly HEADER_LENGTH_LINES: number = 13;
   private isHeaderBeingInserted: boolean = false;
 
@@ -45,22 +46,26 @@ export default class FileDocumenter {
   }
 
   replaceCursor(): void {
-    if (!this.cursorPosition) return;
-    if (!window.activeTextEditor) return;
+    if (!Object.keys(this.cursorPositions).length) return;
+    if (!window.visibleTextEditors.length) return;
 
-    // TODO: Change to "All Visible Text Editors" and manage through a map
-    window.activeTextEditor.selection = new Selection(
-      this.getLastSavedCursorPosition(),
-      this.getLastSavedCursorPosition()
-    );
+    //* Loop is fix for single file in multiple panes jumping to EOF, but VSCode's default
+    //*   behavior cannot be prevented as of now. Fix will stay in place nevertheless.
+    window.visibleTextEditors.forEach((editor: TextEditor) => {
+      editor.selection = new Selection(
+        this.getLastSavedCursorPosition(editor.document.uri.toString()),
+        this.getLastSavedCursorPosition(editor.document.uri.toString())
+      );
+    });
 
-    this.cursorPosition = null;
+    this.cursorPositions = {};
   }
 
   insertOrUpdateHeader(document: TextDocument): Thenable<TextEdit[]> {
     //* Prevent capturing the Cursor position when saving from script
     if (window.activeTextEditor)
-      this.cursorPosition = window.activeTextEditor.selection.active;
+      this.cursorPositions[document.uri.toString()] =
+        window.activeTextEditor.selection.active;
 
     this.isHeaderBeingInserted = this.checkForHeaderOnDoc(document);
 
@@ -78,17 +83,17 @@ export default class FileDocumenter {
     );
   }
 
-  getLastSavedCursorPosition(): Position {
-    if (!this.cursorPosition)
+  getLastSavedCursorPosition(documentURI: string): Position {
+    if (!this.cursorPositions[documentURI])
       return new Position(
         this.isHeaderBeingInserted ? 0 : this.HEADER_LENGTH_LINES,
         0
       );
 
     return new Position(
-      this.cursorPosition.line +
+      this.cursorPositions[documentURI].line +
         (this.isHeaderBeingInserted ? 0 : this.HEADER_LENGTH_LINES),
-      this.cursorPosition.character
+      this.cursorPositions[documentURI].character
     );
   }
 

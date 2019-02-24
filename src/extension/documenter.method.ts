@@ -15,6 +15,8 @@ export default class MethodDocumenter {
   getMethodHeaderInsertEdit(): void {
     const methodHeader = this.constructMethodHeader();
 
+    window.showInformationMessage("Injecting Header!");
+
     if (!methodHeader) return;
     if (!window.activeTextEditor) return;
 
