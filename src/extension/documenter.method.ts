@@ -21,13 +21,11 @@ export default class MethodDocumenter {
     const methodPosition: Position = window.activeTextEditor.selection.anchor;
 
     const edit: WorkspaceEdit = new WorkspaceEdit();
-
     edit.insert(
       window.activeTextEditor.document.uri,
-      new Position(methodPosition.line - 1, 0),
+      new Position(methodPosition.line, 0),
       methodHeader
     );
-
     workspace.applyEdit(edit);
   }
 
@@ -36,14 +34,24 @@ export default class MethodDocumenter {
 
     if (!method) return;
 
+    if (!window.activeTextEditor) return;
+
     const str =
       templates.base() +
-      templates.scope(method.scope) +
+      templates.description() +
       templates.parameters(method.parameters) +
       templates.returnType(method.returnType) +
       templates.end();
 
-    return str;
+    const indentation = window.activeTextEditor.document
+      .lineAt(window.activeTextEditor.selection.anchor.line)
+      .text.match(/^\s*/gi);
+
+    return str.split(/\n/gim).reduce((lines: string, line: string) => {
+      if (!line) return lines;
+
+      return (lines += indentation + line + "\n");
+    }, "\n");
   }
 
   parseSignatureIntoMethod(): Method | void {

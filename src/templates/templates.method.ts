@@ -1,6 +1,6 @@
 export default {
   base(): string {
-    return "/** \n";
+    return "\n/** \n";
   },
   scope(...scopes: string[]): string {
     return `* @scope ${scopes.toString().replace(/,/gi, " ")} \n`;
@@ -14,7 +14,7 @@ export default {
     return `* @return ${returnType} \n`;
   },
   description(): string {
-    return `* @description `;
+    return `* @description \n`;
   },
   // author(): string {},
   // version(): string {},
