@@ -15,8 +15,6 @@ export default class MethodDocumenter {
   getMethodHeaderInsertEdit(): void {
     const methodHeader = this.constructMethodHeader();
 
-    window.showInformationMessage("Injecting Header!");
-
     if (!methodHeader) return;
     if (!window.activeTextEditor) return;
 
@@ -35,7 +33,6 @@ export default class MethodDocumenter {
     const method = this.parseSignatureIntoMethod();
 
     if (!method) return;
-
     if (!window.activeTextEditor) return;
 
     const str =
@@ -49,11 +46,13 @@ export default class MethodDocumenter {
       .lineAt(window.activeTextEditor.selection.anchor.line)
       .text.match(/^\s*/gi);
 
-    return str.split(/\n/gim).reduce((lines: string, line: string) => {
-      if (!line) return lines;
-
-      return (lines += indentation + line + "\n");
-    }, "\n");
+    return str
+      .split(/\n/gim)
+      .reduce(
+        (lines: string, line: string) =>
+          line ? (lines += indentation + line + "\n") : lines,
+        "\n"
+      );
   }
 
   parseSignatureIntoMethod(): Method | void {

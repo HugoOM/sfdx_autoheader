@@ -74,10 +74,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
 
   test("Testing PreSaveListener - Lightning Aura JavaScript Positive", async function() {
     const document = await openTestDocumentByFileIdentifier("jsCtrl");
-    const docConfigs = await workspace.getConfiguration(
-      "SFDX_Autoheader",
-      document.uri
-    );
+    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
 
     await docConfigs.update("EnableForAllWebFiles", false, 1);
     await docConfigs.update("EnableForLightningJavascript", true, 1);
@@ -98,10 +95,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
 
   test("Testing PreSaveListener - Lightning Aura JavaScript Negative (Default)", async () => {
     const document = await openTestDocumentByFileIdentifier("jsCtrl");
-    const docConfigs = await workspace.getConfiguration(
-      "SFDX_Autoheader",
-      document.uri
-    );
+    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
 
     await docConfigs.update("EnableForAllWebFiles", false, 1);
     await docConfigs.update("EnableForLightningJavascript", false, 1);
@@ -122,10 +116,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
 
   test("Testing PreSaveListener - Lightning LWC JavaScript Positive", async () => {
     const document = await openTestDocumentByFileIdentifier("js");
-    const docConfigs = await workspace.getConfiguration(
-      "SFDX_Autoheader",
-      document.uri
-    );
+    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
 
     await docConfigs.update("EnableForAllWebFiles", false, 1);
     await docConfigs.update("EnableForLightningJavascript", true, 1);
@@ -146,10 +137,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
 
   test("Testing PreSaveListener - Lightning LWC JavaScript Negative", async () => {
     const document = await openTestDocumentByFileIdentifier("js");
-    const docConfigs = await workspace.getConfiguration(
-      "SFDX_Autoheader",
-      document.uri
-    );
+    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
 
     await docConfigs.update("EnableForAllWebFiles", false, 1);
     await docConfigs.update("EnableForLightningJavascript", false, 1);
@@ -170,10 +158,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
 
   test("Testing PreSaveListener - Lightning LWC Markup Positive", async () => {
     const document = await openTestDocumentByFileIdentifier("html");
-    const docConfigs = await workspace.getConfiguration(
-      "SFDX_Autoheader",
-      document.uri
-    );
+    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
 
     await docConfigs.update("EnableForAllWebFiles", false, 1);
     await docConfigs.update("EnableForLightningMarkup", true, 1);
@@ -194,10 +179,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
 
   test("Testing PreSaveListener - Lightning LWC Markup Negative", async () => {
     const document = await openTestDocumentByFileIdentifier("html");
-    const docConfigs = await workspace.getConfiguration(
-      "SFDX_Autoheader",
-      document.uri
-    );
+    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
 
     await docConfigs.update("EnableForAllWebFiles", false, 1);
     await docConfigs.update("EnableForLightningMarkup", false, 1);
@@ -310,10 +292,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
 
   test("Testing isValidLanguage - Apex Setting Off", async () => {
     const document = await openTestDocumentByFileIdentifier("apex");
-    const docConfigs = await workspace.getConfiguration(
-      "SFDX_Autoheader",
-      document.uri
-    );
+    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
     await docConfigs.update("EnableForApex", false, 1);
 
     assert.isFalse(fileDocumenter.isValidLanguage(document));
@@ -321,10 +300,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
 
   test("Testing isValidLanguage - Apex Setting On", async () => {
     const document = await openTestDocumentByFileIdentifier("apex");
-    const docConfigs = await workspace.getConfiguration(
-      "SFDX_Autoheader",
-      document.uri
-    );
+    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
     await docConfigs.update("EnableForApex", true, 1);
 
     assert.isTrue(fileDocumenter.isValidLanguage(document));
@@ -332,10 +308,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
 
   test("Testing isValidLanguage - Visalforce Setting Off", async () => {
     const document = await openTestDocumentByFileIdentifier("page");
-    const docConfigs = await workspace.getConfiguration(
-      "SFDX_Autoheader",
-      document.uri
-    );
+    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
     await docConfigs.update("EnableForVisualforce", false, 1);
 
     assert.isFalse(fileDocumenter.isValidLanguage(document));
@@ -343,10 +316,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
 
   test("Testing isValidLanguage - Visalforce Setting On", async () => {
     const document = await openTestDocumentByFileIdentifier("page");
-    const docConfigs = await workspace.getConfiguration(
-      "SFDX_Autoheader",
-      document.uri
-    );
+    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
     await docConfigs.update("EnableForVisualforce", true, 1);
 
     assert.isTrue(fileDocumenter.isValidLanguage(document));
@@ -354,10 +324,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
 
   test("Testing isValidLanguage - Lightning Component Setting Off", async () => {
     const document = await openTestDocumentByFileIdentifier("cmp");
-    const docConfigs = await workspace.getConfiguration(
-      "SFDX_Autoheader",
-      document.uri
-    );
+    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
     await docConfigs.update("EnableForLightningMarkup", false, 1);
 
     assert.isFalse(fileDocumenter.isValidLanguage(document));
@@ -365,10 +332,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
 
   test("Testing isValidLanguage - Lightning Component Setting On", async () => {
     const document = await openTestDocumentByFileIdentifier("cmp");
-    const docConfigs = await workspace.getConfiguration(
-      "SFDX_Autoheader",
-      document.uri
-    );
+    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
     await docConfigs.update("EnableForLightningMarkup", true, 1);
 
     assert.isTrue(fileDocumenter.isValidLanguage(document));
@@ -376,10 +340,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
 
   test("Testing isValidLanguage - Lightning JavaScript Setting Off", async () => {
     const document = await openTestDocumentByFileIdentifier("jsCtrl");
-    const docConfigs = await workspace.getConfiguration(
-      "SFDX_Autoheader",
-      document.uri
-    );
+    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
     await docConfigs.update("EnableForLightningJavascript", false, 1);
 
     assert.isFalse(fileDocumenter.isValidLanguage(document));
@@ -387,10 +348,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
 
   test("Testing isValidLanguage - Lightning JavaScript Setting On", async () => {
     const document = await openTestDocumentByFileIdentifier("jsCtrl");
-    const docConfigs = await workspace.getConfiguration(
-      "SFDX_Autoheader",
-      document.uri
-    );
+    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
     await docConfigs.update("EnableForLightningJavascript", true, 1);
 
     assert.isTrue(fileDocumenter.isValidLanguage(document));
@@ -398,10 +356,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
 
   test("Testing isValidLanguage - Lightning Component Web Setting On", async () => {
     const document = await openTestDocumentByFileIdentifier("cmp");
-    const docConfigs = await workspace.getConfiguration(
-      "SFDX_Autoheader",
-      document.uri
-    );
+    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
     await docConfigs.update("EnableForLightningMarkup", false, 1);
     await docConfigs.update("EnableForLightningJavascript", false, 1);
     await docConfigs.update("EnableForAllWebFiles", true, 1);
@@ -415,10 +370,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
 
   test("Testing isValidLanguage - Lightning JavaScript Web Setting On", async () => {
     const document = await openTestDocumentByFileIdentifier("jsCtrl");
-    const docConfigs = await workspace.getConfiguration(
-      "SFDX_Autoheader",
-      document.uri
-    );
+    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
     await docConfigs.update("EnableForLightningMarkup", false, 1);
     await docConfigs.update("EnableForLightningJavascript", false, 1);
     await docConfigs.update("EnableForAllWebFiles", true, 1);
@@ -432,10 +384,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
 
   test("Testing isValidLanguage - Lightning Component Web Setting Off", async () => {
     const document = await openTestDocumentByFileIdentifier("cmp");
-    const docConfigs = await workspace.getConfiguration(
-      "SFDX_Autoheader",
-      document.uri
-    );
+    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
     await docConfigs.update("EnableForLightningMarkup", false, 1);
     await docConfigs.update("EnableForLightningJavascript", false, 1);
     await docConfigs.update("EnableForAllWebFiles", false, 1);
@@ -448,10 +397,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
 
   test("Testing isValidLanguage - Lightning JavaScript Web Setting Off", async () => {
     const document = await openTestDocumentByFileIdentifier("jsCtrl");
-    const docConfigs = await workspace.getConfiguration(
-      "SFDX_Autoheader",
-      document.uri
-    );
+    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
     await docConfigs.update("EnableForLightningMarkup", false, 1);
     await docConfigs.update("EnableForLightningJavascript", false, 1);
     await docConfigs.update("EnableForAllWebFiles", false, 1);
@@ -518,17 +464,17 @@ suite("Salesforce Documenter - Extension Suite", function() {
     });
     */
 
-  test("Testing getHeaderFormattedDateTime", done => {
-    assert.isString(fileDocumenter.getHeaderFormattedDateTime());
-    done();
-  });
+  // test("Testing getHeaderFormattedDateTime", done => {
+  //   assert.isString(fileDocumenter.getHeaderFormattedDateTime());
+  //   done();
+  // });
 
-  test("Testing getConfiguredUsername", done => {
-    /* Single VSCode package functionality, simply test that 
-           a value is returned and/or that default is leveraged from config */
-    assert.isString(fileDocumenter.getConfiguredUsername());
-    done();
-  });
+  // test("Testing getConfiguredUsername", done => {
+  //   /* Single VSCode package functionality, simply test that
+  //          a value is returned and/or that default is leveraged from config */
+  //   assert.isString(fileDocumenter.getConfiguredUsername());
+  //   done();
+  // });
 
   test("Testing getUpdateHeaderValueEdit", async () => {
     const document = await openTestDocumentByFileIdentifier("apex");

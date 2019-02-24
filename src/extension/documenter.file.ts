@@ -15,6 +15,8 @@ import {
 
 const defaultTemplates = require("../templates/templates.file.js");
 
+import helper from "./documenter.helper";
+
 export default class FileDocumenter {
   private cursorPositions: { [fileURI: string]: Position } = {};
   private readonly HEADER_LENGTH_LINES: number = 13;
@@ -103,8 +105,8 @@ export default class FileDocumenter {
         new Position(0, 0),
         defaultTemplates[document.languageId](
           document.fileName.split(/\/|\\/g).pop(),
-          this.getConfiguredUsername(),
-          this.getHeaderFormattedDateTime()
+          helper.getConfiguredUsername(),
+          helper.getHeaderFormattedDateTime()
         )
       )
     ];
@@ -122,7 +124,7 @@ export default class FileDocumenter {
 
   isValidLanguage(document: TextDocument): boolean {
     const lang = document.languageId;
-    const configs = workspace.getConfiguration("SFDX_Autoheader");
+    const configs = workspace.getConfiguration("SFDoc");
     const enabledForAllWebFiles = configs.get("EnableForAllWebFiles", false);
     const enabledForApex = configs.get("EnableForApex");
     const enabledForVf = configs.get("EnableForVisualforce");
@@ -176,19 +178,6 @@ export default class FileDocumenter {
     return true;
   }
 
-  getHeaderFormattedDateTime(): string {
-    const currentDate = new Date(Date.now());
-    return currentDate.toLocaleString();
-  }
-
-  getConfiguredUsername(): string {
-    const settingsUsername: WorkspaceConfiguration = workspace.getConfiguration(
-      "SFDX_Autoheader"
-    );
-
-    return settingsUsername.get("username", "phUser@phDomain.com");
-  }
-
   async getUpdateHeaderValueEdit(document: TextDocument): Promise<TextEdit[]> {
     return [
       TextEdit.replace(
@@ -206,12 +195,12 @@ export default class FileDocumenter {
 
   updateLastModifiedBy(fileContent: string): string {
     const re = /^(\s*[\*\s]*@Last\s*Modified\s*By\s*:).*/gm;
-    return fileContent.replace(re, `$1 ${this.getConfiguredUsername()}`);
+    return fileContent.replace(re, `$1 ${helper.getConfiguredUsername()}`);
   }
 
   updateLastModifiedDateTime(fileContent: string): string {
     const re = /^(\s*[\*\s]*@Last\s*Modified\s*On\s*:).*/gm;
-    return fileContent.replace(re, `$1 ${this.getHeaderFormattedDateTime()}`);
+    return fileContent.replace(re, `$1 ${helper.getHeaderFormattedDateTime()}`);
   }
 
   getFullDocumentRange(document: TextDocument): Range {

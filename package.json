@@ -1,7 +1,7 @@
 {
   "name": "sfdx-autoheader",
-  "displayName": "Salesforce Autoheader",
-  "description": "Automated Code Comments / Documentation (File Headers) Generation for Salesforce",
+  "displayName": "Salesforce Documenter",
+  "description": "Automated Code Documentation (File & Method Headers) Generation for Salesforce",
   "version": "0.4.2",
   "publisher": "HugoOM",
   "license": "MIT",
@@ -28,7 +28,8 @@
     "visualforce",
     "Salesforce",
     "File Header",
-    "Comments",
+    "Method Header",
+    "Code Comment",
     "Documentation"
   ],
   "icon": "images/slds_action_follow_icon.png",
@@ -44,6 +45,15 @@
   ],
   "main": "./out/documenter.js",
   "contributes": {
+    "menus": {
+      "editor/context": [
+        {
+          "command": "extension.generateMethodHeader",
+          "group": "SFDoc@1",
+          "when": "editorTextFocus && editorLangId == apex"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "extension.generateMethodHeader",
@@ -53,34 +63,34 @@
     ],
     "configuration": {
       "type": "object",
-      "title": "Salesforce Autoheader Config",
+      "title": "Salesforce Documenter Configuration",
       "properties": {
-        "SFDX_Autoheader.username": {
+        "SFDoc.username": {
           "type": "string",
           "default": "phUser@phDomain.com",
-          "description": "Sets the SFDX File Header Username"
+          "description": "Sets the File & Method Header Username"
         },
-        "SFDX_Autoheader.EnableForAllWebFiles": {
+        "SFDoc.EnableForAllWebFiles": {
           "type": "boolean",
           "default": false,
           "description": "Enable On-Save File Headers on ALL JavaScript and HTML files. NOT just those that are part of a Lightning Component. \n WARNING: This Setting Has Priority Over Lightning Settings When Enabled"
         },
-        "SFDX_Autoheader.EnableForApex": {
+        "SFDoc.EnableForApex": {
           "type": "boolean",
           "default": true,
           "description": "Enable On-Save File Headers on Apex Files"
         },
-        "SFDX_Autoheader.EnableForVisualforce": {
+        "SFDoc.EnableForVisualforce": {
           "type": "boolean",
           "default": true,
           "description": "Enable On-Save File Headers on Visualforce Pages"
         },
-        "SFDX_Autoheader.EnableForLightningMarkup": {
+        "SFDoc.EnableForLightningMarkup": {
           "type": "boolean",
           "default": true,
           "description": "Enable On-Save File Headers on Lightning Markup File (Aura & LWC)"
         },
-        "SFDX_Autoheader.EnableForLightningJavascript": {
+        "SFDoc.EnableForLightningJavascript": {
           "type": "boolean",
           "default": false,
           "description": "Enable On-Save File Headers on Lightning Javascript Files (Aura & LWC)"
