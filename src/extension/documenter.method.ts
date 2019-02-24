@@ -1,26 +1,37 @@
-import { window } from "vscode";
+import { window, WorkspaceEdit, Position, workspace } from "vscode";
 
 type Method = {
-  text: string;
-  signature: string;
-  parameters: string;
-  signatureTokens: string[];
-  parameterTokens: string[];
   name: string;
   scope: string;
-  returnType: string;
   isStatic: boolean;
   isOverride: boolean;
+  parameters: string[];
+  returnType: string;
 };
 
 import templates from "../templates/templates.method";
 
 export default class MethodDocumenter {
-  constructor() {}
+  getMethodHeaderInsertEdit(): void {
+    const methodHeader = this.constructMethodHeader();
+
+    if (!methodHeader) return;
+    if (!window.activeTextEditor) return;
+
+    const methodPosition: Position = window.activeTextEditor.selection.anchor;
+
+    const edit: WorkspaceEdit = new WorkspaceEdit();
+
+    edit.insert(
+      window.activeTextEditor.document.uri,
+      new Position(methodPosition.line - 1, 0),
+      methodHeader
+    );
+
+    workspace.applyEdit(edit);
+  }
 
   constructMethodHeader(): string | void {
-    debugger;
-
     const method = this.parseSignatureIntoMethod();
 
     if (!method) return;
@@ -28,38 +39,24 @@ export default class MethodDocumenter {
     const str =
       templates.base() +
       templates.scope(method.scope) +
-      templates.parameters(method.parameterTokens) +
+      templates.parameters(method.parameters) +
       templates.returnType(method.returnType) +
       templates.end();
 
-    debugger;
+    return str;
   }
 
   parseSignatureIntoMethod(): Method | void {
     if (!window.activeTextEditor) return;
 
-    const document = window.activeTextEditor.document;
-    const re_methodDefinitionEnd = /\)/gi;
-    let currentLineId = window.activeTextEditor.selection.anchor.line;
-
     const method: Method = {
-      text: document.lineAt(currentLineId).text,
-      signature: "",
-      parameters: "",
-      signatureTokens: [],
-      parameterTokens: [],
+      parameters: [],
       name: "",
       scope: "",
       returnType: "",
       isStatic: false,
       isOverride: false
     };
-
-    while (!re_methodDefinitionEnd.test(method.text)) {
-      if (currentLineId >= window.activeTextEditor.document.lineCount) return;
-
-      method.text += document.lineAt(++currentLineId).text;
-    }
 
     const apexReservedTerms = [
       "public",
@@ -70,32 +67,43 @@ export default class MethodDocumenter {
       "static"
     ];
 
-    const re_ScopeModifier = /public|private|protected|global/i;
-    [method.signature, method.parameters] = method.text.split("(");
+    const document = window.activeTextEditor.document;
+    const re_methodDefinitionEnd = /\)/gi;
+    let currentLineId = window.activeTextEditor.selection.anchor.line;
 
-    method.signatureTokens = method.signature
+    let methodText = document.lineAt(currentLineId).text;
+    while (!re_methodDefinitionEnd.test(methodText)) {
+      if (currentLineId >= window.activeTextEditor.document.lineCount) return;
+
+      methodText += document.lineAt(++currentLineId).text;
+    }
+
+    const re_ScopeModifier = /public|private|protected|global/i;
+    const [methodSignature, methodParameters] = methodText.split("(");
+
+    let signatureTokens = methodSignature
       .split(/\s+/)
       .filter((token: string) => token !== "");
 
-    method.name = method.signatureTokens.pop() || "";
+    method.name = signatureTokens.pop() || "";
 
     method.scope =
-      method.signatureTokens.find(token => re_ScopeModifier.test(token)) || "";
+      signatureTokens.find(token => re_ScopeModifier.test(token)) || "";
 
     method.returnType =
-      method.signatureTokens.find(
+      signatureTokens.find(
         token => !apexReservedTerms.includes(token.toLowerCase())
       ) || "";
 
-    method.isStatic = method.signatureTokens.some(
+    method.isStatic = signatureTokens.some(
       (token: string) => token.toLowerCase() === "static"
     );
 
-    method.isOverride = method.signatureTokens.some(
+    method.isOverride = signatureTokens.some(
       (token: string) => token.toLowerCase() === "override"
     );
 
-    method.parameterTokens = getParametersAsTokens(method.parameters);
+    method.parameters = getParametersAsTokens(methodParameters);
 
     return method;
 

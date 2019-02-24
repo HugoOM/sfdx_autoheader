@@ -12,7 +12,7 @@ exports.activate = function(
 
   commands.registerCommand(
     "extension.generateMethodHeader",
-    methodDocumenter.constructMethodHeader,
+    methodDocumenter.getMethodHeaderInsertEdit,
     methodDocumenter
   );
 
