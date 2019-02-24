@@ -1,5 +1,5 @@
 module.exports = {
-  apex: (fileName, userName, currentTime) => `/**
+  apex: (fileName: string, userName: string, currentTime: string) => `/**
  * @File Name          : ${fileName}
  * @Description        : 
  * @Author             : ${userName}
@@ -13,7 +13,11 @@ module.exports = {
  * 1.0    ${currentTime}   ${userName}     Initial Version
 **/
 `,
-  visualforce: (fileName, userName, currentTime) => `<!--
+  visualforce: (
+    fileName: string,
+    userName: string,
+    currentTime: string
+  ) => `<!--
   @Page Name          : ${fileName}
   @Description        : 
   @Author             : ${userName}
@@ -27,7 +31,7 @@ module.exports = {
   1.0    ${currentTime}   ${userName}     Initial Version
 -->
 `,
-  html: (fileName, userName, currentTime) => `<!--
+  html: (fileName: string, userName: string, currentTime: string) => `<!--
   @Component Name     : ${fileName}
   @Description        : 
   @Author             : ${userName}
@@ -41,7 +45,7 @@ module.exports = {
   1.0    ${currentTime}   ${userName}     Initial Version
 -->
 `,
-  javascript: (fileName, userName, currentTime) => `/**
+  javascript: (fileName: string, userName: string, currentTime: string) => `/**
  * @File Name          : ${fileName}
  * @Description        : 
  * @Author             : ${userName}
@@ -55,4 +59,4 @@ module.exports = {
  * 1.0    ${currentTime}   ${userName}     Initial Version
 **/
 `
-}
+};

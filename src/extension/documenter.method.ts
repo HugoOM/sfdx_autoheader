@@ -6,19 +6,40 @@ type Method = {
   parameters: string;
   signatureTokens: string[];
   parameterTokens: string[];
-  name: string | undefined;
-  scope: string | undefined;
-  returnType: string | undefined;
+  name: string;
+  scope: string;
+  returnType: string;
   isStatic: boolean;
   isOverride: boolean;
 };
 
+import templates from "../templates/templates.method";
+
 export default class MethodDocumenter {
-  generateMethodHeader(): void {
+  constructor() {}
+
+  constructMethodHeader(): string | void {
+    debugger;
+
+    const method = this.parseSignatureIntoMethod();
+
+    if (!method) return;
+
+    const str =
+      templates.base() +
+      templates.scope(method.scope) +
+      templates.parameters(method.parameterTokens) +
+      templates.returnType(method.returnType) +
+      templates.end();
+
+    debugger;
+  }
+
+  parseSignatureIntoMethod(): Method | void {
     if (!window.activeTextEditor) return;
 
     const document = window.activeTextEditor.document;
-    const re_methodDeclarationStart = /\{/gi;
+    const re_methodDefinitionEnd = /\)/gi;
     let currentLineId = window.activeTextEditor.selection.anchor.line;
 
     const method: Method = {
@@ -34,7 +55,7 @@ export default class MethodDocumenter {
       isOverride: false
     };
 
-    while (!re_methodDeclarationStart.test(method.text)) {
+    while (!re_methodDefinitionEnd.test(method.text)) {
       if (currentLineId >= window.activeTextEditor.document.lineCount) return;
 
       method.text += document.lineAt(++currentLineId).text;
@@ -56,15 +77,15 @@ export default class MethodDocumenter {
       .split(/\s+/)
       .filter((token: string) => token !== "");
 
-    method.name = method.signatureTokens.pop();
+    method.name = method.signatureTokens.pop() || "";
 
-    method.scope = method.signatureTokens.find(token =>
-      re_ScopeModifier.test(token)
-    );
+    method.scope =
+      method.signatureTokens.find(token => re_ScopeModifier.test(token)) || "";
 
-    method.returnType = method.signatureTokens.find(
-      token => !apexReservedTerms.includes(token.toLowerCase())
-    );
+    method.returnType =
+      method.signatureTokens.find(
+        token => !apexReservedTerms.includes(token.toLowerCase())
+      ) || "";
 
     method.isStatic = method.signatureTokens.some(
       (token: string) => token.toLowerCase() === "static"
@@ -76,6 +97,8 @@ export default class MethodDocumenter {
 
     method.parameterTokens = getParametersAsTokens(method.parameters);
 
+    return method;
+
     function getParametersAsTokens(parametersString: string): string[] {
       const tokens = parametersString
         .split(/\(|\)|,|<|>|\s|\{|\}/gi)
@@ -86,7 +109,7 @@ export default class MethodDocumenter {
 
       if (!tokens || !tokens.length) return processedTokens;
 
-      while (currentIndex < tokens.length) {
+      while (currentIndex + 1 < tokens.length) {
         processedTokens.push(
           recursiveProcessToken(tokens[(currentIndex += 1)], false, false)
         );
@@ -98,46 +121,24 @@ export default class MethodDocumenter {
 
       function recursiveProcessToken(
         token: string,
-        isNextValue: boolean,
+        isRoot: boolean,
         isWithinCollection: boolean
       ): string {
         let currentProcessedToken = "";
 
-        if (!token || currentIndex > tokens.length)
-          return currentProcessedToken;
+        if (!token) return currentProcessedToken;
 
         if (token.toLowerCase() === "map")
-          currentProcessedToken =
-            token +
-            "<" +
-            recursiveProcessToken(tokens[(currentIndex += 1)], true, true) +
-            ", " +
-            recursiveProcessToken(tokens[(currentIndex += 1)], true, true) +
-            ">" +
-            (isWithinCollection
-              ? ""
-              : recursiveProcessToken(
-                  tokens[(currentIndex += 1)],
-                  true,
-                  false
-                ));
+          currentProcessedToken = processMapToken(token, isWithinCollection);
         else if (
           token.toLowerCase() === "list" ||
           token.toLowerCase() === "set"
         )
-          currentProcessedToken =
-            token +
-            "<" +
-            recursiveProcessToken(tokens[(currentIndex += 1)], true, true) +
-            ">" +
-            (isWithinCollection
-              ? ""
-              : recursiveProcessToken(
-                  tokens[(currentIndex += 1)],
-                  true,
-                  false
-                ));
-        else if (!isNextValue)
+          currentProcessedToken = processListOrMapToken(
+            token,
+            isWithinCollection
+          );
+        else if (!isRoot)
           currentProcessedToken =
             token +
             " " +
@@ -145,6 +146,52 @@ export default class MethodDocumenter {
         else currentProcessedToken = (isWithinCollection ? "" : " ") + token;
 
         return currentProcessedToken;
+      }
+
+      function processMapToken(
+        token: string,
+        isWithinCollection: boolean
+      ): string {
+        let processedToken: string = "";
+
+        processedToken =
+          token +
+          "<" +
+          recursiveProcessToken(tokens[(currentIndex += 1)], true, true) +
+          ", " +
+          recursiveProcessToken(tokens[(currentIndex += 1)], true, true) +
+          ">";
+
+        if (!isWithinCollection)
+          processedToken += recursiveProcessToken(
+            tokens[(currentIndex += 1)],
+            true,
+            false
+          );
+
+        return processedToken;
+      }
+
+      function processListOrMapToken(
+        token: string,
+        isWithinCollection: boolean
+      ): string {
+        let processedToken = "";
+
+        processedToken =
+          token +
+          "<" +
+          recursiveProcessToken(tokens[(currentIndex += 1)], true, true) +
+          ">";
+
+        if (!isWithinCollection)
+          processedToken += recursiveProcessToken(
+            tokens[(currentIndex += 1)],
+            true,
+            false
+          );
+
+        return processedToken;
       }
     }
   }

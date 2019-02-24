@@ -12,7 +12,7 @@ import {
   WorkspaceConfiguration
 } from "vscode";
 
-const defaultTemplates = require("../templates/default.js");
+const defaultTemplates = require("../templates/templates.file.js");
 
 export default class FileDocumenter {
   private cursorPosition: Position | null = null;

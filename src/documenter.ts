@@ -1,5 +1,5 @@
-import FileDocumenter from "./extension/file_documenter";
-import MethodDocumenter from "./extension/method_documenter";
+import FileDocumenter from "./extension/documenter.file";
+import MethodDocumenter from "./extension/documenter.method";
 import { ExtensionContext, commands } from "vscode";
 
 exports.activate = function(
@@ -12,7 +12,8 @@ exports.activate = function(
 
   commands.registerCommand(
     "extension.generateMethodHeader",
-    methodDocumenter.generateMethodHeader
+    methodDocumenter.constructMethodHeader,
+    methodDocumenter
   );
 
   return { fileDocumenter, methodDocumenter };
