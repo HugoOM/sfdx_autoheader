@@ -2,8 +2,11 @@ import { WorkspaceConfiguration, workspace } from "vscode";
 
 export default {
   getHeaderFormattedDateTime(): string {
-    const currentDate = new Date(Date.now());
-    return currentDate.toLocaleString();
+    return new Date().toLocaleString();
+  },
+
+  getHeaderFormattedDate(): string {
+    return new Date().toLocaleDateString();
   },
 
   getConfiguredUsername(): string {

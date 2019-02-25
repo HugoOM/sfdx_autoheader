@@ -9,8 +9,7 @@ import {
   TextEdit,
   TextEditor,
   window,
-  workspace,
-  WorkspaceConfiguration
+  workspace
 } from "vscode";
 
 const defaultTemplates = require("../templates/templates.file.js");

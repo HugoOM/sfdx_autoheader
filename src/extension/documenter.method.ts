@@ -38,6 +38,7 @@ export default class MethodDocumenter {
     const str =
       templates.base() +
       templates.description() +
+      templates.author() +
       templates.parameters(method.parameters) +
       templates.returnType(method.returnType) +
       templates.end();

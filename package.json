@@ -1,8 +1,8 @@
 {
   "name": "sfdx-autoheader",
   "displayName": "Salesforce Documenter",
-  "description": "Automated Code Documentation (File & Method Headers) Generation for Salesforce",
-  "version": "0.4.2",
+  "description": "Automated Code Documentation Generation for Salesforce",
+  "version": "0.5.1",
   "publisher": "HugoOM",
   "license": "MIT",
   "badges": [
@@ -18,7 +18,7 @@
     "url": "https://github.com/HugoOM/sfdx_autoheader"
   },
   "engines": {
-    "vscode": "^1.31.1"
+    "vscode": "^1.28.0"
   },
   "categories": [
     "Other"
@@ -30,12 +30,13 @@
     "File Header",
     "Method Header",
     "Code Comment",
-    "Documentation"
+    "Documentation",
+    "Documenter"
   ],
-  "icon": "images/slds_action_follow_icon.png",
+  "icon": "images/logo.png",
   "galleryBanner": {
     "theme": "dark",
-    "color": "#232323"
+    "color": "#0C2D61"
   },
   "activationEvents": [
     "onLanguage:apex",
@@ -49,8 +50,15 @@
       "editor/context": [
         {
           "command": "extension.generateMethodHeader",
-          "group": "SFDoc@1",
-          "when": "editorTextFocus && editorLangId == apex"
+          "group": "SFDoc",
+          "when": "editorLangId == apex"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "extension.generateMethodHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == apex"
         }
       ]
     },
