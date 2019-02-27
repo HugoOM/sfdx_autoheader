@@ -1,6 +1,14 @@
 import { WorkspaceConfiguration, workspace } from "vscode";
 
 export default {
+  apexReservedTerms: [
+    "public",
+    "private",
+    "protected",
+    "global",
+    "override",
+    "static"
+  ],
   getHeaderFormattedDateTime(): string {
     return new Date().toLocaleString();
   },

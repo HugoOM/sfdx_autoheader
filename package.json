@@ -65,7 +65,12 @@
     "commands": [
       {
         "command": "extension.generateMethodHeader",
-        "title": "Generate Method Header",
+        "title": "Generate Apex Method Header",
+        "category": "SFDoc"
+      },
+      {
+        "command": "extension.insertFileHeader",
+        "title": "Insert File Header",
         "category": "SFDoc"
       }
     ],
@@ -75,7 +80,7 @@
       "properties": {
         "SFDoc.username": {
           "type": "string",
-          "default": "phUser@phDomain.com",
+          "default": "ChangeMeIn@UserSettingsUnder.SFDoc",
           "description": "Sets the File & Method Header Username"
         },
         "SFDoc.EnableForAllWebFiles": {

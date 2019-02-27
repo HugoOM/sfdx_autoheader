@@ -1,17 +1,16 @@
 /**
  * @File Name          : testFile_SFDXAutoheader.apex
  * @Description        : 
- * @Author             : HugoOM@GitHub.com
+ * @Author             : ChangeMeIn@UserSettingsUnder.SFDoc
  * @Group              : 
- * @Last Modified By   : phUser@phDomain.com
- * @Last Modified On   : 2019-02-26, 10:29:36 p.m.
+ * @Last Modified By   : ChangeMeIn@UserSettingsUnder.SFDoc
+ * @Last Modified On   : 2019-02-27, 12:17:35 a.m.
  * @Modification Log   : 
  *==============================================================================
  * Ver         Date                     Author      		      Modification
  *==============================================================================
- * 1.0    12/5/2018, 9:31:39 PM   HugoOM@GitHub.com     Initial Version
+ * 1.0    2019-02-27, 12:17:30 a.m.   ChangeMeIn@UserSettingsUnder.SFDoc     Initial Version
 **/
-
 public class tester {
 
     public static Map<Id, List<Account>> testMethod( 
@@ -41,7 +40,7 @@ public class tester {
     ) {
       
     }
-
+       
     global override List<Account> getAccount() {
       
     }

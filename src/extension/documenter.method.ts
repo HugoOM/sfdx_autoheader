@@ -1,4 +1,4 @@
-import { window, WorkspaceEdit, Position, workspace } from "vscode";
+import { window, WorkspaceEdit, Position, workspace, Selection } from "vscode";
 
 type Method = {
   name: string;
@@ -10,27 +10,37 @@ type Method = {
 };
 
 import templates from "../templates/templates.method";
+import helper from "./documenter.helper";
 
 export default class MethodDocumenter {
   getMethodHeaderInsertEdit(): void {
     if (!window.activeTextEditor) return;
 
-    const methodPosition: Position = window.activeTextEditor.selection.anchor;
+    const methodSelection: Selection = window.activeTextEditor.selection;
 
-    const methodHeader = this.constructMethodHeader();
+    if (methodSelection.active.line !== methodSelection.anchor.line) {
+      window.showErrorMessage(
+        "SFDoc: Multiline selection is not supported. Set the cursor's position on the first line of the method's declaration."
+      );
+      return;
+    }
+
+    const currentLineId = methodSelection.anchor.line;
+
+    const methodHeader = this.constructMethodHeader(currentLineId);
 
     if (!methodHeader) return;
 
     const edit: WorkspaceEdit = new WorkspaceEdit();
     edit.insert(
       window.activeTextEditor.document.uri,
-      new Position(methodPosition.line, 0),
+      new Position(currentLineId, 0),
       methodHeader
     );
     workspace.applyEdit(edit);
   }
 
-  constructMethodHeader(): string | void {
+  private constructMethodHeader(currentLineId: number): string | void {
     const method = this.parseSignatureIntoMethod();
 
     if (!method) return;
@@ -46,19 +56,28 @@ export default class MethodDocumenter {
       templates.end();
 
     const indentation = window.activeTextEditor.document
-      .lineAt(window.activeTextEditor.selection.anchor.line)
+      .lineAt(currentLineId)
       .text.match(/^\s*/gi);
 
-    return str
+    return this.matchIndentation(str, indentation);
+  }
+
+  private matchIndentation(
+    methodHeaderString: string,
+    indentation: RegExpMatchArray | null
+  ): string {
+    if (!indentation) return methodHeaderString;
+
+    return methodHeaderString
       .split(/\n/gim)
       .reduce(
         (lines: string, line: string) =>
           line ? (lines += indentation + line + "\n") : lines,
-        "\n"
+        ""
       );
   }
 
-  parseSignatureIntoMethod(): Method | void {
+  private parseSignatureIntoMethod(): Method | void {
     if (!window.activeTextEditor) return;
 
     const method: Method = {
@@ -70,19 +89,9 @@ export default class MethodDocumenter {
       isOverride: false
     };
 
-    const apexReservedTerms = [
-      "public",
-      "private",
-      "protected",
-      "global",
-      "override",
-      "static"
-    ];
-
     const document = window.activeTextEditor.document;
     const re_methodDefinitionEnd = /\)/gi;
     let currentLineId = window.activeTextEditor.selection.anchor.line;
-
     let methodText = document.lineAt(currentLineId).text;
 
     if (!methodText.replace(/\s/gi, "")) {
@@ -128,7 +137,7 @@ export default class MethodDocumenter {
 
     method.returnType =
       signatureTokens.find(
-        token => !apexReservedTerms.includes(token.toLowerCase())
+        token => !helper.apexReservedTerms.includes(token.toLowerCase())
       ) || "";
 
     if (
