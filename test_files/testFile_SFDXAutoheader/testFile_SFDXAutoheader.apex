@@ -4,12 +4,12 @@
  * @Author             : ChangeMeIn@UserSettingsUnder.SFDoc
  * @Group              : 
  * @Last Modified By   : ChangeMeIn@UserSettingsUnder.SFDoc
- * @Last Modified On   : 2019-02-27, 12:17:35 a.m.
+ * @Last Modified On   : 2019-02-27, 12:18:56 a.m.
  * @Modification Log   : 
  *==============================================================================
  * Ver         Date                     Author      		      Modification
  *==============================================================================
- * 1.0    2019-02-27, 12:17:30 a.m.   ChangeMeIn@UserSettingsUnder.SFDoc     Initial Version
+ * 1.0    2019-02-27, 12:18:56 a.m.   ChangeMeIn@UserSettingsUnder.SFDoc     Initial Version
 **/
 public class tester {
 
@@ -34,15 +34,15 @@ public class tester {
       Integer i,  
       Map<Id, List<Account>> mapListAcc,
       List<List<Table>> lstListTab,
-      Integer j,
-      Boolean isTrue,
+      Integer j, 
+      Boolean isTrue, 
       Map<  Id, Map<String, List<Time>>>     TimeLostMap
     ) {
       
     }
        
     global override List<Account> getAccount() {
-      
+       
     }
 
 
