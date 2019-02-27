@@ -13,12 +13,13 @@ import templates from "../templates/templates.method";
 
 export default class MethodDocumenter {
   getMethodHeaderInsertEdit(): void {
-    const methodHeader = this.constructMethodHeader();
-
-    if (!methodHeader) return;
     if (!window.activeTextEditor) return;
 
     const methodPosition: Position = window.activeTextEditor.selection.anchor;
+
+    const methodHeader = this.constructMethodHeader();
+
+    if (!methodHeader) return;
 
     const edit: WorkspaceEdit = new WorkspaceEdit();
     edit.insert(
@@ -33,6 +34,7 @@ export default class MethodDocumenter {
     const method = this.parseSignatureIntoMethod();
 
     if (!method) return;
+
     if (!window.activeTextEditor) return;
 
     const str =
@@ -82,18 +84,42 @@ export default class MethodDocumenter {
     let currentLineId = window.activeTextEditor.selection.anchor.line;
 
     let methodText = document.lineAt(currentLineId).text;
-    while (!re_methodDefinitionEnd.test(methodText)) {
-      if (currentLineId >= window.activeTextEditor.document.lineCount) return;
 
-      methodText += document.lineAt(++currentLineId).text;
+    if (!methodText.replace(/\s/gi, "")) {
+      window.showErrorMessage(
+        "SFDoc: Cannot insert method header on empty line."
+      );
+      return;
+    }
+
+    for (
+      ++currentLineId;
+      currentLineId <= window.activeTextEditor.document.lineCount;
+      currentLineId++
+    ) {
+      try {
+        if (re_methodDefinitionEnd.test(methodText)) break;
+
+        let currentLine = document.lineAt(currentLineId).text;
+
+        if (/\*\/|\/\*|\bclass\b|\}/gi.test(currentLine)) throw Error();
+
+        if (currentLineId === window.activeTextEditor.document.lineCount)
+          throw Error();
+
+        methodText += currentLine;
+      } catch (err) {
+        window.showErrorMessage(
+          "SFDoc: Apex method's signature not recognized on selected line."
+        );
+        return;
+      }
     }
 
     const re_ScopeModifier = /public|private|protected|global/i;
     const [methodSignature, methodParameters] = methodText.split("(");
 
-    let signatureTokens = methodSignature
-      .split(/\s+/)
-      .filter((token: string) => token !== "");
+    let signatureTokens = this.getSignatureAsTokens(methodSignature);
 
     method.name = signatureTokens.pop() || "";
 
@@ -105,6 +131,18 @@ export default class MethodDocumenter {
         token => !apexReservedTerms.includes(token.toLowerCase())
       ) || "";
 
+    if (
+      !method.name ||
+      !method.returnType ||
+      !methodSignature ||
+      !methodParameters
+    ) {
+      window.showErrorMessage(
+        "SFDoc: Apex method's signature not recognized on selected line."
+      );
+      return;
+    }
+
     method.isStatic = signatureTokens.some(
       (token: string) => token.toLowerCase() === "static"
     );
@@ -113,104 +151,152 @@ export default class MethodDocumenter {
       (token: string) => token.toLowerCase() === "override"
     );
 
-    method.parameters = getParametersAsTokens(methodParameters);
+    method.parameters = this.getParametersAsTokens(methodParameters);
 
     return method;
+  }
 
-    function getParametersAsTokens(parametersString: string): string[] {
-      const tokens = parametersString
-        .split(/\(|\)|,|<|>|\s|\{|\}/gi)
-        .filter(token => !!token);
+  private getSignatureAsTokens(signatureString: string): string[] {
+    const tokens = signatureString
+      .split(/\(|\)|,|<|>|\s|\{|\}/gi)
+      .filter(token => !!token);
 
-      const processedTokens: string[] = [];
-      let currentIndex = -1;
+    const processedTokens: string[] = [];
+    let currentIndex = -1;
 
-      if (!tokens || !tokens.length) return processedTokens;
+    if (!tokens || !tokens.length) return processedTokens;
 
-      while (currentIndex + 1 < tokens.length) {
-        processedTokens.push(
-          recursiveProcessToken(tokens[(currentIndex += 1)], false, false)
+    while (currentIndex + 1 < tokens.length) {
+      processedTokens.push(
+        recursiveProcessSignatureToken(tokens[(currentIndex += 1)])
+      );
+    }
+
+    return processedTokens
+      .filter(token => token !== "")
+      .map(token => token.trim());
+
+    function recursiveProcessSignatureToken(token: string): string {
+      let currentProcessedToken = "";
+
+      if (!token) return currentProcessedToken;
+
+      if (token.toLowerCase() === "map")
+        currentProcessedToken = processSignatureMapToken(token);
+      else if (token.toLowerCase() === "list" || token.toLowerCase() === "set")
+        currentProcessedToken = processSignatureListOrSetToken(token);
+      else currentProcessedToken = token;
+
+      return currentProcessedToken;
+    }
+
+    function processSignatureMapToken(token: string): string {
+      return (
+        token +
+        "<" +
+        recursiveProcessSignatureToken(tokens[(currentIndex += 1)]) +
+        ", " +
+        recursiveProcessSignatureToken(tokens[(currentIndex += 1)]) +
+        ">"
+      );
+    }
+
+    function processSignatureListOrSetToken(token: string): string {
+      return (
+        token +
+        "<" +
+        recursiveProcessSignatureToken(tokens[(currentIndex += 1)]) +
+        ">"
+      );
+    }
+  }
+
+  private getParametersAsTokens(parametersString: string): string[] {
+    const tokens = parametersString
+      .split(/\(|\)|,|<|>|\s|\{|\}/gi)
+      .filter(token => !!token);
+
+    const processedTokens: string[] = [];
+    let currentIndex = -1;
+
+    if (!tokens || !tokens.length) return processedTokens;
+
+    while (currentIndex + 1 < tokens.length) {
+      processedTokens.push(
+        recursiveProcessParamToken(tokens[(currentIndex += 1)], false, false)
+      );
+    }
+
+    return processedTokens
+      .filter(token => token !== "")
+      .map(token => token.trim());
+
+    function recursiveProcessParamToken(
+      token: string,
+      isRoot: boolean,
+      isWithinCollection: boolean
+    ): string {
+      let currentProcessedToken = "";
+
+      if (!token) return currentProcessedToken;
+
+      if (token.toLowerCase() === "map")
+        currentProcessedToken = processParamMapToken(token, isWithinCollection);
+      else if (token.toLowerCase() === "list" || token.toLowerCase() === "set")
+        currentProcessedToken = processParamListOrSetToken(
+          token,
+          isWithinCollection
         );
-      }
-
-      return processedTokens
-        .filter(token => token !== "")
-        .map(token => token.trim());
-
-      function recursiveProcessToken(
-        token: string,
-        isRoot: boolean,
-        isWithinCollection: boolean
-      ): string {
-        let currentProcessedToken = "";
-
-        if (!token) return currentProcessedToken;
-
-        if (token.toLowerCase() === "map")
-          currentProcessedToken = processMapToken(token, isWithinCollection);
-        else if (
-          token.toLowerCase() === "list" ||
-          token.toLowerCase() === "set"
-        )
-          currentProcessedToken = processListOrMapToken(
-            token,
-            isWithinCollection
-          );
-        else if (!isRoot)
-          currentProcessedToken =
-            token +
-            " " +
-            recursiveProcessToken(tokens[(currentIndex += 1)], true, false);
-        else currentProcessedToken = (isWithinCollection ? "" : " ") + token;
-
-        return currentProcessedToken;
-      }
-
-      function processMapToken(
-        token: string,
-        isWithinCollection: boolean
-      ): string {
-        let processedToken: string = "";
-
-        processedToken =
+      else if (!isRoot)
+        currentProcessedToken =
           token +
-          "<" +
-          recursiveProcessToken(tokens[(currentIndex += 1)], true, true) +
-          ", " +
-          recursiveProcessToken(tokens[(currentIndex += 1)], true, true) +
-          ">";
+          " " +
+          recursiveProcessParamToken(tokens[(currentIndex += 1)], true, false);
+      else currentProcessedToken = (isWithinCollection ? "" : " ") + token;
 
-        if (!isWithinCollection)
-          processedToken += recursiveProcessToken(
-            tokens[(currentIndex += 1)],
-            true,
-            false
-          );
+      return currentProcessedToken;
+    }
 
-        return processedToken;
-      }
+    function processParamMapToken(
+      token: string,
+      isWithinCollection: boolean
+    ): string {
+      let processedToken =
+        token +
+        "<" +
+        recursiveProcessParamToken(tokens[(currentIndex += 1)], true, true) +
+        ", " +
+        recursiveProcessParamToken(tokens[(currentIndex += 1)], true, true) +
+        ">";
 
-      function processListOrMapToken(
-        token: string,
-        isWithinCollection: boolean
-      ): string {
-        let processedToken = "";
+      if (!isWithinCollection)
+        processedToken += recursiveProcessParamToken(
+          tokens[(currentIndex += 1)],
+          true,
+          false
+        );
 
-        processedToken =
-          token +
-          "<" +
-          recursiveProcessToken(tokens[(currentIndex += 1)], true, true) +
-          ">";
+      return processedToken;
+    }
 
-        if (!isWithinCollection)
-          processedToken += recursiveProcessToken(
-            tokens[(currentIndex += 1)],
-            true,
-            false
-          );
+    function processParamListOrSetToken(
+      token: string,
+      isWithinCollection: boolean
+    ): string {
+      let processedToken =
+        token +
+        "<" +
+        recursiveProcessParamToken(tokens[(currentIndex += 1)], true, true) +
+        ">";
 
-        return processedToken;
-      }
+      if (!isWithinCollection)
+        processedToken += recursiveProcessParamToken(
+          tokens[(currentIndex += 1)],
+          true,
+          false
+        );
+
+      return processedToken;
     }
   }
 }

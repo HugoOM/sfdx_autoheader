@@ -2,7 +2,7 @@ import helper from "../extension/documenter.helper";
 
 export default {
   base(): string {
-    return "\n/**\n";
+    return "/**\n";
   },
   scope(...scopes: string[]): string {
     return `* @scope ${scopes.toString().replace(/,/gi, " ")}\n`;
