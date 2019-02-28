@@ -76,7 +76,6 @@ suite("Salesforce Documenter - Extension Suite", function() {
     const document = await openTestDocumentByFileIdentifier("jsCtrl");
     const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
 
-    await docConfigs.update("EnableForAllWebFiles", false, 1);
     await docConfigs.update("EnableForLightningJavascript", true, 1);
 
     await clearFile(document);
@@ -97,7 +96,6 @@ suite("Salesforce Documenter - Extension Suite", function() {
     const document = await openTestDocumentByFileIdentifier("jsCtrl");
     const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
 
-    await docConfigs.update("EnableForAllWebFiles", false, 1);
     await docConfigs.update("EnableForLightningJavascript", false, 1);
 
     await clearFile(document);
@@ -118,7 +116,6 @@ suite("Salesforce Documenter - Extension Suite", function() {
     const document = await openTestDocumentByFileIdentifier("js");
     const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
 
-    await docConfigs.update("EnableForAllWebFiles", false, 1);
     await docConfigs.update("EnableForLightningJavascript", true, 1);
 
     await clearFile(document);
@@ -139,7 +136,6 @@ suite("Salesforce Documenter - Extension Suite", function() {
     const document = await openTestDocumentByFileIdentifier("js");
     const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
 
-    await docConfigs.update("EnableForAllWebFiles", false, 1);
     await docConfigs.update("EnableForLightningJavascript", false, 1);
 
     await clearFile(document);
@@ -160,7 +156,6 @@ suite("Salesforce Documenter - Extension Suite", function() {
     const document = await openTestDocumentByFileIdentifier("html");
     const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
 
-    await docConfigs.update("EnableForAllWebFiles", false, 1);
     await docConfigs.update("EnableForLightningMarkup", true, 1);
 
     await clearFile(document);
@@ -181,7 +176,6 @@ suite("Salesforce Documenter - Extension Suite", function() {
     const document = await openTestDocumentByFileIdentifier("html");
     const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
 
-    await docConfigs.update("EnableForAllWebFiles", false, 1);
     await docConfigs.update("EnableForLightningMarkup", false, 1);
 
     await clearFile(document);
@@ -359,13 +353,11 @@ suite("Salesforce Documenter - Extension Suite", function() {
     const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
     await docConfigs.update("EnableForLightningMarkup", false, 1);
     await docConfigs.update("EnableForLightningJavascript", false, 1);
-    await docConfigs.update("EnableForAllWebFiles", true, 1);
 
     assert.isTrue(fileDocumenter.isValidLanguage(document));
 
     await docConfigs.update("EnableForLightningMarkup", true, 1);
     await docConfigs.update("EnableForLightningJavascript", true, 1);
-    await docConfigs.update("EnableForAllWebFiles", false, 1);
   });
 
   test("Testing isValidLanguage - Lightning JavaScript Web Setting On", async () => {
@@ -373,13 +365,11 @@ suite("Salesforce Documenter - Extension Suite", function() {
     const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
     await docConfigs.update("EnableForLightningMarkup", false, 1);
     await docConfigs.update("EnableForLightningJavascript", false, 1);
-    await docConfigs.update("EnableForAllWebFiles", true, 1);
 
     assert.isTrue(fileDocumenter.isValidLanguage(document));
 
     await docConfigs.update("EnableForLightningMarkup", true, 1);
     await docConfigs.update("EnableForLightningJavascript", true, 1);
-    await docConfigs.update("EnableForAllWebFiles", false, 1);
   });
 
   test("Testing isValidLanguage - Lightning Component Web Setting Off", async () => {
@@ -387,7 +377,6 @@ suite("Salesforce Documenter - Extension Suite", function() {
     const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
     await docConfigs.update("EnableForLightningMarkup", false, 1);
     await docConfigs.update("EnableForLightningJavascript", false, 1);
-    await docConfigs.update("EnableForAllWebFiles", false, 1);
 
     assert.isFalse(fileDocumenter.isValidLanguage(document));
 
@@ -400,7 +389,6 @@ suite("Salesforce Documenter - Extension Suite", function() {
     const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
     await docConfigs.update("EnableForLightningMarkup", false, 1);
     await docConfigs.update("EnableForLightningJavascript", false, 1);
-    await docConfigs.update("EnableForAllWebFiles", false, 1);
 
     assert.isFalse(fileDocumenter.isValidLanguage(document));
 
@@ -506,8 +494,8 @@ suite("Salesforce Documenter - Extension Suite", function() {
      * @Description        : 
      * @Author             : 
      * @Group              : 
-     * @Last Modified By   : 
-     * @Last Modified On   : 
+     * @Last Modified By   : hmonette@deloitte.ca
+     * @Last Modified On   : 2019-02-27, 10:42:33 p.m.
      * @Modification Log   : 
      *------------------------------------------------------------------------------
      * Ver       	   Date           Author      		   Modification

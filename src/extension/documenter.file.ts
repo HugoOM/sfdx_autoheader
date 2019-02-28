@@ -134,7 +134,6 @@ export default class FileDocumenter {
   isValidLanguage(document: TextDocument): boolean {
     const lang = document.languageId;
     const configs = workspace.getConfiguration("SFDoc");
-    const enabledForAllWebFiles = configs.get("EnableForAllWebFiles", false);
     const enabledForApex = configs.get("EnableForApex");
     const enabledForVf = configs.get("EnableForVisualforce");
     const enabledForLightMarkup = configs.get("EnableForLightningMarkup", true);
@@ -148,16 +147,10 @@ export default class FileDocumenter {
     if (lang === "visualforce" && enabledForVf) return true;
 
     if (lang === "html")
-      return (
-        enabledForAllWebFiles ||
-        (enabledForLightMarkup && this.isLightning(document))
-      );
+      return enabledForLightMarkup && this.isLightning(document);
 
     if (lang === "javascript")
-      return (
-        enabledForAllWebFiles ||
-        (enabledForLightningJavaScript && this.isLightning(document))
-      );
+      return enabledForLightningJavaScript && this.isLightning(document);
 
     return false;
   }
