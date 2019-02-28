@@ -348,29 +348,29 @@ suite("Salesforce Documenter - Extension Suite", function() {
     assert.isTrue(fileDocumenter.isValidLanguage(document));
   });
 
-  test("Testing isValidLanguage - Lightning Component Web Setting On", async () => {
-    const document = await openTestDocumentByFileIdentifier("cmp");
-    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
-    await docConfigs.update("EnableForLightningMarkup", false, 1);
-    await docConfigs.update("EnableForLightningJavascript", false, 1);
+  // test("Testing isValidLanguage - Lightning Component Web Setting On", async () => {
+  //   const document = await openTestDocumentByFileIdentifier("cmp");
+  //   const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
+  //   await docConfigs.update("EnableForLightningMarkup", false, 1);
+  //   await docConfigs.update("EnableForLightningJavascript", false, 1);
 
-    assert.isTrue(fileDocumenter.isValidLanguage(document));
+  //   assert.isTrue(fileDocumenter.isValidLanguage(document));
 
-    await docConfigs.update("EnableForLightningMarkup", true, 1);
-    await docConfigs.update("EnableForLightningJavascript", true, 1);
-  });
+  //   await docConfigs.update("EnableForLightningMarkup", true, 1);
+  //   await docConfigs.update("EnableForLightningJavascript", true, 1);
+  // });
 
-  test("Testing isValidLanguage - Lightning JavaScript Web Setting On", async () => {
-    const document = await openTestDocumentByFileIdentifier("jsCtrl");
-    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
-    await docConfigs.update("EnableForLightningMarkup", false, 1);
-    await docConfigs.update("EnableForLightningJavascript", false, 1);
+  // test("Testing isValidLanguage - Lightning JavaScript Web Setting On", async () => {
+  //   const document = await openTestDocumentByFileIdentifier("jsCtrl");
+  //   const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
+  //   await docConfigs.update("EnableForLightningMarkup", false, 1);
+  //   await docConfigs.update("EnableForLightningJavascript", false, 1);
 
-    assert.isTrue(fileDocumenter.isValidLanguage(document));
+  //   assert.isTrue(fileDocumenter.isValidLanguage(document));
 
-    await docConfigs.update("EnableForLightningMarkup", true, 1);
-    await docConfigs.update("EnableForLightningJavascript", true, 1);
-  });
+  //   await docConfigs.update("EnableForLightningMarkup", true, 1);
+  //   await docConfigs.update("EnableForLightningJavascript", true, 1);
+  // });
 
   test("Testing isValidLanguage - Lightning Component Web Setting Off", async () => {
     const document = await openTestDocumentByFileIdentifier("cmp");
@@ -494,7 +494,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
      * @Description        : 
      * @Author             : 
      * @Group              : 
-     * @Last Modified By   : hmonette@deloitte.ca
+     * @Last Modified By   : hi@hugo.dev
      * @Last Modified On   : 2019-02-27, 10:42:33 p.m.
      * @Modification Log   : 
      *------------------------------------------------------------------------------
