@@ -52,6 +52,26 @@
           "command": "extension.generateMethodHeader",
           "group": "SFDoc",
           "when": "editorLangId == apex"
+        },
+        {
+          "command": "extension.insertFileHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == apex"
+        },
+        {
+          "command": "extension.insertFileHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == visualforce"
+        },
+        {
+          "command": "extension.insertFileHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == html"
+        },
+        {
+          "command": "extension.insertFileHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == javascript"
         }
       ],
       "commandPalette": [
@@ -59,6 +79,26 @@
           "command": "extension.generateMethodHeader",
           "group": "SFDoc",
           "when": "editorLangId == apex"
+        },
+        {
+          "command": "extension.insertFileHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == apex"
+        },
+        {
+          "command": "extension.insertFileHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == visualforce"
+        },
+        {
+          "command": "extension.insertFileHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == html"
+        },
+        {
+          "command": "extension.insertFileHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == javascript"
         }
       ]
     },
@@ -83,11 +123,6 @@
           "default": "ChangeMeIn@UserSettingsUnder.SFDoc",
           "description": "Sets the File & Method Header Username"
         },
-        "SFDoc.EnableForAllWebFiles": {
-          "type": "boolean",
-          "default": false,
-          "description": "Enable On-Save File Headers on ALL JavaScript and HTML files. NOT just those that are part of a Lightning Component. \n WARNING: This Setting Has Priority Over Lightning Settings When Enabled"
-        },
         "SFDoc.EnableForApex": {
           "type": "boolean",
           "default": true,
@@ -107,6 +142,31 @@
           "type": "boolean",
           "default": false,
           "description": "Enable On-Save File Headers on Lightning Javascript Files (Aura & LWC)"
+        },
+        "SFDX_Autoheader.username": {
+          "type": "string",
+          "default": "",
+          "description": "[Deprecated]: Compatibility-only setting. Will be retired in a future version. Use settings under 'SFDoc' instead."
+        },
+        "SFDX_Autoheader.EnableForApex": {
+          "type": "boolean",
+          "default": true,
+          "description": "[Deprecated]: Compatibility-only setting. Will be retired in a future version. Use settings under 'SFDoc' instead."
+        },
+        "SFDX_Autoheader.EnableForVisualforce": {
+          "type": "boolean",
+          "default": true,
+          "description": "[Deprecated]: Compatibility-only setting. Will be retired in a future version. Use settings under 'SFDoc' instead."
+        },
+        "SFDX_Autoheader.EnableForLightningMarkup": {
+          "type": "boolean",
+          "default": true,
+          "description": "[Deprecated]: Compatibility-only setting. Will be retired in a future version. Use settings under 'SFDoc' instead."
+        },
+        "SFDX_Autoheader.EnableForLightningJavascript": {
+          "type": "boolean",
+          "default": false,
+          "description": "[Deprecated]: Compatibility-only setting. Will be retired in a future version. Use settings under 'SFDoc' instead."
         }
       }
     },

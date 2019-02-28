@@ -1,6 +1,6 @@
 import FileDocumenter from "./documenter.file";
 import MethodDocumenter from "./documenter.method";
-import { commands, window, workspace, WorkspaceEdit } from "vscode";
+import { commands, window, TextEditor, TextEditorEdit, Position } from "vscode";
 
 export default class DocumenterCommands {
   constructor(
@@ -13,24 +13,29 @@ export default class DocumenterCommands {
       this.methodDocumenter
     );
 
-    commands.registerCommand(
+    commands.registerTextEditorCommand(
       "extension.insertFileHeader",
       this.insertFileHeader,
       this
     );
   }
 
-  // TODO: Manage messages through header
-  insertFileHeader() {
-    if (!window.activeTextEditor) return;
-    const document = window.activeTextEditor.document;
+  insertFileHeader(editor: TextEditor, edit: TextEditorEdit) {
+    if (!this.fileDocumenter.isValidLanguageOnRequest(editor.document)) {
+      window.showErrorMessage("SFDoc: Unsupported file type and/or language");
+      return;
+    }
 
-    if (!this.fileDocumenter.isValidLanguage(document)) return;
+    if (this.fileDocumenter.checkForHeaderOnDoc(editor.document)) {
+      window.showErrorMessage(
+        "SFDoc: Header already present on file's first line"
+      );
+      return;
+    }
 
-    this.fileDocumenter.getInsertFileHeaderEdit(document).then(edits => {
-      const edit: WorkspaceEdit = new WorkspaceEdit();
-      edit.set(document.uri, edits);
-      workspace.applyEdit(edit);
-    });
+    edit.insert(
+      new Position(0, 0),
+      this.fileDocumenter.getFileHeader(editor.document)
+    );
   }
 }

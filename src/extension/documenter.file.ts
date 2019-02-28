@@ -99,16 +99,15 @@ export default class FileDocumenter {
   }
 
   async getInsertFileHeaderEdit(document: TextDocument): Promise<TextEdit[]> {
-    return [
-      TextEdit.insert(
-        new Position(0, 0),
-        defaultTemplates[document.languageId](
-          document.fileName.split(/\/|\\/g).pop(),
-          helper.getConfiguredUsername(),
-          helper.getHeaderFormattedDateTime()
-        )
-      )
-    ];
+    return [TextEdit.insert(new Position(0, 0), this.getFileHeader(document))];
+  }
+
+  getFileHeader(document: TextDocument): string {
+    return defaultTemplates[document.languageId](
+      document.fileName.split(/\/|\\/g).pop(),
+      helper.getConfiguredUsername(),
+      helper.getHeaderFormattedDateTime()
+    );
   }
 
   isLineABlockComment(lineContent: string): boolean {
@@ -119,6 +118,17 @@ export default class FileDocumenter {
   isLineAnXMLComment(lineContent: string): boolean {
     const re = /^\s*<!--/g;
     return re.test(lineContent);
+  }
+
+  isValidLanguageOnRequest(document: TextDocument): boolean {
+    const languageId = document.languageId;
+
+    if (languageId === "apex") return true;
+    if (languageId === "visualforce") return true;
+    if (languageId === "html") return true;
+    if (languageId === "javascript") return true;
+
+    return false;
   }
 
   isValidLanguage(document: TextDocument): boolean {

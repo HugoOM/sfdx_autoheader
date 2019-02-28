@@ -2,12 +2,36 @@ import { workspace } from "vscode";
 
 export default {
   init() {
-    const config = workspace
-      .getConfiguration("SFDX_Autoheader")
-      .get("username");
+    const old_Config = workspace.getConfiguration("SFDX_Autoheader");
 
-    // TODO: Implement migration of SFDX_Autoheader settings to SFDoc ...
+    const new_Config = workspace.getConfiguration("SFDoc");
 
-    debugger;
+    const configKeys = [
+      "username",
+      "EnableForAllWebFiles",
+      "EnableForApex",
+      "EnableForVisualforce",
+      "EnableForLightningMarkup",
+      "EnableForLightningJavascript"
+    ];
+
+    configKeys.forEach(key => {
+      if (!old_Config.has(key)) return;
+
+      let oldValue = old_Config.get(key);
+
+      if (oldValue === null || oldValue === undefined || oldValue === "")
+        return;
+
+      const oldConfigSetting = old_Config.inspect(key);
+
+      if (!oldConfigSetting) return;
+
+      if (oldValue === oldConfigSetting.defaultValue) return;
+
+      new_Config.update(key, oldValue, true).then(() => {
+        old_Config.update(key, undefined, true);
+      });
+    });
   }
 };
