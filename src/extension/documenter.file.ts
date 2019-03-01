@@ -8,13 +8,13 @@ import {
   TextDocumentWillSaveEvent,
   TextEdit,
   TextEditor,
+  TextEditorEdit,
   window,
   workspace
 } from "vscode";
+import helper from "./documenter.helper";
 
 const defaultTemplates = require("../templates/templates.file.js");
-
-import helper from "./documenter.helper";
 
 export default class FileDocumenter {
   private cursorPositions: { [fileURI: string]: Position } = {};
@@ -73,6 +73,22 @@ export default class FileDocumenter {
     return this.isHeaderBeingInserted
       ? this.getUpdateHeaderValueEdit(document)
       : this.getInsertFileHeaderEdit(document);
+  }
+
+  insertFileHeaderFromCommand(editor: TextEditor, edit: TextEditorEdit) {
+    if (!this.isValidLanguageOnRequest(editor.document)) {
+      window.showErrorMessage("SFDoc: Unsupported file type and/or language");
+      return;
+    }
+
+    if (this.checkForHeaderOnDoc(editor.document)) {
+      window.showErrorMessage(
+        "SFDoc: Header already present on file's first line"
+      );
+      return;
+    }
+
+    edit.insert(new Position(0, 0), this.getFileHeader(editor.document));
   }
 
   checkForHeaderOnDoc(document: TextDocument): boolean {

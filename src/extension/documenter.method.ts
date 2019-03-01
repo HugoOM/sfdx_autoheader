@@ -1,4 +1,12 @@
-import { window, WorkspaceEdit, Position, workspace, Selection } from "vscode";
+import {
+  Selection,
+  TextEditor,
+  TextEditorEdit,
+  window,
+  Position
+} from "vscode";
+import templates from "../templates/templates.method";
+import helper from "./documenter.helper";
 
 type Method = {
   name: string;
@@ -9,14 +17,12 @@ type Method = {
   returnType: string;
 };
 
-import templates from "../templates/templates.method";
-import helper from "./documenter.helper";
-
 export default class MethodDocumenter {
-  getMethodHeaderInsertEdit(): void {
-    if (!window.activeTextEditor) return;
-
-    const methodSelection: Selection = window.activeTextEditor.selection;
+  insertMethodHeaderFromCommand(
+    editor: TextEditor,
+    edit: TextEditorEdit
+  ): void {
+    const methodSelection: Selection = editor.selection;
 
     if (methodSelection.active.line !== methodSelection.anchor.line) {
       window.showErrorMessage(
@@ -31,13 +37,7 @@ export default class MethodDocumenter {
 
     if (!methodHeader) return;
 
-    const edit: WorkspaceEdit = new WorkspaceEdit();
-    edit.insert(
-      window.activeTextEditor.document.uri,
-      new Position(currentLineId, 0),
-      methodHeader
-    );
-    workspace.applyEdit(edit);
+    edit.insert(new Position(currentLineId, 0), methodHeader);
   }
 
   private constructMethodHeader(currentLineId: number): string | void {
