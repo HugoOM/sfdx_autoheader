@@ -8,30 +8,39 @@ export default {
 
     const configKeys = [
       "username",
-      "EnableForAllWebFiles",
       "EnableForApex",
       "EnableForVisualforce",
       "EnableForLightningMarkup",
       "EnableForLightningJavascript"
     ];
 
-    configKeys.forEach(key => {
-      if (!old_Config.has(key)) return;
+    settingsPromiseChain(0);
 
-      let oldValue = old_Config.get(key);
+    function settingsPromiseChain(i: number): Promise<number> {
+      return new Promise(done => {
+        const key = configKeys[i];
 
-      if (oldValue === null || oldValue === undefined || oldValue === "")
-        return;
+        if (!key) return done();
 
-      const oldConfigSetting = old_Config.inspect(key);
+        if (!old_Config.has(key)) return done(settingsPromiseChain(i + 1));
 
-      if (!oldConfigSetting) return;
+        let oldValue = old_Config.get(key);
 
-      if (oldValue === oldConfigSetting.defaultValue) return;
+        if (oldValue === null || oldValue === undefined || oldValue === "")
+          return done(settingsPromiseChain(i + 1));
 
-      new_Config.update(key, oldValue, true).then(() => {
-        old_Config.update(key, undefined, true);
+        const oldConfigSetting = old_Config.inspect(key);
+
+        if (!oldConfigSetting) return done(settingsPromiseChain(i + 1));
+
+        if (oldValue === oldConfigSetting.defaultValue)
+          return done(settingsPromiseChain(i + 1));
+
+        new_Config
+          .update(key, oldValue, true)
+          .then(() => old_Config.update(key, undefined, true))
+          .then(() => done(settingsPromiseChain(i + 1)));
       });
-    });
+    }
   }
 };
