@@ -9,9 +9,17 @@
 
 ### _This extension depends on the official [Salesforce Extensions for VSCode](https://marketplace.visualstudio.com/items?itemName=salesforce.salesforcedx-vscode) for language support._
 
+# Summary
+
+Salesforce Documenter aims at facilitating proper and structured code documenting for Salesforce-related files, by automating related tasks such as File Header Insertion & Update, as well as Method Header insertion.
+
+Salesforce Documenter can be adopted as a project-wide and/or team-wide standard, in an effort to encourage and eventually enforce proper code documenting.
+
+Through these means, code becomes easier to understand, maintain, and evolve.
+
 # Features
 
-- Add a method header to any Apex method
+- Add a method header to any Apex method, with JavaDoc-Like tags to be completed with the method's and contextual details
 
 ![Method Header Demo](https://github.com/HugoOM/sfdx_autoheader/blob/rewrite_Typescript/images/Instructions_MethodHeader.gif?raw=true)
 
@@ -33,5 +41,5 @@
 | SFDoc.username                     | Username that will appear in File and Method headers.                                    |
 | SFDoc.EnableForApex                | Enable automatic on-save file header insertion and update for Apex classes               |
 | SFDoc.EnableForVisualforce         | Enable automatic on-save file header insertion and update for Visualforce pages          |
-| SFDoc.EnableForLightningMarkup     | Enable automatic on-save file header insertion and update for Lightning markup files     |
+| SFDoc.EnableForLightningMarkup     | Enable automatic on-save file header insertion and update for Lightning Markup files     |
 | SFDoc.EnableForLightningJavascript | Enable automatic on-save file header insertion and update for Lightning JavaScript files |
