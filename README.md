@@ -21,11 +21,11 @@ Through these means, code becomes easier to understand, maintain, and evolve.
 
 - Add a method header to any Apex method, with JavaDoc-Like tags to be completed with the method's and contextual details
 
-![Method Header Demo](https://github.com/HugoOM/sfdx_autoheader/blob/rewrite_Typescript/images/Instructions_MethodHeader.gif?raw=true)
+![Method Header Demo](https://github.com/HugoOM/sfdx_autoheader/blob/master/images/Instructions_MethodHeader.gif?raw=true)
 
 - Add/Update a header to any Salesforce file (Apex, Visualforce, Aura, LWC, JavaScript)
 
-![File Header Demo](https://github.com/HugoOM/sfdx_autoheader/blob/rewrite_Typescript/images/Instructions_FileHeader.gif?raw=true)
+![File Header Demo](https://github.com/HugoOM/sfdx_autoheader/blob/master/images/Instructions_FileHeader.gif?raw=true)
 
 # Commands
 
