@@ -1,5 +1,21 @@
 # Change Log
 
+## [Future]
+
+- Update tests to cover Method Headers logic
+- File-wide method header injection
+
+## [0.5.0]
+
+- Complete rebranding into **_Salesforce Documenter_**
+- TypeScript rewrite
+- Method header generation
+- Commands support for File & Method Headers
+- Validation and user feedback
+- Deprecated the "Enable For All Web Files" setting. Use on-demand commands instead
+- Depracated old "SFDX_Autoheader..." settings for "SFDoc..."
+- Added migration logic to transfer old settings to the new model, on activation
+
 ## [0.4.2]
 
 - More accurate logic to identify Lightning files
@@ -21,7 +37,7 @@
 - Document Range Perf Improvement
 - First save (insert) Cursor Bug Fix
 - Default Templates Indent Fix
-- Unit Test Coverage Update - Complete & Current
+- Test Coverage Update - Complete & Current
 - New _fancier_ name
 
 ## [0.2.3]
