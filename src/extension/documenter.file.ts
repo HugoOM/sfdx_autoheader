@@ -26,55 +26,6 @@ export default class FileDocumenter {
     this.setListenerOnPostSave(context);
   }
 
-  setListenerOnPreSave(context: ExtensionContext): void {
-    const preSaveHookListener: Disposable = workspace.onWillSaveTextDocument.call(
-      this,
-      (event: TextDocumentWillSaveEvent) => {
-        if (!event.document.isDirty) return;
-        if (!this.isValidLanguage(event.document)) return;
-
-        event.waitUntil(this.insertOrUpdateHeader(event.document));
-      }
-    );
-    context.subscriptions.push(preSaveHookListener);
-  }
-
-  setListenerOnPostSave(context: ExtensionContext): void {
-    const postSaveHookListener = workspace.onDidSaveTextDocument(
-      this.replaceCursor.bind(this)
-    );
-    context.subscriptions.push(postSaveHookListener);
-  }
-
-  replaceCursor(): void {
-    if (!Object.keys(this.cursorPositions).length) return;
-    if (!window.visibleTextEditors.length) return;
-
-    //* Loop is fix for single file in multiple panes jumping to EOF, but VSCode's default
-    //*   behavior cannot be prevented as of now. Fix will stay in place nevertheless.
-    window.visibleTextEditors.forEach((editor: TextEditor) => {
-      editor.selection = new Selection(
-        this.getLastSavedCursorPosition(editor.document.uri.toString()),
-        this.getLastSavedCursorPosition(editor.document.uri.toString())
-      );
-    });
-
-    this.cursorPositions = {};
-  }
-
-  insertOrUpdateHeader(document: TextDocument): Thenable<TextEdit[]> {
-    //* Prevent capturing the Cursor position when saving from script
-    if (window.activeTextEditor)
-      this.cursorPositions[document.uri.toString()] =
-        window.activeTextEditor.selection.active;
-
-    this.isHeaderBeingInserted = this.checkForHeaderOnDoc(document);
-
-    return this.isHeaderBeingInserted
-      ? this.getUpdateHeaderValueEdit(document)
-      : this.getInsertFileHeaderEdit(document);
-  }
-
   insertFileHeaderFromCommand(editor: TextEditor, edit: TextEditorEdit) {
     if (!this.isValidLanguageOnRequest(editor.document)) {
       window.showErrorMessage("SFDoc: Unsupported file type and/or language");
@@ -100,7 +51,67 @@ export default class FileDocumenter {
     );
   }
 
-  getLastSavedCursorPosition(documentURI: string): Position {
+  isValidLanguageOnRequest(document: TextDocument): boolean {
+    const languageId = document.languageId;
+
+    if (languageId === "apex") return true;
+    if (languageId === "visualforce") return true;
+    if (languageId === "html") return true;
+    if (languageId === "javascript") return true;
+
+    return false;
+  }
+
+  private setListenerOnPreSave(context: ExtensionContext): void {
+    const preSaveHookListener: Disposable = workspace.onWillSaveTextDocument.call(
+      this,
+      (event: TextDocumentWillSaveEvent) => {
+        if (!event.document.isDirty) return;
+        if (!this.isValidLanguage(event.document)) return;
+
+        event.waitUntil(this.insertOrUpdateHeader(event.document));
+      }
+    );
+    context.subscriptions.push(preSaveHookListener);
+  }
+
+  private setListenerOnPostSave(context: ExtensionContext): void {
+    const postSaveHookListener = workspace.onDidSaveTextDocument(
+      this.replaceCursor.bind(this)
+    );
+    context.subscriptions.push(postSaveHookListener);
+  }
+
+  private replaceCursor(): void {
+    if (!Object.keys(this.cursorPositions).length) return;
+    if (!window.visibleTextEditors.length) return;
+
+    //* Loop is fix for single file in multiple panes jumping to EOF, but VSCode's default
+    //*   behavior cannot be prevented as of now. Fix will stay in place nevertheless.
+    window.visibleTextEditors.forEach((editor: TextEditor) => {
+      editor.selection = new Selection(
+        this.getLastSavedCursorPosition(editor.document.uri.toString()),
+        this.getLastSavedCursorPosition(editor.document.uri.toString())
+      );
+    });
+
+    this.cursorPositions = {};
+  }
+
+  private insertOrUpdateHeader(document: TextDocument): Thenable<TextEdit[]> {
+    //* Prevent capturing the Cursor position when saving from script
+    if (window.activeTextEditor)
+      this.cursorPositions[document.uri.toString()] =
+        window.activeTextEditor.selection.active;
+
+    this.isHeaderBeingInserted = this.checkForHeaderOnDoc(document);
+
+    return this.isHeaderBeingInserted
+      ? this.getUpdateHeaderValueEdit(document)
+      : this.getInsertFileHeaderEdit(document);
+  }
+
+  private getLastSavedCursorPosition(documentURI: string): Position {
     if (!this.cursorPositions[documentURI])
       return new Position(
         this.isHeaderBeingInserted ? 0 : this.HEADER_LENGTH_LINES,
@@ -114,11 +125,13 @@ export default class FileDocumenter {
     );
   }
 
-  async getInsertFileHeaderEdit(document: TextDocument): Promise<TextEdit[]> {
+  private async getInsertFileHeaderEdit(
+    document: TextDocument
+  ): Promise<TextEdit[]> {
     return [TextEdit.insert(new Position(0, 0), this.getFileHeader(document))];
   }
 
-  getFileHeader(document: TextDocument): string {
+  private getFileHeader(document: TextDocument): string {
     return defaultTemplates[document.languageId](
       document.fileName.split(/\/|\\/g).pop(),
       helper.getConfiguredUsername(),
@@ -126,28 +139,17 @@ export default class FileDocumenter {
     );
   }
 
-  isLineABlockComment(lineContent: string): boolean {
+  private isLineABlockComment(lineContent: string): boolean {
     const re = /^\s*\/\*/g;
     return re.test(lineContent);
   }
 
-  isLineAnXMLComment(lineContent: string): boolean {
+  private isLineAnXMLComment(lineContent: string): boolean {
     const re = /^\s*<!--/g;
     return re.test(lineContent);
   }
 
-  isValidLanguageOnRequest(document: TextDocument): boolean {
-    const languageId = document.languageId;
-
-    if (languageId === "apex") return true;
-    if (languageId === "visualforce") return true;
-    if (languageId === "html") return true;
-    if (languageId === "javascript") return true;
-
-    return false;
-  }
-
-  isValidLanguage(document: TextDocument): boolean {
+  private isValidLanguage(document: TextDocument): boolean {
     const lang = document.languageId;
     const configs = workspace.getConfiguration("SFDoc");
     const enabledForApex = configs.get("EnableForApex");
@@ -171,7 +173,7 @@ export default class FileDocumenter {
     return false;
   }
 
-  isLightning(document: TextDocument): boolean {
+  private isLightning(document: TextDocument): boolean {
     const validExtensions: string[] = ["htm", "html", "cmp", "js"];
     const validSalesforceFolderNames = ["aura", "lwc"];
     const pathTokens = document.uri.path.split("/");
@@ -196,7 +198,9 @@ export default class FileDocumenter {
     return true;
   }
 
-  async getUpdateHeaderValueEdit(document: TextDocument): Promise<TextEdit[]> {
+  private async getUpdateHeaderValueEdit(
+    document: TextDocument
+  ): Promise<TextEdit[]> {
     return [
       TextEdit.replace(
         this.getFullDocumentRange(document),
@@ -205,23 +209,23 @@ export default class FileDocumenter {
     ];
   }
 
-  updateHeaderLastModifiedByAndDate(documentText: string): string {
+  private updateHeaderLastModifiedByAndDate(documentText: string): string {
     return this.updateLastModifiedDateTime(
       this.updateLastModifiedBy(documentText)
     );
   }
 
-  updateLastModifiedBy(fileContent: string): string {
+  private updateLastModifiedBy(fileContent: string): string {
     const re = /^(\s*[\*\s]*@Last\s*Modified\s*By\s*:).*/gm;
     return fileContent.replace(re, `$1 ${helper.getConfiguredUsername()}`);
   }
 
-  updateLastModifiedDateTime(fileContent: string): string {
+  private updateLastModifiedDateTime(fileContent: string): string {
     const re = /^(\s*[\*\s]*@Last\s*Modified\s*On\s*:).*/gm;
     return fileContent.replace(re, `$1 ${helper.getHeaderFormattedDateTime()}`);
   }
 
-  getFullDocumentRange(document: TextDocument): Range {
+  private getFullDocumentRange(document: TextDocument): Range {
     const lastChar = document.lineAt(document.lineCount - 1).text.length;
 
     return new Range(

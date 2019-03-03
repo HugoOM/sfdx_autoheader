@@ -1,5 +1,3 @@
-//TODO Improve tests to validate header content instead of simply it's presence
-
 const { assert } = require("chai");
 
 const {
@@ -10,8 +8,7 @@ const {
   Range,
   extensions,
   window,
-  Selection,
-  Uri
+  Selection
 } = require("vscode");
 
 const path = require("path");
@@ -22,14 +19,6 @@ suite("Salesforce Documenter - Extension Suite", function() {
   let fileDocumenter, methodDocumenter;
 
   suiteSetup(function(done) {
-    //? updateWorkspaceFolders broken in 1.31.1 for Extension Tests ran from outside ('npm t')
-    // workspace.updateWorkspaceFolders(0, null, {
-    //   name: "testFile_SFDXAutoheader",
-    //   uri: Uri.file(
-    //     path.join(__dirname, "../../test_files/", "testFile_SFDXAutoheader")
-    //   )
-    // });
-
     loadExtension().then(api => {
       ({ fileDocumenter, methodDocumenter } = api);
       done();
@@ -348,54 +337,6 @@ suite("Salesforce Documenter - Extension Suite", function() {
     assert.isTrue(fileDocumenter.isValidLanguage(document));
   });
 
-  // test("Testing isValidLanguage - Lightning Component Web Setting On", async () => {
-  //   const document = await openTestDocumentByFileIdentifier("cmp");
-  //   const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
-  //   await docConfigs.update("EnableForLightningMarkup", false, 1);
-  //   await docConfigs.update("EnableForLightningJavascript", false, 1);
-
-  //   assert.isTrue(fileDocumenter.isValidLanguage(document));
-
-  //   await docConfigs.update("EnableForLightningMarkup", true, 1);
-  //   await docConfigs.update("EnableForLightningJavascript", true, 1);
-  // });
-
-  // test("Testing isValidLanguage - Lightning JavaScript Web Setting On", async () => {
-  //   const document = await openTestDocumentByFileIdentifier("jsCtrl");
-  //   const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
-  //   await docConfigs.update("EnableForLightningMarkup", false, 1);
-  //   await docConfigs.update("EnableForLightningJavascript", false, 1);
-
-  //   assert.isTrue(fileDocumenter.isValidLanguage(document));
-
-  //   await docConfigs.update("EnableForLightningMarkup", true, 1);
-  //   await docConfigs.update("EnableForLightningJavascript", true, 1);
-  // });
-
-  test("Testing isValidLanguage - Lightning Component Web Setting Off", async () => {
-    const document = await openTestDocumentByFileIdentifier("cmp");
-    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
-    await docConfigs.update("EnableForLightningMarkup", false, 1);
-    await docConfigs.update("EnableForLightningJavascript", false, 1);
-
-    assert.isFalse(fileDocumenter.isValidLanguage(document));
-
-    await docConfigs.update("EnableForLightningMarkup", true, 1);
-    await docConfigs.update("EnableForLightningJavascript", true, 1);
-  });
-
-  test("Testing isValidLanguage - Lightning JavaScript Web Setting Off", async () => {
-    const document = await openTestDocumentByFileIdentifier("jsCtrl");
-    const docConfigs = await workspace.getConfiguration("SFDoc", document.uri);
-    await docConfigs.update("EnableForLightningMarkup", false, 1);
-    await docConfigs.update("EnableForLightningJavascript", false, 1);
-
-    assert.isFalse(fileDocumenter.isValidLanguage(document));
-
-    await docConfigs.update("EnableForLightningMarkup", true, 1);
-    await docConfigs.update("EnableForLightningJavascript", true, 1);
-  });
-
   test("Testing isLightning - Invalid File", async () => {
     const document = await openTestDocumentByFileIdentifier("java");
 
@@ -412,8 +353,6 @@ suite("Salesforce Documenter - Extension Suite", function() {
     const document = await openTestDocumentByFileIdentifier("jsCtrl");
 
     assert.isTrue(fileDocumenter.isLightning(document));
-
-    //TODO Test for Helper & Invalid JS File
   });
 
   /* Update following rework
@@ -451,18 +390,6 @@ suite("Salesforce Documenter - Extension Suite", function() {
       done();
     });
     */
-
-  // test("Testing getHeaderFormattedDateTime", done => {
-  //   assert.isString(fileDocumenter.getHeaderFormattedDateTime());
-  //   done();
-  // });
-
-  // test("Testing getConfiguredUsername", done => {
-  //   /* Single VSCode package functionality, simply test that
-  //          a value is returned and/or that default is leveraged from config */
-  //   assert.isString(fileDocumenter.getConfiguredUsername());
-  //   done();
-  // });
 
   test("Testing getUpdateHeaderValueEdit", async () => {
     const document = await openTestDocumentByFileIdentifier("apex");
@@ -588,10 +515,7 @@ async function clearFile(document) {
 
   wEdit.set(document.uri, [TextEdit.delete(new Range(0, 0, 100, 100))]);
 
-  await workspace.applyEdit(wEdit);
-
-  //! Hack since workspace.applyEdit(...) seems to resolve too early
-  return wait(2000);
+  return workspace.applyEdit(wEdit);
 }
 
 async function resetTestFile(document) {

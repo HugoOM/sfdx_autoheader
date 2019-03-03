@@ -24,14 +24,19 @@ export default class MethodDocumenter {
   ): void {
     const methodSelection: Selection = editor.selection;
 
-    if (methodSelection.active.line !== methodSelection.anchor.line) {
+    const currentLineId = methodSelection.anchor.line;
+
+    if (/\/\/|\*\//i.test(editor.document.lineAt(currentLineId - 1).text)) {
+      window.showErrorMessage("SFDoc: Method comment already present.");
+      return;
+    }
+
+    if (methodSelection.active.line !== currentLineId) {
       window.showErrorMessage(
         "SFDoc: Multiline selection is not supported. Set the cursor's position on the first line of the method's declaration."
       );
       return;
     }
-
-    const currentLineId = methodSelection.anchor.line;
 
     const methodHeader = this.constructMethodHeader(currentLineId);
 
