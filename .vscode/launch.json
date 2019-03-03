@@ -4,12 +4,18 @@
 // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
 {
   "version": "0.2.0",
-  "configurations": [{
+  "configurations": [
+    {
       "name": "Extension",
       "type": "extensionHost",
       "request": "launch",
       "runtimeExecutable": "${execPath}",
-      "args": ["--extensionDevelopmentPath=${workspaceFolder}"]
+      "args": [
+        "${workspaceFolder}/test_files/testFile_SFDXAutoheader",
+        "--extensionDevelopmentPath=${workspaceFolder}"
+      ],
+      // "outFiles": ["${workspaceFolder}/out/**/*.js"]
+      "preLaunchTask": "npm: compile"
     },
     {
       "name": "Extension Tests",
@@ -17,11 +23,14 @@
       "request": "launch",
       "runtimeExecutable": "${execPath}",
       "args": [
+        "${workspaceFolder}/test_files/testFile_SFDXAutoheader",
         "--disableExtensions",
         "--extensionDevelopmentPath=${workspaceFolder}",
-        "--extensionTestsPath=${workspaceFolder}/test"
-      ],
-      "preLaunchTask": ""
+        // "--extensionTestsPath=${workspaceFolder}/out/test/extension.test.js"
+        "--extensionTestsPath=${workspaceFolder}/out/test/"
+      ]
+      // "outFiles": ["${workspaceFolder}/out/**/*.js"]
+      // "preLaunchTask": "npm: watch"
     }
   ]
 }

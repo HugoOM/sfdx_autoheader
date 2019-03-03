@@ -1,8 +1,8 @@
 {
   "name": "sfdx-autoheader",
-  "displayName": "Salesforce Autoheader",
-  "description": "Automated Code Comments / Documentation (File Headers) Generation for Salesforce",
-  "version": "0.4.2",
+  "displayName": "Salesforce Documenter",
+  "description": "Automated Code Documentation Generation for Salesforce",
+  "version": "0.5.0",
   "publisher": "HugoOM",
   "license": "MIT",
   "badges": [
@@ -28,13 +28,15 @@
     "visualforce",
     "Salesforce",
     "File Header",
-    "Comments",
-    "Documentation"
+    "Method Header",
+    "Code Comment",
+    "Documentation",
+    "Documenter"
   ],
-  "icon": "images/slds_action_follow_icon.png",
+  "icon": "images/logo.png",
   "galleryBanner": {
     "theme": "dark",
-    "color": "#232323"
+    "color": "#0C2D61"
   },
   "activationEvents": [
     "onLanguage:apex",
@@ -42,41 +44,129 @@
     "onLanguage:javascript",
     "onLanguage:html"
   ],
-  "main": "./extension",
+  "main": "./out/documenter.js",
   "contributes": {
+    "menus": {
+      "editor/context": [
+        {
+          "command": "extension.generateMethodHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == apex"
+        },
+        {
+          "command": "extension.insertFileHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == apex"
+        },
+        {
+          "command": "extension.insertFileHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == visualforce"
+        },
+        {
+          "command": "extension.insertFileHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == html"
+        },
+        {
+          "command": "extension.insertFileHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == javascript"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "extension.generateMethodHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == apex"
+        },
+        {
+          "command": "extension.insertFileHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == apex"
+        },
+        {
+          "command": "extension.insertFileHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == visualforce"
+        },
+        {
+          "command": "extension.insertFileHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == html"
+        },
+        {
+          "command": "extension.insertFileHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == javascript"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "extension.generateMethodHeader",
+        "title": "Generate Apex Method Header",
+        "category": "SFDoc"
+      },
+      {
+        "command": "extension.insertFileHeader",
+        "title": "Insert File Header",
+        "category": "SFDoc"
+      }
+    ],
     "configuration": {
       "type": "object",
-      "title": "SFDX Autoheader Config",
+      "title": "Salesforce Documenter Configuration",
       "properties": {
-        "SFDX_Autoheader.username": {
+        "SFDoc.username": {
           "type": "string",
-          "default": "phUser@phDomain.com",
-          "description": "Sets the SFDX File Header Username"
+          "default": "ChangeMeIn@UserSettingsUnder.SFDoc",
+          "description": "Sets the File & Method Header Username"
         },
-        "SFDX_Autoheader.EnableForAllWebFiles": {
-          "type": "boolean",
-          "default": false,
-          "description": "Enable On-Save File Headers on ALL JavaScript and HTML files. NOT just those that are part of a Lightning Component. \n WARNING: This Setting Has Priority Over Lightning Settings When Enabled"
-        },
-        "SFDX_Autoheader.EnableForApex": {
+        "SFDoc.EnableForApex": {
           "type": "boolean",
           "default": true,
           "description": "Enable On-Save File Headers on Apex Files"
         },
-        "SFDX_Autoheader.EnableForVisualforce": {
+        "SFDoc.EnableForVisualforce": {
           "type": "boolean",
           "default": true,
           "description": "Enable On-Save File Headers on Visualforce Pages"
         },
-        "SFDX_Autoheader.EnableForLightningMarkup": {
+        "SFDoc.EnableForLightningMarkup": {
           "type": "boolean",
           "default": true,
           "description": "Enable On-Save File Headers on Lightning Markup File (Aura & LWC)"
         },
-        "SFDX_Autoheader.EnableForLightningJavascript": {
+        "SFDoc.EnableForLightningJavascript": {
           "type": "boolean",
           "default": false,
           "description": "Enable On-Save File Headers on Lightning Javascript Files (Aura & LWC)"
+        },
+        "SFDX_Autoheader.username": {
+          "type": "string",
+          "default": "",
+          "description": "[Deprecated]: Compatibility-only setting. Will be retired in a future version. Use settings under 'SFDoc' instead."
+        },
+        "SFDX_Autoheader.EnableForApex": {
+          "type": "boolean",
+          "default": true,
+          "description": "[Deprecated]: Compatibility-only setting. Will be retired in a future version. Use settings under 'SFDoc' instead."
+        },
+        "SFDX_Autoheader.EnableForVisualforce": {
+          "type": "boolean",
+          "default": true,
+          "description": "[Deprecated]: Compatibility-only setting. Will be retired in a future version. Use settings under 'SFDoc' instead."
+        },
+        "SFDX_Autoheader.EnableForLightningMarkup": {
+          "type": "boolean",
+          "default": true,
+          "description": "[Deprecated]: Compatibility-only setting. Will be retired in a future version. Use settings under 'SFDoc' instead."
+        },
+        "SFDX_Autoheader.EnableForLightningJavascript": {
+          "type": "boolean",
+          "default": false,
+          "description": "[Deprecated]: Compatibility-only setting. Will be retired in a future version. Use settings under 'SFDoc' instead."
         }
       }
     },
@@ -109,15 +199,21 @@
     ]
   },
   "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "dev": "tsc -p ./ -w",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
     "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "node ./node_modules/vscode/bin/test"
+    "test": "npm run compile && node ./node_modules/vscode/bin/test"
   },
   "devDependencies": {
+    "@types/chai": "^4.1.7",
     "@types/mocha": "^2.2.42",
-    "@types/node": "^8.10.25",
+    "@types/node": "^10.12.21",
     "chai": "^4.2.0",
     "eslint": "^4.11.0",
-    "typescript": "^2.6.1",
-    "vscode": "^1.1.21"
+    "tslint": "^5.12.1",
+    "typescript": "^3.3.1",
+    "vscode": "^1.1.28"
   }
 }
