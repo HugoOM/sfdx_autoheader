@@ -13,40 +13,25 @@
 
 - Add a method header to any Apex method
 
-![marketplace](https://github.com/HugoOM/sfdx_autoheader/blob/rewrite_Typescript/images/Instructions_MethodHeader.gif?raw=true)
+![Method Header Demo](https://github.com/HugoOM/sfdx_autoheader/blob/rewrite_Typescript/images/Instructions_MethodHeader.gif?raw=true)
 
 - Add/Update a header to any Salesforce file (Apex, Visualforce, Aura, LWC, JavaScript)
 
-![marketplace](https://github.com/HugoOM/sfdx_autoheader/blob/rewrite_Typescript/images/Instructions_FileHeader.gif?raw=true)
+![File Header Demo](https://github.com/HugoOM/sfdx_autoheader/blob/rewrite_Typescript/images/Instructions_FileHeader.gif?raw=true)
 
 # Commands
 
-| Property | Description | Applies To |
-| -------- | ----------- | ---------- |
-| SFDoc:   |             |            |
-| SFDoc:   |             |            |
+| Command                            | Description                                                                                                     | Applies To                          |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| SFDoc: Generate Apex Method Header | Place cursor on the first line of a method declaration. Insert a method header based on the method's signature. | Apex Methods                        |
+| SFDoc: Insert File Header          | Insert a file header at the top of the current file, if it doesn't already include one.                         | Apex, Visualforce, HTML, JavaScript |
 
 # Settings
 
-| Property                           | Description |
-| ---------------------------------- | ----------- |
-| SFDoc.username                     |             |
-| SFDoc.EnableForApex                |             |
-| SFDoc.EnableForVisualforce         |             |
-| SFDoc.EnableForLightningMarkup     |             |
-| SFDoc.EnableForLightningJavascript |             |
-
-<!-- # Thoughts & Recommendation 🧠
-
-The point of this extension is to provide a simple way to identify and qualify files that are part of a Salesforce development project, as well as to keep track of changes made to them, why, by whom, and when. -->
-
-<!-- # Usage
-
-Upon first saving any Apex, Visualforce or Lightning file, a matching header will be added at the top.
-Further saves will update the "Last Modified By" and "Last Modified On" values to the current user and time. -->
-
-<!-- # Config
-
-1.  Under "Settings" (Preferences > Open Settings), look for "SFDX".
-2.  Set the desired Username under "SFDX_Autoheader: Username".
-3.  Toggle (On/Off) the "On-Save" header by file type. -->
+| Property                           | Description                                                                              |
+| ---------------------------------- | ---------------------------------------------------------------------------------------- |
+| SFDoc.username                     | Username that will appear in File and Method headers.                                    |
+| SFDoc.EnableForApex                | Enable automatic on-save file header insertion and update for Apex classes               |
+| SFDoc.EnableForVisualforce         | Enable automatic on-save file header insertion and update for Visualforce pages          |
+| SFDoc.EnableForLightningMarkup     | Enable automatic on-save file header insertion and update for Lightning markup files     |
+| SFDoc.EnableForLightningJavascript | Enable automatic on-save file header insertion and update for Lightning JavaScript files |

@@ -4,6 +4,7 @@
 
 - Update tests to cover Method Headers logic
 - File-wide method header injection
+- File header update regardless of settings (for header inserted through command)
 
 ## [0.5.0]
 
