@@ -7,6 +7,10 @@
 - File header update regardless of settings (for header inserted through command)
 - Finer grain tuning of the method header tags through settings
 
+## [0.5.1]
+
+- Fixed an issue where two spaces would be added between a param type and it's name, for method headers
+
 ## [0.5.0]
 
 - Complete rebranding into **_Salesforce Documenter_**

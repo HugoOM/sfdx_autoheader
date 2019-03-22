@@ -264,7 +264,6 @@ export default class MethodDocumenter {
       else if (!isRoot)
         currentProcessedToken =
           token +
-          " " +
           recursiveProcessParamToken(tokens[(currentIndex += 1)], true, false);
       else currentProcessedToken = (isWithinCollection ? "" : " ") + token;
 
