@@ -42,7 +42,8 @@
     "onLanguage:apex",
     "onLanguage:visualforce",
     "onLanguage:javascript",
-    "onLanguage:html"
+    "onLanguage:html",
+    "onLanguage:xml"
   ],
   "main": "./out/documenter.js",
   "contributes": {
@@ -72,6 +73,11 @@
           "command": "extension.insertFileHeader",
           "group": "SFDoc",
           "when": "editorLangId == javascript"
+        },
+        {
+          "command": "extension.insertFileHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == xml"
         }
       ],
       "commandPalette": [
@@ -99,6 +105,11 @@
           "command": "extension.insertFileHeader",
           "group": "SFDoc",
           "when": "editorLangId == javascript"
+        },
+        {
+          "command": "extension.insertFileHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == xml"
         }
       ]
     },
