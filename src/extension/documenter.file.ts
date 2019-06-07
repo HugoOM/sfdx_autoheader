@@ -178,7 +178,7 @@ export default class FileDocumenter {
   }
 
   private isLightning(document: TextDocument): boolean {
-    const validExtensions: string[] = ["htm", "html", "cmp", "js", "xml"];
+    const validExtensions: string[] = ["htm", "html", "cmp", "js"];
     const validSalesforceFolderNames = ["aura", "lwc"];
     const pathTokens = document.uri.path.split("/");
     const folderName = pathTokens[pathTokens.length - 2];
