@@ -2,7 +2,7 @@
   "name": "sfdx-autoheader",
   "displayName": "Salesforce Documenter",
   "description": "Automated Code Documentation Generation for Salesforce",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "publisher": "HugoOM",
   "license": "MIT",
   "badges": [
@@ -42,7 +42,8 @@
     "onLanguage:apex",
     "onLanguage:visualforce",
     "onLanguage:javascript",
-    "onLanguage:html"
+    "onLanguage:html",
+    "onLanguage:xml"
   ],
   "main": "./out/documenter.js",
   "contributes": {
@@ -72,6 +73,11 @@
           "command": "extension.insertFileHeader",
           "group": "SFDoc",
           "when": "editorLangId == javascript"
+        },
+        {
+          "command": "extension.insertFileHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == xml"
         }
       ],
       "commandPalette": [
@@ -99,6 +105,11 @@
           "command": "extension.insertFileHeader",
           "group": "SFDoc",
           "when": "editorLangId == javascript"
+        },
+        {
+          "command": "extension.insertFileHeader",
+          "group": "SFDoc",
+          "when": "editorLangId == xml"
         }
       ]
     },
