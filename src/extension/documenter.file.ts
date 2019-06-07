@@ -58,6 +58,7 @@ export default class FileDocumenter {
     if (languageId === "visualforce") return true;
     if (languageId === "html") return true;
     if (languageId === "javascript") return true;
+    if (languageId === "xml") return true;
 
     return false;
   }
@@ -167,6 +168,9 @@ export default class FileDocumenter {
     if (lang === "html")
       return enabledForLightMarkup && this.isLightning(document);
 
+    if (lang === "xml")
+      return enabledForLightMarkup && this.isLightning(document);
+
     if (lang === "javascript")
       return enabledForLightningJavaScript && this.isLightning(document);
 
@@ -174,7 +178,7 @@ export default class FileDocumenter {
   }
 
   private isLightning(document: TextDocument): boolean {
-    const validExtensions: string[] = ["htm", "html", "cmp", "js"];
+    const validExtensions: string[] = ["htm", "html", "cmp", "js", "xml"];
     const validSalesforceFolderNames = ["aura", "lwc"];
     const pathTokens = document.uri.path.split("/");
     const folderName = pathTokens[pathTokens.length - 2];
