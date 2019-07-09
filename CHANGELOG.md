@@ -7,6 +7,14 @@
 - File header update regardless of settings (for header inserted through command)
 - Finer grain tuning of the method header tags through settings
 
+## [0.5.3]
+
+- Hotfix to remove .xml file extension from support. Only the language binding under .cmp should be valid.
+
+## [0.5.2]
+
+- Added support for XML language binding under Aura .cmp files
+
 ## [0.5.1]
 
 - Fixed an issue where two spaces would be added between a param type and it's name, for method headers

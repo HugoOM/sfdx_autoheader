@@ -78,6 +78,7 @@ export default class FileDocumenter {
     if (languageId === "visualforce") return true;
     if (languageId === "html") return true;
     if (languageId === "javascript") return true;
+    if (languageId === "xml") return true;
 
     return false;
   }
@@ -229,6 +230,9 @@ export default class FileDocumenter {
     if (lang === "visualforce" && enabledForVf) return true;
 
     if (lang === "html")
+      return enabledForLightMarkup && this.isLightning(document);
+
+    if (lang === "xml")
       return enabledForLightMarkup && this.isLightning(document);
 
     if (lang === "javascript")
