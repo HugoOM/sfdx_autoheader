@@ -8,6 +8,10 @@ import {
 import templates from "../templates/templates.method";
 import helper from "./documenter.helper";
 
+/**
+ * Standard data structure reprensenting an Apex method signature being parsed
+ * and processed by the extension.
+ */
 type Method = {
   name: string;
   scope: string;

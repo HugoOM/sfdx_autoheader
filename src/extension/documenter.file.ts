@@ -13,26 +13,37 @@ import {
   workspace
 } from "vscode";
 import helper from "./documenter.helper";
+import defaultTemplates from "../templates/templates.file";
 
-const defaultTemplates = require("../templates/templates.file.js");
-
+/**
+ * Class that contains the methods related to generating and populating a class/file level header.
+ */
 export default class FileDocumenter {
   private cursorPositions: { [fileURI: string]: Position } = {};
   private readonly HEADER_LENGTH_LINES: number = 13;
   private isHeaderBeingInserted: boolean = false;
 
+  /**
+   * Map "On Save" event listeners provided by the class to the VSCode Framework.
+   * @param context Framework-provided Extension Context
+   */
   constructor(context: ExtensionContext) {
     this.setListenerOnPreSave(context);
     this.setListenerOnPostSave(context);
   }
 
-  insertFileHeaderFromCommand(editor: TextEditor, edit: TextEditorEdit) {
+  /**
+   * Method exposed as an editor command to insert a file-level header.
+   * @param editor The current text editor
+   * @param edit The various edits to be applied to the files
+   */
+  insertFileHeaderFromCommand(editor: TextEditor, edit: TextEditorEdit): void {
     if (!this.isValidLanguageOnRequest(editor.document)) {
       window.showErrorMessage("SFDoc: Unsupported file type and/or language");
       return;
     }
 
-    if (this.checkForHeaderOnDoc(editor.document)) {
+    if (this.isHeaderPresentOnDoc(editor.document)) {
       window.showErrorMessage(
         "SFDoc: Header already present on file's first line"
       );
@@ -42,7 +53,11 @@ export default class FileDocumenter {
     edit.insert(new Position(0, 0), this.getFileHeader(editor.document));
   }
 
-  checkForHeaderOnDoc(document: TextDocument): boolean {
+  /**
+   * Check whether a file-level is already present on the current document.
+   * @param document The open and active text document
+   */
+  isHeaderPresentOnDoc(document: TextDocument): boolean {
     const firstLineText: string = document.lineAt(0).text;
 
     return (
@@ -51,6 +66,11 @@ export default class FileDocumenter {
     );
   }
 
+  /**
+   * Validates whether the language of the current document is supported by the extension.
+   * Valid languages include: [Apex, Visualforce, HTML, JavaScript]
+   * @param document The open and active text document
+   */
   isValidLanguageOnRequest(document: TextDocument): boolean {
     const languageId = document.languageId;
 
@@ -62,6 +82,10 @@ export default class FileDocumenter {
     return false;
   }
 
+  /**
+   * Attach the file-header insertion action to the Pre-Save framework hook.
+   * @param context Framework-provided Extension Context
+   */
   private setListenerOnPreSave(context: ExtensionContext): void {
     const preSaveHookListener: Disposable = workspace.onWillSaveTextDocument.call(
       this,
@@ -75,6 +99,10 @@ export default class FileDocumenter {
     context.subscriptions.push(preSaveHookListener);
   }
 
+  /**
+   * Attach the cursor position reset action to the Post-Save framework hook.
+   * @param context Framework-provided Extension Context
+   */
   private setListenerOnPostSave(context: ExtensionContext): void {
     const postSaveHookListener = workspace.onDidSaveTextDocument(
       this.replaceCursor.bind(this)
@@ -82,6 +110,10 @@ export default class FileDocumenter {
     context.subscriptions.push(postSaveHookListener);
   }
 
+  /**
+   * Replace the cursor to its original position, that is prior to inserting or
+   * update a file header.
+   */
   private replaceCursor(): void {
     if (!Object.keys(this.cursorPositions).length) return;
     if (!window.visibleTextEditors.length) return;
@@ -98,19 +130,30 @@ export default class FileDocumenter {
     this.cursorPositions = {};
   }
 
+  /**
+   * Determine whether a file-level header should be inserted, or if one is already
+   * present and it should be updated instead.
+   * @param document The open and active text document
+   */
   private insertOrUpdateHeader(document: TextDocument): Thenable<TextEdit[]> {
     //* Prevent capturing the Cursor position when saving from script
     if (window.activeTextEditor)
       this.cursorPositions[document.uri.toString()] =
         window.activeTextEditor.selection.active;
 
-    this.isHeaderBeingInserted = this.checkForHeaderOnDoc(document);
+    this.isHeaderBeingInserted = this.isHeaderPresentOnDoc(document);
 
     return this.isHeaderBeingInserted
       ? this.getUpdateHeaderValueEdit(document)
       : this.getInsertFileHeaderEdit(document);
   }
 
+  /**
+   * Get and capture the current position of the cursor, prior to saving or updating
+   * the header. Doing so allows for replacing it at same place after the operation
+   * is completed.
+   * @param documentURI URI of the currently active document
+   */
   private getLastSavedCursorPosition(documentURI: string): Position {
     if (!this.cursorPositions[documentURI])
       return new Position(
@@ -125,30 +168,51 @@ export default class FileDocumenter {
     );
   }
 
+  /**
+   * Get a VSCode Text Edit that contains the header to be inserted.
+   * @param document The open and active text document
+   */
   private async getInsertFileHeaderEdit(
     document: TextDocument
   ): Promise<TextEdit[]> {
     return [TextEdit.insert(new Position(0, 0), this.getFileHeader(document))];
   }
 
+  /**
+   * Get the structured File Header content to be inserted, based on the selected
+   * settings.
+   * @param document The open and active text document
+   */
   private getFileHeader(document: TextDocument): string {
-    return defaultTemplates[document.languageId](
-      document.fileName.split(/\/|\\/g).pop(),
-      helper.getConfiguredUsername(),
-      helper.getHeaderFormattedDateTime()
+    return defaultTemplates(
+      document.languageId,
+      document.fileName.split(/\/|\\/g).pop()
     );
   }
 
+  /**
+   * Checks whether the line is a Block-type comment (Apex format)
+   * @param lineContent Content of the line being verified
+   */
   private isLineABlockComment(lineContent: string): boolean {
     const re = /^\s*\/\*/g;
     return re.test(lineContent);
   }
 
+  /**
+   * Checks whether the line is an XML comment
+   * @param lineContent Content of the line being verified
+   */
   private isLineAnXMLComment(lineContent: string): boolean {
     const re = /^\s*<!--/g;
     return re.test(lineContent);
   }
 
+  /**
+   * Checks if the language is valid/supported by the extension and if it's enabled
+   * in the user and/or workdspace settings.
+   * @param document The open and active text document
+   */
   private isValidLanguage(document: TextDocument): boolean {
     const lang = document.languageId;
     const configs = workspace.getConfiguration("SFDoc");
@@ -173,6 +237,11 @@ export default class FileDocumenter {
     return false;
   }
 
+  /**
+   * Checks if the current document is a Lightning document, based on it's file extension,
+   * and containing folder structure.
+   * @param document The open and active text document
+   */
   private isLightning(document: TextDocument): boolean {
     const validExtensions: string[] = ["htm", "html", "cmp", "js"];
     const validSalesforceFolderNames = ["aura", "lwc"];
@@ -198,6 +267,10 @@ export default class FileDocumenter {
     return true;
   }
 
+  /**
+   * Get a VSCode Text Edit that contains the header with the updated values.
+   * @param document The open and active text document
+   */
   private async getUpdateHeaderValueEdit(
     document: TextDocument
   ): Promise<TextEdit[]> {
@@ -209,22 +282,38 @@ export default class FileDocumenter {
     ];
   }
 
+  /**
+   * Update the "Last Modified By" and "Last Modified Date" values.
+   * @param documentText The content of the active document as text.
+   */
   private updateHeaderLastModifiedByAndDate(documentText: string): string {
     return this.updateLastModifiedDateTime(
       this.updateLastModifiedBy(documentText)
     );
   }
 
+  /**
+   * Update the "Last Modfiied By" value in the current header.
+   * @param fileContent The content of the active document as text.
+   */
   private updateLastModifiedBy(fileContent: string): string {
     const re = /^(\s*[\*\s]*@Last\s*Modified\s*By\s*:).*/gm;
     return fileContent.replace(re, `$1 ${helper.getConfiguredUsername()}`);
   }
 
+  /**
+   * Update the "Last Modfiied On" value in the current header.
+   * @param fileContent The content of the active document as text.
+   */
   private updateLastModifiedDateTime(fileContent: string): string {
     const re = /^(\s*[\*\s]*@Last\s*Modified\s*On\s*:).*/gm;
     return fileContent.replace(re, `$1 ${helper.getHeaderFormattedDateTime()}`);
   }
 
+  /**
+   * Returns a VSCode Range instance that spans the whole document.
+   * @param document The active text document.
+   */
   private getFullDocumentRange(document: TextDocument): Range {
     const lastChar = document.lineAt(document.lineCount - 1).text.length;
 
