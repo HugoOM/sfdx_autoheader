@@ -1,6 +1,15 @@
 import helper from "../extension/documenter.helper";
 
-export default function(languageId: string, fileName: string | undefined) {
+/**
+ * Generates and returns a file header, based on the language of the current file,
+ * its name and the user/workspace SFDoc settings.
+ * @param languageId VSCode language identifier for the current file
+ * @param fileName Name of the current file
+ */
+export function getFileHeaderFromTemplate(
+  languageId: string,
+  fileName: string | undefined
+) {
   let blockStart, lineStart, blockEnd;
 
   if (languageId === "apex" || languageId === "javascript") {
@@ -21,9 +30,7 @@ ${lineStart} @Group              :
 ${lineStart} @Last Modified By   : ${helper.getConfiguredUsername()}
 ${lineStart} @Last Modified On   : ${helper.getHeaderFormattedDateTime()}
 ${lineStart} @Modification Log   : 
-${lineStart}==============================================================================
 ${lineStart} Ver       Date            Author      		    Modification
-${lineStart}==============================================================================
 ${lineStart} 1.0    ${helper.getHeaderFormattedDate()}   ${helper.getConfiguredUsername()}     Initial Version
 ${blockEnd}
 `;

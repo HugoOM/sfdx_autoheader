@@ -13,7 +13,7 @@ import {
   workspace
 } from "vscode";
 import helper from "./documenter.helper";
-import defaultTemplates from "../templates/templates.file";
+import { getFileHeaderFromTemplate } from "../templates/templates.file";
 
 /**
  * Class that contains the methods related to generating and populating a class/file level header.
@@ -185,7 +185,7 @@ export default class FileDocumenter {
    * @param document The open and active text document
    */
   private getFileHeader(document: TextDocument): string {
-    return defaultTemplates(
+    return getFileHeaderFromTemplate(
       document.languageId,
       document.fileName.split(/\/|\\/g).pop()
     );
