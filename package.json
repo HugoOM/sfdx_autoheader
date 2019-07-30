@@ -153,6 +153,11 @@
           "type": "boolean",
           "default": false,
           "description": "Enable On-Save File Headers on Lightning Javascript Files (Aura & LWC)"
+        },
+        "SFDoc.IncludParameterTypeInMethodHeader": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include the type of the parameter along with it's name when generating a method header"
         }
       }
     },
@@ -195,9 +200,9 @@
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^12.6.2",
+    "@types/node": "^12.6.8",
     "chai": "^4.2.0",
-    "eslint": "^6.0.1",
+    "eslint": "^6.1.0",
     "tslint": "^5.18.0",
     "typescript": "^3.5.3",
     "vscode": "^1.1.35"

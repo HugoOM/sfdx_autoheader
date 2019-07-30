@@ -4,7 +4,8 @@ import {
   TextEditorEdit,
   window,
   Position,
-  TextDocument
+  TextDocument,
+  workspace
 } from "vscode";
 import { getMethodHeaderFromTemplate } from "../templates/templates.method";
 import helper from "./documenter.helper";
@@ -154,7 +155,17 @@ export default class MethodDocumenter {
       return;
     }
 
+    const isIncludeParameterType = workspace
+      .getConfiguration("SFDoc")
+      .get("IncludParameterTypeInMethodHeader", false);
+
     method.parameters = this.tokenizeApexMethod(methodParameters, false);
+
+    // Remove the parameter type from the parameter token strings
+    if (isIncludeParameterType)
+      method.parameters = method.parameters.map(
+        token => token.split(" ").pop() || ""
+      );
 
     return method;
   }
@@ -163,6 +174,7 @@ export default class MethodDocumenter {
    * Parse the method's parameters into tokens, to be utilized in the
    *  generated method's header.
    * @param content Method's parameters as text
+   * @param isSignature True if the current
    */
   private tokenizeApexMethod(content: string, isSignature: boolean): string[] {
     const tokens = content
@@ -195,10 +207,22 @@ export default class MethodDocumenter {
       .map(token => token.trim());
   }
 
+  /**
+   * Identify the type of the current token and process it, that it structure it
+   *  so that it can be inserted into the header, accordingly.
+   *  This method makes recursive calls to process collection-type token.
+   * @param token The string token being processed
+   * @param tokensIterator The tokens array iterator
+   * @param isFirstOfLine Indicate whether the current token is at the first position of a token string.
+   *  Is true for any token that is parsed alone, like signature arguments like "static"
+   * @param isWithinCollection Indicates whether the current token is within a collection declaration
+   * @param isSignature Indicates whether the current token is part of the methods signature.
+   *  A false value indicates that method parameters token are being processed instead
+   */
   private processToken(
     token: string,
     tokensIterator: IterableIterator<string>,
-    isRoot: boolean,
+    isFirstOfLine: boolean,
     isWithinCollection: boolean,
     isSignature: boolean = false
   ): string {
@@ -220,7 +244,7 @@ export default class MethodDocumenter {
         isWithinCollection,
         isSignature
       );
-    else if (!isRoot)
+    else if (!isFirstOfLine)
       currentProcessedToken =
         token +
         this.processToken(
@@ -234,6 +258,14 @@ export default class MethodDocumenter {
     return currentProcessedToken;
   }
 
+  /**
+   * Process a token that is Map declaration
+   * @param token The string token being processed
+   * @param tokensIterator The tokens array iterator
+   * @param isWithinCollection Indicates whether the current token is within a collection declaration
+   * @param isSignature Indicates whether the current token is part of the methods signature.
+   *  A false value indicates that method parameters token are being processed instead
+   */
   private processTokenMap(
     token: string,
     tokensIterator: IterableIterator<string>,
@@ -269,6 +301,14 @@ export default class MethodDocumenter {
     return processedToken;
   }
 
+  /**
+   * Process a token that is a List or Set declaration
+   * @param token The string token being processed
+   * @param tokensIterator The tokens array iterator
+   * @param isWithinCollection Indicates whether the current token is within a collection declaration
+   * @param isSignature Indicates whether the current token is part of the methods signature.
+   *  A false value indicates that method parameters token are being processed instead
+   */
   private processTokenListOrSet(
     token: string,
     tokensIterator: IterableIterator<string>,

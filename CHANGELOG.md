@@ -11,6 +11,8 @@
 
 - Removed "=" characters line around the "@Modification Log" header row, to improve formatting in VSCode's class peak overlay. It made the text very large and bold.
 - Removed legacy "SFDX-Autoheader" configuration items and related migration feature.
+- Removed method param type by default. Now behind a setting.
+- Removed the Time component from the default entry in the file header modification log.
 
 ## [0.5.3]
 
