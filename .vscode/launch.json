@@ -28,7 +28,8 @@
         "--extensionDevelopmentPath=${workspaceFolder}",
         // "--extensionTestsPath=${workspaceFolder}/out/test/extension.test.js"
         "--extensionTestsPath=${workspaceFolder}/out/test/"
-      ]
+      ],
+      "preLaunchTask": "npm: compile"
       // "outFiles": ["${workspaceFolder}/out/**/*.js"]
       // "preLaunchTask": "npm: watch"
     }
