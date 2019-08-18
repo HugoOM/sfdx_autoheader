@@ -11,8 +11,10 @@
       "request": "launch",
       "runtimeExecutable": "${execPath}",
       "args": [
+        "--disableExtensions",
         "${workspaceFolder}/test_files/testFile_SFDXAutoheader",
-        "--extensionDevelopmentPath=${workspaceFolder}"
+        "--extensionDevelopmentPath=${workspaceFolder}",
+        "--extensionTestsPath=${workspaceFolder}/out/test/"
       ],
       // "outFiles": ["${workspaceFolder}/out/**/*.js"]
       "preLaunchTask": "npm: compile"
