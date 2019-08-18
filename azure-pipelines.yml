@@ -6,8 +6,17 @@
 trigger:
   - master
 
+strategy:
+  matrix:
+    linux:
+      imageName: "ubuntu-latest"
+    mac:
+      imageName: "macos-latest"
+    windows:
+      imageName: "windows-latest"
+
 pool:
-  vmImage: "ubuntu-latest"
+  vmImage: $(imageName)
 
 steps:
   - task: NodeTool@0
