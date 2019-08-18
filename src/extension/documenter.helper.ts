@@ -7,7 +7,9 @@ export default {
     "protected",
     "global",
     "override",
-    "static"
+    "static",
+    "webservice",
+    "testMethod"
   ],
   getHeaderFormattedDateTime(): string {
     return new Date().toLocaleString();

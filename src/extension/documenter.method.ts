@@ -162,7 +162,7 @@ export default class MethodDocumenter {
     method.parameters = this.tokenizeApexMethod(methodParameters, false);
 
     // Remove the parameter type from the parameter token strings
-    if (isIncludeParameterType)
+    if (!isIncludeParameterType)
       method.parameters = method.parameters.map(
         token => token.split(" ").pop() || ""
       );

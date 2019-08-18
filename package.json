@@ -2,7 +2,7 @@
   "name": "sfdx-autoheader",
   "displayName": "Salesforce Documenter",
   "description": "Automated Code Documentation Generation for Salesforce",
-  "version": "0.5.3",
+  "version": "0.6.0",
   "publisher": "HugoOM",
   "license": "MIT",
   "badges": [
