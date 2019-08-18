@@ -22,8 +22,9 @@ steps:
     condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
 
   - bash: |
+      npm install
       echo ">>> Run sample integration test"
-      npm test
+      npm run test
     displayName: Run Tests
     env:
       DISPLAY: ":99.0"
