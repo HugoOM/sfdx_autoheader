@@ -1,4 +1,4 @@
-import { WorkspaceConfiguration, workspace } from "vscode";
+import { workspace } from "vscode";
 
 export default {
   apexReservedTerms: [
@@ -7,7 +7,9 @@ export default {
     "protected",
     "global",
     "override",
-    "static"
+    "static",
+    "webservice",
+    "testMethod"
   ],
   getHeaderFormattedDateTime(): string {
     return new Date().toLocaleString();
@@ -18,10 +20,8 @@ export default {
   },
 
   getConfiguredUsername(): string {
-    const settingsUsername: WorkspaceConfiguration = workspace.getConfiguration(
-      "SFDoc"
-    );
-
-    return settingsUsername.get("username", "phUser@phDomain.com");
+    return workspace
+      .getConfiguration("SFDoc")
+      .get("username", "phUser@phDomain.com");
   }
 };

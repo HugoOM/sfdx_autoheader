@@ -3,21 +3,32 @@ import {
   TextEditor,
   TextEditorEdit,
   window,
-  Position
+  Position,
+  TextDocument,
+  workspace
 } from "vscode";
-import templates from "../templates/templates.method";
+import { getMethodHeaderFromTemplate } from "../templates/templates.method";
 import helper from "./documenter.helper";
 
+/**
+ * Standard data structure reprensenting an Apex method signature being parsed
+ * and processed by the extension.
+ */
 type Method = {
   name: string;
-  scope: string;
-  isStatic: boolean;
-  isOverride: boolean;
   parameters: string[];
   returnType: string;
 };
 
+/**
+ * Class that contains the methods related to generating and populating an Apex method header.
+ */
 export default class MethodDocumenter {
+  /**
+   * Method exposed as an editor command to insert an Apex method header.
+   * @param editor The current and active VSCode editor
+   * @param edit Edit to be applied to the file, provided by VSCode when registering a command
+   */
   insertMethodHeaderFromCommand(
     editor: TextEditor,
     edit: TextEditorEdit
@@ -26,6 +37,7 @@ export default class MethodDocumenter {
 
     const currentLineId = methodSelection.anchor.line;
 
+    //TODO: Move to its own method "CheckForComment"
     if (/\/\/|\*\//i.test(editor.document.lineAt(currentLineId - 1).text)) {
       window.showErrorMessage("SFDoc: Method comment already present.");
       return;
@@ -40,25 +52,32 @@ export default class MethodDocumenter {
 
     const methodHeader = this.constructMethodHeader(currentLineId);
 
-    if (!methodHeader) return;
+    if (!methodHeader) {
+      window.showErrorMessage(
+        "SFDoc: Apex method's signature not recognized on selected line."
+      );
+      return;
+    }
 
     edit.insert(new Position(currentLineId, 0), methodHeader);
   }
 
+  /**
+   * Entry-point method to construct a header for Apex method present on the selected line
+   * @param currentLineId Id of the currently selected line, for which a header
+   *  will be generated
+   */
   private constructMethodHeader(currentLineId: number): string | void {
-    const method = this.parseSignatureIntoMethod();
+    const method = this.parseApexMethodSignature();
 
     if (!method) return;
 
     if (!window.activeTextEditor) return;
 
-    const str =
-      templates.base() +
-      templates.description() +
-      templates.author() +
-      templates.parameters(method.parameters) +
-      templates.returnType(method.returnType) +
-      templates.end();
+    const str = getMethodHeaderFromTemplate(
+      method.parameters,
+      method.returnType
+    );
 
     const indentation = window.activeTextEditor.document
       .lineAt(currentLineId)
@@ -67,6 +86,11 @@ export default class MethodDocumenter {
     return this.matchIndentation(str, indentation);
   }
 
+  /**
+   * Apply the indentation of the method being processed to the generated header.
+   * @param methodHeaderString The header being generated
+   * @param indentation The indentation that precedes the selected line
+   */
   private matchIndentation(
     methodHeaderString: string,
     indentation: RegExpMatchArray | null
@@ -82,63 +106,37 @@ export default class MethodDocumenter {
       );
   }
 
-  private parseSignatureIntoMethod(): Method | void {
+  /**
+   * Parse the signature of the Apex method being process into the TS "Method" type.
+   */
+  private parseApexMethodSignature(): Method | void {
     if (!window.activeTextEditor) return;
 
     const method: Method = {
       parameters: [],
       name: "",
-      scope: "",
-      returnType: "",
-      isStatic: false,
-      isOverride: false
+      returnType: ""
     };
 
     const document = window.activeTextEditor.document;
-    const re_methodDefinitionEnd = /\)/gi;
     let currentLineId = window.activeTextEditor.selection.anchor.line;
-    let methodText = document.lineAt(currentLineId).text;
 
-    if (!methodText.replace(/\s/gi, "")) {
+    if (!document.lineAt(currentLineId).text.replace(/\s/gi, "")) {
       window.showErrorMessage(
         "SFDoc: Cannot insert method header on empty line."
       );
       return;
     }
 
-    for (
-      ++currentLineId;
-      currentLineId <= window.activeTextEditor.document.lineCount;
-      currentLineId++
-    ) {
-      try {
-        if (re_methodDefinitionEnd.test(methodText)) break;
+    const methodText = this.getMethodTextFromDocument(currentLineId, document);
 
-        let currentLine = document.lineAt(currentLineId).text;
+    if (!methodText) return;
 
-        if (/\*\/|\/\*|\bclass\b|\}/gi.test(currentLine)) throw Error();
-
-        if (currentLineId === window.activeTextEditor.document.lineCount)
-          throw Error();
-
-        methodText += currentLine;
-      } catch (err) {
-        window.showErrorMessage(
-          "SFDoc: Apex method's signature not recognized on selected line."
-        );
-        return;
-      }
-    }
-
-    const re_ScopeModifier = /public|private|protected|global/i;
     const [methodSignature, methodParameters] = methodText.split("(");
 
-    let signatureTokens = this.getSignatureAsTokens(methodSignature);
+    let signatureTokens = this.tokenizeApexMethod(methodSignature, true);
 
     method.name = signatureTokens.pop() || "";
-
-    method.scope =
-      signatureTokens.find(token => re_ScopeModifier.test(token)) || "";
 
     method.returnType =
       signatureTokens.find(
@@ -157,159 +155,217 @@ export default class MethodDocumenter {
       return;
     }
 
-    method.isStatic = signatureTokens.some(
-      (token: string) => token.toLowerCase() === "static"
-    );
+    const isIncludeParameterType = workspace
+      .getConfiguration("SFDoc")
+      .get("IncludParameterTypeInMethodHeader", false);
 
-    method.isOverride = signatureTokens.some(
-      (token: string) => token.toLowerCase() === "override"
-    );
+    method.parameters = this.tokenizeApexMethod(methodParameters, false);
 
-    method.parameters = this.getParametersAsTokens(methodParameters);
+    // Remove the parameter type from the parameter token strings
+    if (!isIncludeParameterType)
+      method.parameters = method.parameters.map(
+        token => token.split(" ").pop() || ""
+      );
 
     return method;
   }
 
-  private getSignatureAsTokens(signatureString: string): string[] {
-    const tokens = signatureString
+  /**
+   * Parse the method's parameters into tokens, to be utilized in the
+   *  generated method's header.
+   * @param content Method's parameters as text
+   * @param isSignature True if the current
+   */
+  private tokenizeApexMethod(content: string, isSignature: boolean): string[] {
+    const tokens = content
       .split(/\(|\)|,|<|>|\s|\{|\}/gi)
       .filter(token => !!token);
 
     const processedTokens: string[] = [];
-    let currentIndex = -1;
 
     if (!tokens || !tokens.length) return processedTokens;
 
-    while (currentIndex + 1 < tokens.length) {
+    const tokensIterator = tokens[Symbol.iterator]();
+
+    let iterVal = tokensIterator.next();
+
+    while (!iterVal.done) {
       processedTokens.push(
-        recursiveProcessSignatureToken(tokens[(currentIndex += 1)])
+        this.processToken(
+          iterVal.value,
+          tokensIterator,
+          isSignature,
+          false,
+          isSignature
+        )
       );
+      iterVal = tokensIterator.next();
     }
 
     return processedTokens
       .filter(token => token !== "")
       .map(token => token.trim());
-
-    function recursiveProcessSignatureToken(token: string): string {
-      let currentProcessedToken = "";
-
-      if (!token) return currentProcessedToken;
-
-      if (token.toLowerCase() === "map")
-        currentProcessedToken = processSignatureMapToken(token);
-      else if (token.toLowerCase() === "list" || token.toLowerCase() === "set")
-        currentProcessedToken = processSignatureListOrSetToken(token);
-      else currentProcessedToken = token;
-
-      return currentProcessedToken;
-    }
-
-    function processSignatureMapToken(token: string): string {
-      return (
-        token +
-        "<" +
-        recursiveProcessSignatureToken(tokens[(currentIndex += 1)]) +
-        ", " +
-        recursiveProcessSignatureToken(tokens[(currentIndex += 1)]) +
-        ">"
-      );
-    }
-
-    function processSignatureListOrSetToken(token: string): string {
-      return (
-        token +
-        "<" +
-        recursiveProcessSignatureToken(tokens[(currentIndex += 1)]) +
-        ">"
-      );
-    }
   }
 
-  private getParametersAsTokens(parametersString: string): string[] {
-    const tokens = parametersString
-      .split(/\(|\)|,|<|>|\s|\{|\}/gi)
-      .filter(token => !!token);
+  /**
+   * Identify the type of the current token and process it, that it structure it
+   *  so that it can be inserted into the header, accordingly.
+   *  This method makes recursive calls to process collection-type token.
+   * @param token The string token being processed
+   * @param tokensIterator The tokens array iterator
+   * @param isFirstOfLine Indicate whether the current token is at the first position of a token string.
+   *  Is true for any token that is parsed alone, like signature arguments like "static"
+   * @param isWithinCollection Indicates whether the current token is within a collection declaration
+   * @param isSignature Indicates whether the current token is part of the methods signature.
+   *  A false value indicates that method parameters token are being processed instead
+   */
+  private processToken(
+    token: string,
+    tokensIterator: IterableIterator<string>,
+    isFirstOfLine: boolean,
+    isWithinCollection: boolean,
+    isSignature: boolean = false
+  ): string {
+    let currentProcessedToken = "";
 
-    const processedTokens: string[] = [];
-    let currentIndex = -1;
+    if (!token) return currentProcessedToken;
 
-    if (!tokens || !tokens.length) return processedTokens;
-
-    while (currentIndex + 1 < tokens.length) {
-      processedTokens.push(
-        recursiveProcessParamToken(tokens[(currentIndex += 1)], false, false)
+    if (token.toLowerCase() === "map")
+      currentProcessedToken = this.processTokenMap(
+        token,
+        tokensIterator,
+        isWithinCollection,
+        isSignature
       );
-    }
-
-    return processedTokens
-      .filter(token => token !== "")
-      .map(token => token.trim());
-
-    function recursiveProcessParamToken(
-      token: string,
-      isRoot: boolean,
-      isWithinCollection: boolean
-    ): string {
-      let currentProcessedToken = "";
-
-      if (!token) return currentProcessedToken;
-
-      if (token.toLowerCase() === "map")
-        currentProcessedToken = processParamMapToken(token, isWithinCollection);
-      else if (token.toLowerCase() === "list" || token.toLowerCase() === "set")
-        currentProcessedToken = processParamListOrSetToken(
-          token,
-          isWithinCollection
-        );
-      else if (!isRoot)
-        currentProcessedToken =
-          token +
-          recursiveProcessParamToken(tokens[(currentIndex += 1)], true, false);
-      else currentProcessedToken = (isWithinCollection ? "" : " ") + token;
-
-      return currentProcessedToken;
-    }
-
-    function processParamMapToken(
-      token: string,
-      isWithinCollection: boolean
-    ): string {
-      let processedToken =
+    else if (token.toLowerCase() === "list" || token.toLowerCase() === "set")
+      currentProcessedToken = this.processTokenListOrSet(
+        token,
+        tokensIterator,
+        isWithinCollection,
+        isSignature
+      );
+    else if (!isFirstOfLine)
+      currentProcessedToken =
         token +
-        "<" +
-        recursiveProcessParamToken(tokens[(currentIndex += 1)], true, true) +
-        ", " +
-        recursiveProcessParamToken(tokens[(currentIndex += 1)], true, true) +
-        ">";
-
-      if (!isWithinCollection)
-        processedToken += recursiveProcessParamToken(
-          tokens[(currentIndex += 1)],
+        this.processToken(
+          tokensIterator.next().value,
+          tokensIterator,
           true,
           false
         );
+    else currentProcessedToken = (isWithinCollection ? "" : " ") + token;
 
-      return processedToken;
+    return currentProcessedToken;
+  }
+
+  /**
+   * Process a token that is Map declaration
+   * @param token The string token being processed
+   * @param tokensIterator The tokens array iterator
+   * @param isWithinCollection Indicates whether the current token is within a collection declaration
+   * @param isSignature Indicates whether the current token is part of the methods signature.
+   *  A false value indicates that method parameters token are being processed instead
+   */
+  private processTokenMap(
+    token: string,
+    tokensIterator: IterableIterator<string>,
+    isWithinCollection: boolean,
+    isSignature: boolean
+  ): string {
+    let processedToken =
+      token +
+      "<" +
+      this.processToken(
+        tokensIterator.next().value,
+        tokensIterator,
+        true,
+        true
+      ) +
+      ", " +
+      this.processToken(
+        tokensIterator.next().value,
+        tokensIterator,
+        true,
+        true
+      ) +
+      ">";
+
+    if (!isWithinCollection && !isSignature)
+      processedToken += this.processToken(
+        tokensIterator.next().value,
+        tokensIterator,
+        true,
+        false
+      );
+
+    return processedToken;
+  }
+
+  /**
+   * Process a token that is a List or Set declaration
+   * @param token The string token being processed
+   * @param tokensIterator The tokens array iterator
+   * @param isWithinCollection Indicates whether the current token is within a collection declaration
+   * @param isSignature Indicates whether the current token is part of the methods signature.
+   *  A false value indicates that method parameters token are being processed instead
+   */
+  private processTokenListOrSet(
+    token: string,
+    tokensIterator: IterableIterator<string>,
+    isWithinCollection: boolean,
+    isSignature: boolean
+  ): string {
+    let processedToken =
+      token +
+      "<" +
+      this.processToken(
+        tokensIterator.next().value,
+        tokensIterator,
+        true,
+        true
+      ) +
+      ">";
+
+    if (!isWithinCollection && !isSignature)
+      processedToken += this.processToken(
+        tokensIterator.next().value,
+        tokensIterator,
+        true,
+        false
+      );
+
+    return processedToken;
+  }
+
+  /**
+   * Parse and return the Apex method's signature for which a header was requested,
+   *  by going down through the lines from the cursor's position to the end of the
+   *  method's arguments definition.
+   * @param lineNumber Line number/id where the User's cursor is positionned and
+   *  where the processing of the Apex method's signature should begin
+   * @param document The currently active text document
+   */
+  private getMethodTextFromDocument(
+    lineNumber: number,
+    document: TextDocument
+  ): string | void {
+    const re_methodDefinitionEnd = /\)/gi;
+    let methodText = "";
+
+    while (true) {
+      let currentLine = document.lineAt(lineNumber).text;
+
+      methodText += currentLine;
+
+      if (re_methodDefinitionEnd.test(methodText)) break;
+
+      if (/\*\/|\/\*|\bclass\b|\}/gi.test(currentLine)) return;
+
+      if (lineNumber === document.lineCount) return;
+
+      lineNumber++;
     }
 
-    function processParamListOrSetToken(
-      token: string,
-      isWithinCollection: boolean
-    ): string {
-      let processedToken =
-        token +
-        "<" +
-        recursiveProcessParamToken(tokens[(currentIndex += 1)], true, true) +
-        ">";
-
-      if (!isWithinCollection)
-        processedToken += recursiveProcessParamToken(
-          tokens[(currentIndex += 1)],
-          true,
-          false
-        );
-
-      return processedToken;
-    }
+    return methodText;
   }
 }

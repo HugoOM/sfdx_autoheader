@@ -2,14 +2,13 @@
   "name": "sfdx-autoheader",
   "displayName": "Salesforce Documenter",
   "description": "Automated Code Documentation Generation for Salesforce",
-  "version": "0.5.3",
+  "version": "0.6.0",
   "publisher": "HugoOM",
   "license": "MIT",
   "badges": [
     {
-      "url": "https://travis-ci.org/HugoOM/sfdx_autoheader.svg?branch=master",
-      "href": "https://travis-ci.org/HugoOM/sfdx_autoheader",
-      "description": "Travis-CI Build Status for Master Branch (Current Release)"
+      "url": "https://dev.azure.com/HugoOM/Salesforce%20Documenter/_apis/build/status/HugoOM.sfdx_autoheader?branchName=master",
+      "description": "Azure Pipelines Build Status for Master Branch (Current Release)"
     }
   ],
   "preview": true,
@@ -154,30 +153,10 @@
           "default": false,
           "description": "Enable On-Save File Headers on Lightning Javascript Files (Aura & LWC)"
         },
-        "SFDX_Autoheader.username": {
-          "type": "string",
-          "default": "",
-          "description": "[Deprecated]: Compatibility-only setting. Will be retired in a future version. Use settings under 'SFDoc' instead."
-        },
-        "SFDX_Autoheader.EnableForApex": {
-          "type": "boolean",
-          "default": true,
-          "description": "[Deprecated]: Compatibility-only setting. Will be retired in a future version. Use settings under 'SFDoc' instead."
-        },
-        "SFDX_Autoheader.EnableForVisualforce": {
-          "type": "boolean",
-          "default": true,
-          "description": "[Deprecated]: Compatibility-only setting. Will be retired in a future version. Use settings under 'SFDoc' instead."
-        },
-        "SFDX_Autoheader.EnableForLightningMarkup": {
-          "type": "boolean",
-          "default": true,
-          "description": "[Deprecated]: Compatibility-only setting. Will be retired in a future version. Use settings under 'SFDoc' instead."
-        },
-        "SFDX_Autoheader.EnableForLightningJavascript": {
+        "SFDoc.IncludParameterTypeInMethodHeader": {
           "type": "boolean",
           "default": false,
-          "description": "[Deprecated]: Compatibility-only setting. Will be retired in a future version. Use settings under 'SFDoc' instead."
+          "description": "Include the type of the parameter along with it's name when generating a method header"
         }
       }
     },
@@ -218,13 +197,13 @@
     "test": "npm run compile && node ./node_modules/vscode/bin/test"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.7",
+    "@types/chai": "^4.2.0",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^12.0.4",
+    "@types/node": "^12.7.2",
     "chai": "^4.2.0",
-    "eslint": "^5.16.0",
-    "tslint": "^5.17.0",
-    "typescript": "^3.5.1",
-    "vscode": "^1.1.34"
+    "eslint": "^6.2.2",
+    "tslint": "^5.19.0",
+    "typescript": "^3.6.2",
+    "vscode": "^1.1.36"
   }
 }

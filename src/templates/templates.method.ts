@@ -1,27 +1,24 @@
 import helper from "../extension/documenter.helper";
 
-export default {
-  base(): string {
-    return "/**\n";
-  },
-  scope(...scopes: string[]): string {
-    return `* @scope ${scopes.toString().replace(/,/gi, " ")}\n`;
-  },
-  parameters(parameters: string[]): string {
-    return parameters.reduce((parametersString: string, parameter: string) => {
-      return (parametersString += `* @param ${parameter}\n`);
-    }, "");
-  },
-  returnType(returnType: string): string {
-    return `* @return ${returnType}\n`;
-  },
-  description(): string {
-    return `* @description\n`;
-  },
-  author(): string {
-    return `* @author ${helper.getConfiguredUsername()} | ${helper.getHeaderFormattedDate()}\n`;
-  },
-  end(): string {
-    return "*/\n";
-  }
-};
+/**
+ * Generate a header for the selected Apex method, based on the SFDoc template and
+ * the method's signature.
+ * @param parameters List of tokenized parameters in the Apex method's signature
+ * @param returnType The return type of the Apex method
+ */
+export function getMethodHeaderFromTemplate(
+  parameters: string[],
+  returnType: string
+) {
+  return (
+    "/**\n" +
+    "* @description \n" +
+    `* @author ${helper.getConfiguredUsername()} | ${helper.getHeaderFormattedDate()} \n` +
+    `${parameters
+      .map(param => `* @param ${param} \n`)
+      .toString()
+      .replace(/,/gim, "")}` +
+    `* @return ${returnType} \n` +
+    "**/"
+  );
+}

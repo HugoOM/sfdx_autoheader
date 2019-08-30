@@ -1,76 +1,37 @@
-module.exports = {
-  apex: (fileName: string, userName: string, currentTime: string) => `/**
- * @File Name          : ${fileName}
- * @Description        : 
- * @Author             : ${userName}
- * @Group              : 
- * @Last Modified By   : ${userName}
- * @Last Modified On   : ${currentTime}
- * @Modification Log   : 
- *==============================================================================
- * Ver         Date                     Author      		      Modification
- *==============================================================================
- * 1.0    ${currentTime}   ${userName}     Initial Version
-**/
-`,
-  visualforce: (
-    fileName: string,
-    userName: string,
-    currentTime: string
-  ) => `<!--
-  @Page Name          : ${fileName}
-  @Description        : 
-  @Author             : ${userName}
-  @Group              : 
-  @Last Modified By   : ${userName}
-  @Last Modified On   : ${currentTime}
-  @Modification Log   : 
-  ==============================================================================
-  Ver         Date                     Author      		      Modification
-  ==============================================================================
-  1.0    ${currentTime}   ${userName}     Initial Version
--->
-`,
-  html: (fileName: string, userName: string, currentTime: string) => `<!--
-  @Component Name     : ${fileName}
-  @Description        : 
-  @Author             : ${userName}
-  @Group              : 
-  @Last Modified By   : ${userName}
-  @Last Modified On   : ${currentTime}
-  @Modification Log   : 
-  ==============================================================================
-  Ver         Date                     Author      		      Modification
-  ==============================================================================
-  1.0    ${currentTime}   ${userName}     Initial Version
--->
-`,
-  xml: (fileName: string, userName: string, currentTime: string) => `<!--
-  @Component Name     : ${fileName}
-  @Description        : 
-  @Author             : ${userName}
-  @Group              : 
-  @Last Modified By   : ${userName}
-  @Last Modified On   : ${currentTime}
-  @Modification Log   : 
-  ==============================================================================
-  Ver         Date                     Author      		      Modification
-  ==============================================================================
-  1.0    ${currentTime}   ${userName}     Initial Version
--->
-`,
-  javascript: (fileName: string, userName: string, currentTime: string) => `/**
- * @File Name          : ${fileName}
- * @Description        : 
- * @Author             : ${userName}
- * @Group              : 
- * @Last Modified By   : ${userName}
- * @Last Modified On   : ${currentTime}
- * @Modification Log   : 
- *==============================================================================
- * Ver         Date                     Author      		      Modification
- *==============================================================================
- * 1.0    ${currentTime}   ${userName}     Initial Version
-**/
-`
-};
+import helper from "../extension/documenter.helper";
+
+/**
+ * Generates and returns a file header, based on the language of the current file,
+ * its name and the user/workspace SFDoc settings.
+ * @param languageId VSCode language identifier for the current file
+ * @param fileName Name of the current file
+ */
+export function getFileHeaderFromTemplate(
+  languageId: string,
+  fileName: string | undefined
+) {
+  let blockStart, lineStart, blockEnd;
+
+  if (languageId === "apex" || languageId === "javascript") {
+    blockStart = "/**";
+    lineStart = " *";
+    blockEnd = "**/";
+  } else if (languageId === "html" || languageId === "visualforce") {
+    blockStart = "<!--";
+    lineStart = " ";
+    blockEnd = "-->";
+  }
+
+  return `${blockStart}
+${lineStart} @File Name          : ${fileName}
+${lineStart} @Description        : 
+${lineStart} @Author             : ${helper.getConfiguredUsername()}
+${lineStart} @Group              : 
+${lineStart} @Last Modified By   : ${helper.getConfiguredUsername()}
+${lineStart} @Last Modified On   : ${helper.getHeaderFormattedDateTime()}
+${lineStart} @Modification Log   : 
+${lineStart} Ver       Date            Author      		    Modification
+${lineStart} 1.0    ${helper.getHeaderFormattedDate()}   ${helper.getConfiguredUsername()}     Initial Version
+${blockEnd}
+`;
+}

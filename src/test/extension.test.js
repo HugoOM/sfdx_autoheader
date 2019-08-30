@@ -355,41 +355,38 @@ suite("Salesforce Documenter - Extension Suite", function() {
     assert.isTrue(fileDocumenter.isLightning(document));
   });
 
-  /* Update following rework
-    test("Testing checkForHeader", done => {
-      const blockComment = "/*";
-      const xmlComment = "<!--";
-      const notAComment = "abc";
-  
-      ext.checkForHeader(blockComment);
-      assert.isTrue(ext.isHeaderExistsOnFile);
-  
-      ext.checkForHeader(xmlComment);
-      assert.isTrue(ext.isHeaderExistsOnFile);
-  
-      ext.checkForHeader(notAComment);
-      assert.isFalse(ext.isHeaderExistsOnFile);
-  
-      done();
-    });
-  
-    test("Testing getLastSavedCursorPosition", done => {
-      const testPosition = new Position(15, 15);
-      ext.cursorPosition = testPosition;
-      ext.isHeaderExistsOnFile = true;
-  
-      assert.deepEqual(testPosition, ext.getLastSavedCursorPosition());
-  
-      ext.isHeaderExistsOnFile = false;
-  
-      assert.equal(
-        testPosition.line + ext.HEADER_LENGTH_LINES,
-        ext.getLastSavedCursorPosition().line
-      );
-  
-      done();
-    });
-    */
+  // FIXME: Update to check content from a file
+  // test("Testing checkForHeader", async done => {
+  //   const blockComment = "/*";
+  //   const xmlComment = "<!--";
+  //   const notAComment = "abc";
+
+  //   const document = await openTestDocumentByFileIdentifier("apex");
+
+  //   assert.isTrue(fileDocumenter.isHeaderPresentOnDoc(blockComment));
+
+  //   assert.isTrue(fileDocumenter.isHeaderPresentOnDoc(xmlComment));
+
+  //   assert.isFalse(fileDocumenter.isHeaderPresentOnDoc(notAComment));
+
+  //   done();
+  // });
+
+  // FIXME: Fix ...
+  // test("Testing getLastSavedCursorPosition", done => {
+  //   const testPosition = new Position(15, 15);
+  //   fileDocumenter.cursorPosition = testPosition;
+  //   // fileDocumenter.isHeaderExistsOnFile = true;
+
+  //   assert.deepEqual(testPosition, fileDocumenter.getLastSavedCursorPosition());
+
+  //   assert.equal(
+  //     testPosition.line + fileDocumenter.HEADER_LENGTH_LINES,
+  //     fileDocumenter.getLastSavedCursorPosition().line
+  //   );
+
+  //   done();
+  // });
 
   test("Testing getUpdateHeaderValueEdit", async () => {
     const document = await openTestDocumentByFileIdentifier("apex");
@@ -424,9 +421,7 @@ suite("Salesforce Documenter - Extension Suite", function() {
      * @Last Modified By   : hi@hugo.dev
      * @Last Modified On   : 2019-02-27, 10:42:33 p.m.
      * @Modification Log   : 
-     *------------------------------------------------------------------------------
      * Ver       	   Date           Author      		   Modification
-     *------------------------------------------------------------------------------
      **/`;
     const lastModByRegex = /^(\s*\*\s*@Last\s*Modified\s*By\s*:).*/gm;
     const lastModOnRegex = /^(\s*\*\s*@Last\s*Modified\s*On\s*:).*/gm;
@@ -471,6 +466,16 @@ suite("Salesforce Documenter - Extension Suite", function() {
     assert.equal(testRange.end.line, document.lineCount);
     return;
   });
+
+  /* -- Method Documenter Tests -- */
+  // test("Testing Insert Method Header From Command", done => {
+  //   // TODO: Implement
+  //   const doc = openTestDocumentByFileIdentifier("apex");
+
+  //   methodDocumenter.insertMethodHeaderFromCommand();
+
+  //   done();
+  // });
 });
 
 function wait(timeToWaitInMS) {
