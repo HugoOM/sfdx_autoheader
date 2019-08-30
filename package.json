@@ -198,13 +198,13 @@
     "test": "npm run compile && node ./node_modules/vscode/bin/test"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.7",
+    "@types/chai": "^4.2.0",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^12.6.8",
+    "@types/node": "^12.7.2",
     "chai": "^4.2.0",
-    "eslint": "^6.1.0",
-    "tslint": "^5.18.0",
-    "typescript": "^3.5.3",
-    "vscode": "^1.1.35"
+    "eslint": "^6.2.2",
+    "tslint": "^5.19.0",
+    "typescript": "^3.6.2",
+    "vscode": "^1.1.36"
   }
 }
