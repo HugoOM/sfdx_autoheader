@@ -18,6 +18,7 @@
 - Removed the Time component from the default entry in the file header modification log.
 - Removed the Param types for method header by default, now behind a setting.
 - Full code comenting and tidying (DRY on method header)
+- Changed CI from Travis to Azure Pipelines
 
 ## [0.5.3]
 

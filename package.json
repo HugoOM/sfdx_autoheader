@@ -7,9 +7,8 @@
   "license": "MIT",
   "badges": [
     {
-      "url": "https://travis-ci.org/HugoOM/sfdx_autoheader.svg?branch=master",
-      "href": "https://travis-ci.org/HugoOM/sfdx_autoheader",
-      "description": "Travis-CI Build Status for Master Branch (Current Release)"
+      "url": "https://dev.azure.com/HugoOM/Salesforce%20Documenter/_apis/build/status/HugoOM.sfdx_autoheader?branchName=master",
+      "description": "Azure Pipelines Build Status for Master Branch (Current Release)"
     }
   ],
   "preview": true,
