@@ -36,10 +36,11 @@ Through these means, code becomes easier to understand, maintain, and evolve.
 
 # Settings
 
-| Property                           | Description                                                                              |
-| ---------------------------------- | ---------------------------------------------------------------------------------------- |
-| SFDoc.username                     | Username that will appear in File and Method headers.                                    |
-| SFDoc.EnableForApex                | Enable automatic on-save file header insertion and update for Apex classes               |
-| SFDoc.EnableForVisualforce         | Enable automatic on-save file header insertion and update for Visualforce pages          |
-| SFDoc.EnableForLightningMarkup     | Enable automatic on-save file header insertion and update for Lightning Markup files     |
-| SFDoc.EnableForLightningJavascript | Enable automatic on-save file header insertion and update for Lightning JavaScript files |
+| Property                                | Description                                                                              |
+| --------------------------------------- | ---------------------------------------------------------------------------------------- |
+| SFDoc.username                          | Username that will appear in File and Method headers.                                    |
+| SFDoc.EnableForApex                     | Enable automatic on-save file header insertion and update for Apex classes               |
+| SFDoc.EnableForVisualforce              | Enable automatic on-save file header insertion and update for Visualforce pages          |
+| SFDoc.EnableForLightningMarkup          | Enable automatic on-save file header insertion and update for Lightning Markup files     |
+| SFDoc.EnableForLightningJavascript      | Enable automatic on-save file header insertion and update for Lightning JavaScript files |
+| SFDoc.IncludParameterTypeInMethodHeader | Include Param Types as well as name in method header                                     |

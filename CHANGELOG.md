@@ -3,9 +3,12 @@
 ## [Future]
 
 - Update tests to cover Method Headers logic
+- Insert method header before annotations instead of between anotations and declaration
 - File-wide method header injection
 - File header update regardless of settings (for header inserted through command)
 - Finer grain tuning of the method header tags through settings
+- Update Readme .gifs to latest format
+- Fire file header update regardless of settings
 
 ## [0.6.0]
 
@@ -13,6 +16,8 @@
 - Removed legacy "SFDX-Autoheader" configuration items and related migration feature.
 - Removed method param type by default. Now behind a setting.
 - Removed the Time component from the default entry in the file header modification log.
+- Removed the Param types for method header by default, now behind a setting.
+- Full code comenting and tidying (DRY on method header)
 
 ## [0.5.3]
 
