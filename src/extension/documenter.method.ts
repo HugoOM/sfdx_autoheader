@@ -27,7 +27,7 @@ export default class MethodDocumenter {
   /**
    * Method exposed as an editor command to insert an Apex method header.
    * @param editor The current and active VSCode editor
-   * @param edit
+   * @param edit Edit to be applied to the file, provided by VSCode when registering a command
    */
   insertMethodHeaderFromCommand(
     editor: TextEditor,

@@ -466,6 +466,16 @@ suite("Salesforce Documenter - Extension Suite", function() {
     assert.equal(testRange.end.line, document.lineCount);
     return;
   });
+
+  /* -- Method Documenter Tests -- */
+  // test("Testing Insert Method Header From Command", done => {
+  //   // TODO: Implement
+  //   const doc = openTestDocumentByFileIdentifier("apex");
+
+  //   methodDocumenter.insertMethodHeaderFromCommand();
+
+  //   done();
+  // });
 });
 
 function wait(timeToWaitInMS) {
