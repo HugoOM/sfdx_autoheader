@@ -35,6 +35,7 @@ export default class MethodDocumenter {
   ): void {
     const methodSelection: Selection = editor.selection;
 
+    // TODO: Parse the content of the line to ensure it doesn't include some annotations ... Find the first VALID line.
     const currentLineId = methodSelection.anchor.line;
 
     //TODO: Move to its own method "CheckForComment"
@@ -140,7 +141,9 @@ export default class MethodDocumenter {
 
     method.returnType =
       signatureTokens.find(
-        token => !helper.apexReservedTerms.includes(token.toLowerCase())
+        token =>
+          !helper.apexReservedTerms.includes(token.toLowerCase()) &&
+          !helper.apexAnnotationsRegex.test(token)
       ) || "";
 
     if (
