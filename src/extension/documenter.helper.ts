@@ -12,7 +12,7 @@ export default {
     "testMethod"
   ],
 
-  apexAnnotationsRegex: /^@\s*\D*/,
+  apexAnnotationsRegex: /^\s*@\s*\D*/,
 
   getHeaderFormattedDateTime(): string {
     return new Date().toLocaleString();

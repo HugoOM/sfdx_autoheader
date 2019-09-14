@@ -3,12 +3,16 @@
 ## [Future]
 
 - Update tests to cover Method Headers logic
-- Insert method header before annotations instead of between anotations and declaration
 - File-wide method header injection
 - File header update regardless of settings (for header inserted through command)
 - Finer grain tuning of the method header tags through settings
 - Update Readme .gifs to latest format
 - Fire file header update regardless of settings
+
+## [0.6.1]
+
+- Method headers are now inserted before annotations, if any are present on the preceding lines.
+- Method headers now properly consider "inline" annotations as valid tokens. This prevents an issue where an annotations would be recognized as the return type.
 
 ## [0.6.0]
 
