@@ -11,6 +11,9 @@ export default {
     "webservice",
     "testMethod"
   ],
+
+  apexAnnotationsRegex: /^\s*@\s*\D*/,
+
   getHeaderFormattedDateTime(): string {
     return new Date().toLocaleString();
   },

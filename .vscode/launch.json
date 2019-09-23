@@ -13,8 +13,7 @@
       "args": [
         "--disableExtensions",
         "${workspaceFolder}/test_files/testFile_SFDXAutoheader",
-        "--extensionDevelopmentPath=${workspaceFolder}",
-        "--extensionTestsPath=${workspaceFolder}/out/test/"
+        "--extensionDevelopmentPath=${workspaceFolder}"
       ],
       // "outFiles": ["${workspaceFolder}/out/**/*.js"]
       "preLaunchTask": "npm: compile"

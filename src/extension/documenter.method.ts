@@ -37,8 +37,12 @@ export default class MethodDocumenter {
 
     const currentLineId = methodSelection.anchor.line;
 
-    //TODO: Move to its own method "CheckForComment"
-    if (/\/\/|\*\//i.test(editor.document.lineAt(currentLineId - 1).text)) {
+    const lineToInsertId = this.getMethodFirstLineIncludingAnnotations(
+      editor.document,
+      currentLineId
+    );
+
+    if (lineToInsertId === null) {
       window.showErrorMessage("SFDoc: Method comment already present.");
       return;
     }
@@ -59,7 +63,35 @@ export default class MethodDocumenter {
       return;
     }
 
-    edit.insert(new Position(currentLineId, 0), methodHeader);
+    edit.insert(new Position(lineToInsertId, 0), methodHeader);
+  }
+
+  /**
+   * Get the line Id (number) from the current document where the method header should
+   *  be inserted, while considering the annotations if any are present. The insertion
+   *  line should be prior to the annotations.
+   * @param document  The current text document
+   * @param methodFirstLineId Line number where the method's declaration starts
+   */
+  private getMethodFirstLineIncludingAnnotations(
+    document: TextDocument,
+    methodFirstLineId: number
+  ): number | null {
+    let methodFirstLineBeforeAnnotations = methodFirstLineId;
+
+    while (
+      helper.apexAnnotationsRegex.test(
+        document.lineAt(methodFirstLineBeforeAnnotations - 1).text
+      )
+    )
+      methodFirstLineBeforeAnnotations--;
+
+    // TODO: Move to its own method "checkForMethodHeader"
+    return /\/\/|\*\//i.test(
+      document.lineAt(methodFirstLineBeforeAnnotations - 1).text
+    )
+      ? null
+      : methodFirstLineBeforeAnnotations;
   }
 
   /**
@@ -140,7 +172,9 @@ export default class MethodDocumenter {
 
     method.returnType =
       signatureTokens.find(
-        token => !helper.apexReservedTerms.includes(token.toLowerCase())
+        token =>
+          !helper.apexReservedTerms.includes(token.toLowerCase()) &&
+          !helper.apexAnnotationsRegex.test(token)
       ) || "";
 
     if (
@@ -179,7 +213,11 @@ export default class MethodDocumenter {
   private tokenizeApexMethod(content: string, isSignature: boolean): string[] {
     const tokens = content
       .split(/\(|\)|,|<|>|\s|\{|\}/gi)
-      .filter(token => !!token);
+      .map((token, index, tokens) => {
+        if (token === "@") tokens[index + 1] = "@" + tokens[index + 1];
+        return token;
+      })
+      .filter(token => !!token && token !== "@");
 
     const processedTokens: string[] = [];
 
