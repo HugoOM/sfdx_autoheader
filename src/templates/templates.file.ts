@@ -23,13 +23,13 @@ export function getFileHeaderFromTemplate(
   }
 
   return `${blockStart}
-${lineStart} @File Name          : ${fileName}
-${lineStart} @Description        : 
-${lineStart} @Author             : ${helper.getConfiguredUsername()}
-${lineStart} @Group              : 
-${lineStart} @Last Modified By   : ${helper.getConfiguredUsername()}
-${lineStart} @Last Modified On   : ${helper.getHeaderFormattedDateTime()}
-${lineStart} @Modification Log   : 
+${lineStart} @file name          : ${fileName}
+${lineStart} @description        : 
+${lineStart} @author             : ${helper.getConfiguredUsername()}
+${lineStart} @group              : 
+${lineStart} @last modified by   : ${helper.getConfiguredUsername()}
+${lineStart} @last modified on   : ${helper.getHeaderFormattedDateTime()}
+${lineStart} @modification log   : 
 ${lineStart} Ver       Date            Author      		    Modification
 ${lineStart} 1.0    ${helper.getHeaderFormattedDate()}   ${helper.getConfiguredUsername()}     Initial Version
 ${blockEnd}

@@ -18,7 +18,7 @@ export function getMethodHeaderFromTemplate(
       .map(param => `* @param ${param} \n`)
       .toString()
       .replace(/,/gim, "")}` +
-    `* @return ${returnType} \n` +
-    "**/"
+    (returnType === "void" ? "" : `* @return ${returnType} `) +
+    "\n**/"
   );
 }

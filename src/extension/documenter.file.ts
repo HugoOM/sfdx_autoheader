@@ -301,7 +301,7 @@ export default class FileDocumenter {
    * @param fileContent The content of the active document as text.
    */
   private updateLastModifiedBy(fileContent: string): string {
-    const re = /^(\s*[\*\s]*@Last\s*Modified\s*By\s*:).*/gm;
+    const re = /^(\s*[\*\s]*@last\s*modified\s*by\s*:).*/gm;
     return fileContent.replace(re, `$1 ${helper.getConfiguredUsername()}`);
   }
 
@@ -310,7 +310,7 @@ export default class FileDocumenter {
    * @param fileContent The content of the active document as text.
    */
   private updateLastModifiedDateTime(fileContent: string): string {
-    const re = /^(\s*[\*\s]*@Last\s*Modified\s*On\s*:).*/gm;
+    const re = /^(\s*[\*\s]*@last\s*modified\son\s*:).*/gm;
     return fileContent.replace(re, `$1 ${helper.getHeaderFormattedDateTime()}`);
   }
 
