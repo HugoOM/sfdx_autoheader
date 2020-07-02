@@ -5,13 +5,13 @@ import {
   window,
   Position,
   TextDocument,
-  workspace
+  workspace,
 } from "vscode";
 import { getMethodHeaderFromTemplate } from "../templates/templates.method";
 import helper from "./documenter.helper";
 
 /**
- * Standard data structure reprensenting an Apex method signature being parsed
+ * Standard data structure representing an Apex method signature being parsed
  * and processed by the extension.
  */
 type Method = {
@@ -147,7 +147,7 @@ export default class MethodDocumenter {
     const method: Method = {
       parameters: [],
       name: "",
-      returnType: ""
+      returnType: "",
     };
 
     const document = window.activeTextEditor.document;
@@ -172,7 +172,7 @@ export default class MethodDocumenter {
 
     method.returnType =
       signatureTokens.find(
-        token =>
+        (token) =>
           !helper.apexReservedTerms.includes(token.toLowerCase()) &&
           !helper.apexAnnotationsRegex.test(token)
       ) || "";
@@ -198,7 +198,7 @@ export default class MethodDocumenter {
     // Remove the parameter type from the parameter token strings
     if (!isIncludeParameterType)
       method.parameters = method.parameters.map(
-        token => token.split(" ").pop() || ""
+        (token) => token.split(" ").pop() || ""
       );
 
     return method;
@@ -217,7 +217,7 @@ export default class MethodDocumenter {
         if (token === "@") tokens[index + 1] = "@" + tokens[index + 1];
         return token;
       })
-      .filter(token => !!token && token !== "@");
+      .filter((token) => !!token && token !== "@");
 
     const processedTokens: string[] = [];
 
@@ -241,8 +241,8 @@ export default class MethodDocumenter {
     }
 
     return processedTokens
-      .filter(token => token !== "")
-      .map(token => token.trim());
+      .filter((token) => token !== "")
+      .map((token) => token.trim());
   }
 
   /**

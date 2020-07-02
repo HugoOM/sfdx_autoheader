@@ -6,32 +6,27 @@ import helper from "../extension/documenter.helper";
  * @param languageId VSCode language identifier for the current file
  * @param fileName Name of the current file
  */
-export function getFileHeaderFromTemplate(
-  languageId: string,
-  fileName: string | undefined
-) {
-  let blockStart, lineStart, blockEnd;
-
-  if (languageId === "apex" || languageId === "javascript") {
-    blockStart = "/**";
-    lineStart = " *";
+export function getFileHeaderFromTemplate(languageId: string) {
+  let blockStart = "/**",
+    lineStart = " *",
     blockEnd = "**/";
-  } else if (languageId === "html" || languageId === "visualforce") {
+  const formattedDate = helper.getHeaderFormattedDate();
+  const username = helper.getConfiguredUsername();
+
+  if (languageId === "html" || languageId === "visualforce") {
     blockStart = "<!--";
     lineStart = " ";
     blockEnd = "-->";
   }
 
   return `${blockStart}
-${lineStart} @file name          : ${fileName}
-${lineStart} @description        : 
-${lineStart} @author             : ${helper.getConfiguredUsername()}
-${lineStart} @group              : 
-${lineStart} @last modified by   : ${helper.getConfiguredUsername()}
-${lineStart} @last modified on   : ${helper.getHeaderFormattedDateTime()}
-${lineStart} @modification log   : 
-${lineStart} Ver       Date            Author      		    Modification
-${lineStart} 1.0    ${helper.getHeaderFormattedDate()}   ${helper.getConfiguredUsername()}     Initial Version
+${helper.getFormattedFileHeaderProperties(lineStart, username, formattedDate)}
+${lineStart} Modifications Log 
+${lineStart} Ver   ${"Date".padEnd(
+    formattedDate.length,
+    " "
+  )}   ${"Author".padEnd(username.length, " ")}   Modification
+${lineStart} 1.0   ${formattedDate}   ${username}   Initial Version
 ${blockEnd}
 `;
 }

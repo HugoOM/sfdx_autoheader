@@ -10,7 +10,7 @@ import {
   TextEditor,
   TextEditorEdit,
   window,
-  workspace
+  workspace,
 } from "vscode";
 import helper from "./documenter.helper";
 import { getFileHeaderFromTemplate } from "../templates/templates.file";
@@ -92,7 +92,11 @@ export default class FileDocumenter {
       this,
       (event: TextDocumentWillSaveEvent) => {
         if (!event.document.isDirty) return;
-        if (!this.isValidLanguage(event.document)) return;
+        if (
+          !this.isHeaderPresentOnDoc(event.document) &&
+          !this.isValidLanguage(event.document)
+        )
+          return;
 
         event.waitUntil(this.insertOrUpdateHeader(event.document));
       }
@@ -185,10 +189,7 @@ export default class FileDocumenter {
    * @param document The open and active text document
    */
   private getFileHeader(document: TextDocument): string {
-    return getFileHeaderFromTemplate(
-      document.languageId,
-      document.fileName.split(/\/|\\/g).pop()
-    );
+    return getFileHeaderFromTemplate(document.languageId);
   }
 
   /**
@@ -282,7 +283,7 @@ export default class FileDocumenter {
       TextEdit.replace(
         this.getFullDocumentRange(document),
         this.updateHeaderLastModifiedByAndDate(document.getText())
-      )
+      ),
     ];
   }
 
@@ -311,7 +312,7 @@ export default class FileDocumenter {
    */
   private updateLastModifiedDateTime(fileContent: string): string {
     const re = /^(\s*[\*\s]*@last\s*modified\son\s*:).*/gm;
-    return fileContent.replace(re, `$1 ${helper.getHeaderFormattedDateTime()}`);
+    return fileContent.replace(re, `$1 ${helper.getHeaderFormattedDate()}`);
   }
 
   /**

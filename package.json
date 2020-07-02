@@ -2,7 +2,7 @@
   "name": "sfdx-autoheader",
   "displayName": "Salesforce Documenter",
   "description": "Automated Code Documentation Generation for Salesforce",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "publisher": "HugoOM",
   "license": "MIT",
   "badges": [
@@ -126,12 +126,43 @@
     ],
     "configuration": {
       "type": "object",
-      "title": "Salesforce Documenter Configuration",
+      "title": "Salesforce Documenter",
       "properties": {
         "SFDoc.username": {
           "type": "string",
           "default": "ChangeMeIn@UserSettingsUnder.SFDoc",
           "description": "Sets the File & Method Header Username"
+        },
+        "SFDoc.FileHeaderProperties": {
+          "type": "array",
+          "default": [
+            {
+              "name": "description"
+            },
+            {
+              "name": "author",
+              "defaultValue": "$username"
+            },
+            {
+              "name": "group"
+            },
+            {
+              "name": "last modified on",
+              "defaultValue": "$date"
+            },
+            {
+              "name": "last modified by",
+              "defaultValue": "$username"
+            }
+          ],
+          "description": "Array of properties for the generated File Headers in the format: {name: String, defaultValue?: string}"
+        },
+        "SFDoc.DateFormat": {
+          "type": "string",
+          "default": "MM-DD-YYYY",
+          "description": "The format in which SFDoc should output dates. Needs to include [DD, MM, YYYY] in the desired order and with the desired separators",
+          "pattern": "(?=.*(M|MM))(?=.*(D|DD))(?=.*YYYY)",
+          "patternErrorMessage": "Date format should contain DD, MM, and YYYY"
         },
         "SFDoc.EnableForApex": {
           "type": "boolean",
@@ -197,13 +228,13 @@
     "test": "npm run compile && node ./node_modules/vscode/bin/test"
   },
   "devDependencies": {
-    "@types/chai": "^4.2.0",
-    "@types/mocha": "^5.2.7",
-    "@types/node": "^12.7.2",
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^14.0.14",
     "chai": "^4.2.0",
-    "eslint": "^6.2.2",
-    "tslint": "^5.19.0",
-    "typescript": "^3.6.2",
-    "vscode": "^1.1.36"
+    "eslint": "^7.3.1",
+    "tslint": "^6.1.2",
+    "typescript": "^3.9.6",
+    "vscode": "^1.1.37"
   }
 }
