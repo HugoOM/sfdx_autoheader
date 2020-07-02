@@ -29,10 +29,10 @@ Through these means, code becomes easier to understand, maintain, and evolve.
 
 # Commands
 
-| Command                            | Description                                                                                                     | Applies To                          |
-| ---------------------------------- | --------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
-| SFDoc: Generate Apex Method Header | Place cursor on the first line of a method declaration. Insert a method header based on the method's signature. | Apex Methods                        |
-| SFDoc: Insert File Header          | Insert a file header at the top of the current file, if it doesn't already include one.                         | Apex, Visualforce, HTML, JavaScript |
+| Command                          | Description                                                                                                     | Applies To                          |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| SFDoc: Insert Apex Method Header | Place cursor on the first line of a method declaration. Insert a method header based on the method's signature. | Apex Methods                        |
+| SFDoc: Insert File Header        | Insert a file header at the top of the current file, if it doesn't already include one.                         | Apex, Visualforce, HTML, JavaScript |
 
 # Settings
 

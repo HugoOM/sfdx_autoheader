@@ -9,9 +9,9 @@ public class tester {
       Integer j,
       Boolean isTrue,
       Map<  Id, Map<String, List<Time>>>     TimeLostMap
-    ) { 
-          
-    } 
+    ) {    
+                
+    }   
 
     void testMethod2(Integer i, List<List <Account>> lstAcc) {}
 

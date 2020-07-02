@@ -1,4 +1,4 @@
-import { workspace } from "vscode";
+import { workspace, TextDocument } from "vscode";
 
 type FileHeaderProperty = {
   name: string;
@@ -18,6 +18,10 @@ export default {
   ],
 
   apexAnnotationsRegex: /^\s*@\s*\D*/,
+
+  getFileHeaderRawProperties(): Array<FileHeaderProperty> {
+    return workspace.getConfiguration("SFDoc").get("FileHeaderProperties", []);
+  },
 
   getFormattedFileHeaderProperties(
     lineStartChar: string,
@@ -48,7 +52,7 @@ export default {
       .replace(/\,/gm, "");
   },
 
-  getHeaderFormattedDate(): string {
+  getFormattedDate(): string {
     const currentDate = new Date();
 
     const dateFormat = workspace
@@ -63,5 +67,23 @@ export default {
 
   getConfiguredUsername(): string {
     return workspace.getConfiguration("SFDoc").get("username", "");
+  },
+
+  getContainingClassName(document: TextDocument, lineNumber: number): string {
+    const re = /class\s*\S*/;
+
+    do {
+      const line = document.lineAt(--lineNumber);
+
+      if (line.isEmptyOrWhitespace) continue;
+
+      const matches = line.text.match(re);
+
+      if (!matches) continue;
+
+      return matches[0].split(" ")[1];
+    } while (lineNumber > 0);
+
+    return "";
   },
 };

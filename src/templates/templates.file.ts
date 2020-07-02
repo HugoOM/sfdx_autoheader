@@ -10,7 +10,7 @@ export function getFileHeaderFromTemplate(languageId: string) {
   let blockStart = "/**",
     lineStart = " *",
     blockEnd = "**/";
-  const formattedDate = helper.getHeaderFormattedDate();
+  const formattedDate = helper.getFormattedDate();
   const username = helper.getConfiguredUsername();
 
   if (languageId === "html" || languageId === "visualforce") {

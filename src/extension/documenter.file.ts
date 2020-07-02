@@ -292,27 +292,42 @@ export default class FileDocumenter {
    * @param documentText The content of the active document as text.
    */
   private updateHeaderLastModifiedByAndDate(documentText: string): string {
-    return this.updateLastModifiedDateTime(
-      this.updateLastModifiedBy(documentText)
-    );
+    return this.updateLastModifiedDate(this.updateLastModifiedBy(documentText));
   }
 
   /**
-   * Update the "Last Modfiied By" value in the current header.
+   * Update the "Last Modified By" value in the current header.
    * @param fileContent The content of the active document as text.
    */
   private updateLastModifiedBy(fileContent: string): string {
-    const re = /^(\s*[\*\s]*@last\s*modified\s*by\s*:).*/gm;
-    return fileContent.replace(re, `$1 ${helper.getConfiguredUsername()}`);
+    helper.getFileHeaderRawProperties().forEach(({ name, defaultValue }) => {
+      if (defaultValue != "$username") return;
+
+      const re = RegExp(`^(\\s*[\\*\\s]*@${name}\\s*:).*`, "gim");
+
+      fileContent = fileContent.replace(
+        re,
+        `$1 ${helper.getConfiguredUsername()}`
+      );
+    });
+
+    return fileContent;
   }
 
   /**
-   * Update the "Last Modfiied On" value in the current header.
+   * Update the "Last Modified On" value in the current header.
    * @param fileContent The content of the active document as text.
    */
-  private updateLastModifiedDateTime(fileContent: string): string {
-    const re = /^(\s*[\*\s]*@last\s*modified\son\s*:).*/gm;
-    return fileContent.replace(re, `$1 ${helper.getHeaderFormattedDate()}`);
+  private updateLastModifiedDate(fileContent: string): string {
+    helper.getFileHeaderRawProperties().forEach(({ name, defaultValue }) => {
+      if (defaultValue != "$date") return;
+
+      const re = RegExp(`^(\\s*[\\*\\s]*@${name}\\s*:).*`, "gim");
+
+      fileContent = fileContent.replace(re, `$1 ${helper.getFormattedDate()}`);
+    });
+
+    return fileContent;
   }
 
   /**

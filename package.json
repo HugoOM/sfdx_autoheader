@@ -49,7 +49,7 @@
     "menus": {
       "editor/context": [
         {
-          "command": "extension.generateMethodHeader",
+          "command": "extension.insertApexMethodHeader",
           "group": "SFDoc",
           "when": "editorLangId == apex"
         },
@@ -81,7 +81,7 @@
       ],
       "commandPalette": [
         {
-          "command": "extension.generateMethodHeader",
+          "command": "extension.insertApexMethodHeader",
           "group": "SFDoc",
           "when": "editorLangId == apex"
         },
@@ -114,8 +114,8 @@
     },
     "commands": [
       {
-        "command": "extension.generateMethodHeader",
-        "title": "Generate Apex Method Header",
+        "command": "extension.insertApexMethodHeader",
+        "title": "Insert Apex Method Header",
         "category": "SFDoc"
       },
       {

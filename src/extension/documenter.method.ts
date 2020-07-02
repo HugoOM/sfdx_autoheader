@@ -100,11 +100,11 @@ export default class MethodDocumenter {
    *  will be generated
    */
   private constructMethodHeader(currentLineId: number): string | void {
+    if (!window.activeTextEditor) return;
+
     const method = this.parseApexMethodSignature();
 
     if (!method) return;
-
-    if (!window.activeTextEditor) return;
 
     const str = getMethodHeaderFromTemplate(
       method.parameters,
@@ -176,6 +176,13 @@ export default class MethodDocumenter {
           !helper.apexReservedTerms.includes(token.toLowerCase()) &&
           !helper.apexAnnotationsRegex.test(token)
       ) || "";
+
+    if (!method.returnType) {
+      const isMethodAConstructror =
+        helper.getContainingClassName(document, currentLineId) === method.name;
+
+      if (isMethodAConstructror) method.returnType = "void";
+    }
 
     if (
       !method.name ||
