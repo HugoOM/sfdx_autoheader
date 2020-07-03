@@ -19,10 +19,16 @@ export default {
 
   apexAnnotationsRegex: /^\s*@\s*\D*/,
 
+  /**
+   * Get an array of all File Header properties configured in the extension's settings.
+   */
   getFileHeaderRawProperties(): Array<FileHeaderProperty> {
     return workspace.getConfiguration("SFDoc").get("FileHeaderProperties", []);
   },
 
+  /**
+   * Get a File-Header-suitable formatted string of all configured File Header properties.
+   */
   getFormattedFileHeaderProperties(
     lineStartChar: string,
     username: string,
@@ -52,6 +58,9 @@ export default {
       .replace(/\,/gm, "");
   },
 
+  /**
+   * Get a date formatted according to the format set in the extension's settings under DateFormat.
+   */
   getFormattedDate(): string {
     const currentDate = new Date();
 
@@ -69,6 +78,9 @@ export default {
     return workspace.getConfiguration("SFDoc").get("username", "");
   },
 
+  /**
+   * Walk the document's contents updwards from the current location (command's call site) to find the containing class's name.
+   */
   getContainingClassName(document: TextDocument, lineNumber: number): string {
     const re = /class\s*\S*/;
 

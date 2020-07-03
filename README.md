@@ -11,19 +11,19 @@
 
 # Summary
 
-Salesforce Documenter aims at facilitating proper and structured code documenting for Salesforce-related files, by automating related tasks such as File Header Insertion & Update, as well as Method Header insertion.
+Salesforce Documenter aims at facilitating properly structured code documentation for Salesforce-related files by automating related tasks such as generating & maintaining File and Method headers.
 
-Salesforce Documenter can be adopted as a project-wide and/or team-wide standard, in an effort to encourage and eventually enforce proper code documenting.
+_SFDoc_ can be adopted as a project-wide and/or team-wide standard, in an effort to encourage, and eventually enforce, proper code documenting.
 
 Through these means, code becomes easier to understand, maintain, and evolve.
 
 # Features
 
-- Add a method header to any Apex method, with JavaDoc-Like tags to be completed with the method's and contextual details
+- Add a Method header to any Apex method; generating ApexDoc-compliant tags.
 
 ![Method Header Demo](https://github.com/HugoOM/sfdx_autoheader/blob/master/images/Instructions_MethodHeader.gif?raw=true)
 
-- Add/Update a header to any Salesforce file (Apex, Visualforce, Aura, LWC, JavaScript)
+- Add a File header to any Salesforce file (Apex, Visualforce, Aura, LWC, JavaScript).
 
 ![File Header Demo](https://github.com/HugoOM/sfdx_autoheader/blob/master/images/Instructions_FileHeader.gif?raw=true)
 
@@ -31,16 +31,18 @@ Through these means, code becomes easier to understand, maintain, and evolve.
 
 | Command                          | Description                                                                                                     | Applies To                          |
 | -------------------------------- | --------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
-| SFDoc: Insert Apex Method Header | Place cursor on the first line of a method declaration. Insert a method header based on the method's signature. | Apex Methods                        |
+| SFDoc: Insert Apex Method Header | Place cursor on the first line of a method declaration. Insert a method header based on the method's signature. | Apex                                |
 | SFDoc: Insert File Header        | Insert a file header at the top of the current file, if it doesn't already include one.                         | Apex, Visualforce, HTML, JavaScript |
 
 # Settings
 
-| Property                                | Description                                                                              |
-| --------------------------------------- | ---------------------------------------------------------------------------------------- |
-| SFDoc.username                          | Username that will appear in File and Method headers.                                    |
-| SFDoc.EnableForApex                     | Enable automatic on-save file header insertion and update for Apex classes               |
-| SFDoc.EnableForVisualforce              | Enable automatic on-save file header insertion and update for Visualforce pages          |
-| SFDoc.EnableForLightningMarkup          | Enable automatic on-save file header insertion and update for Lightning Markup files     |
-| SFDoc.EnableForLightningJavascript      | Enable automatic on-save file header insertion and update for Lightning JavaScript files |
-| SFDoc.IncludParameterTypeInMethodHeader | Include Param Types as well as name in method header                                     |
+| Property                                | Description                                                                                                                       |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| SFDoc.username                          | Username that will appear in File and Method headers.                                                                             |
+| SFDoc.DateFormat                        | The format in which SFDoc will output dates. Needs to include [DD, MM, YYYY] in the desired order and with the desired separator. |
+| SFDoc.FileHeaderProperties              | Array of properties to be added to the File Headers. Format of entries is : `{name: string, defaultValue?: string}`               |
+| SFDoc.EnableForApex                     | Enable automatic on-save file header insertion and update for Apex classes                                                        |
+| SFDoc.EnableForVisualforce              | Enable automatic on-save file header insertion and update for Visualforce pages                                                   |
+| SFDoc.EnableForLightningMarkup          | Enable automatic on-save file header insertion and update for Lightning Markup files                                              |
+| SFDoc.EnableForLightningJavascript      | Enable automatic on-save file header insertion and update for Lightning JavaScript files                                          |
+| SFDoc.IncludParameterTypeInMethodHeader | Include Parameters' Type in method header                                                                                         |

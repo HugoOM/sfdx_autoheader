@@ -126,7 +126,7 @@
     ],
     "configuration": {
       "type": "object",
-      "title": "Salesforce Documenter",
+      "title": "Salesforce Documenter Configuration",
       "properties": {
         "SFDoc.username": {
           "type": "string",
@@ -160,7 +160,7 @@
         "SFDoc.DateFormat": {
           "type": "string",
           "default": "MM-DD-YYYY",
-          "description": "The format in which SFDoc should output dates. Needs to include [DD, MM, YYYY] in the desired order and with the desired separators",
+          "description": "The format in which SFDoc will output dates. Needs to include [DD, MM, YYYY] in the desired order and with the desired separators.",
           "pattern": "(?=.*(M|MM))(?=.*(D|DD))(?=.*YYYY)",
           "patternErrorMessage": "Date format should contain DD, MM, and YYYY"
         },

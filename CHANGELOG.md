@@ -2,12 +2,18 @@
 
 ## [Future]
 
-- Update tests to cover Method Headers logic
+- Code refactoring and cleanup for release [0.7.0] features
+- Full re-do of the extension's unit tests
 - File-wide method header injection
-- File header update regardless of settings (for header inserted through command)
 - Finer grain tuning of the method header tags through settings
-- Update Readme .gifs to latest format
-- Fire file header update regardless of settings
+
+## [0.7.0]
+
+- Fully customizeable File Header properties.
+- Customizeable Date format.
+- Support for Method Headers on Constructor methods.
+- Automatic updating of File Headers regardless of the "EnableForApex" setting.
+- Default tags now ApexDoc compliant by default.
 
 ## [0.6.1]
 
@@ -16,7 +22,7 @@
 
 ## [0.6.0]
 
-- Removed "=" characters line around the "@Modification Log" header row, to improve formatting in VSCode's class peak overlay. It made the text very large and bold.
+- Removed "=" characters line around the "@Modification Log" header row, to improve formatting in VSCode's class peek overlay. It made the text very large and bold.
 - Removed legacy "SFDX-Autoheader" configuration items and related migration feature.
 - Removed method param type by default. Now behind a setting.
 - Removed the Time component from the default entry in the file header modification log.
