@@ -8,7 +8,7 @@ export default class DocumenterCommands {
     private fileDocumenter: FileDocumenter
   ) {
     commands.registerTextEditorCommand(
-      "extension.generateMethodHeader",
+      "extension.insertApexMethodHeader",
       this.methodDocumenter.insertMethodHeaderFromCommand,
       this.methodDocumenter
     );

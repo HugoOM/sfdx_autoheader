@@ -11,7 +11,7 @@
       "request": "launch",
       "runtimeExecutable": "${execPath}",
       "args": [
-        "--disableExtensions",
+        //"--disableExtensions",
         "${workspaceFolder}/test_files/testFile_SFDXAutoheader",
         "--extensionDevelopmentPath=${workspaceFolder}"
       ],

@@ -10,7 +10,7 @@ import {
   TextEditor,
   TextEditorEdit,
   window,
-  workspace
+  workspace,
 } from "vscode";
 import helper from "./documenter.helper";
 import { getFileHeaderFromTemplate } from "../templates/templates.file";
@@ -92,7 +92,11 @@ export default class FileDocumenter {
       this,
       (event: TextDocumentWillSaveEvent) => {
         if (!event.document.isDirty) return;
-        if (!this.isValidLanguage(event.document)) return;
+        if (
+          !this.isHeaderPresentOnDoc(event.document) &&
+          !this.isValidLanguage(event.document)
+        )
+          return;
 
         event.waitUntil(this.insertOrUpdateHeader(event.document));
       }
@@ -185,10 +189,7 @@ export default class FileDocumenter {
    * @param document The open and active text document
    */
   private getFileHeader(document: TextDocument): string {
-    return getFileHeaderFromTemplate(
-      document.languageId,
-      document.fileName.split(/\/|\\/g).pop()
-    );
+    return getFileHeaderFromTemplate(document.languageId);
   }
 
   /**
@@ -282,7 +283,7 @@ export default class FileDocumenter {
       TextEdit.replace(
         this.getFullDocumentRange(document),
         this.updateHeaderLastModifiedByAndDate(document.getText())
-      )
+      ),
     ];
   }
 
@@ -291,27 +292,42 @@ export default class FileDocumenter {
    * @param documentText The content of the active document as text.
    */
   private updateHeaderLastModifiedByAndDate(documentText: string): string {
-    return this.updateLastModifiedDateTime(
-      this.updateLastModifiedBy(documentText)
-    );
+    return this.updateLastModifiedDate(this.updateLastModifiedBy(documentText));
   }
 
   /**
-   * Update the "Last Modfiied By" value in the current header.
+   * Update the "Last Modified By" value in the current header.
    * @param fileContent The content of the active document as text.
    */
   private updateLastModifiedBy(fileContent: string): string {
-    const re = /^(\s*[\*\s]*@Last\s*Modified\s*By\s*:).*/gm;
-    return fileContent.replace(re, `$1 ${helper.getConfiguredUsername()}`);
+    helper.getFileHeaderRawProperties().forEach(({ name, defaultValue }) => {
+      if (defaultValue != "$username") return;
+
+      const re = RegExp(`^(\\s*[\\*\\s]*@${name}\\s*:).*`, "gim");
+
+      fileContent = fileContent.replace(
+        re,
+        `$1 ${helper.getConfiguredUsername()}`
+      );
+    });
+
+    return fileContent;
   }
 
   /**
-   * Update the "Last Modfiied On" value in the current header.
+   * Update the "Last Modified On" value in the current header.
    * @param fileContent The content of the active document as text.
    */
-  private updateLastModifiedDateTime(fileContent: string): string {
-    const re = /^(\s*[\*\s]*@Last\s*Modified\s*On\s*:).*/gm;
-    return fileContent.replace(re, `$1 ${helper.getHeaderFormattedDateTime()}`);
+  private updateLastModifiedDate(fileContent: string): string {
+    helper.getFileHeaderRawProperties().forEach(({ name, defaultValue }) => {
+      if (defaultValue != "$date") return;
+
+      const re = RegExp(`^(\\s*[\\*\\s]*@${name}\\s*:).*`, "gim");
+
+      fileContent = fileContent.replace(re, `$1 ${helper.getFormattedDate()}`);
+    });
+
+    return fileContent;
   }
 
   /**

@@ -13,12 +13,12 @@ export function getMethodHeaderFromTemplate(
   return (
     "/**\n" +
     "* @description \n" +
-    `* @author ${helper.getConfiguredUsername()} | ${helper.getHeaderFormattedDate()} \n` +
+    `* @author ${helper.getConfiguredUsername()} | ${helper.getFormattedDate()} \n` +
     `${parameters
-      .map(param => `* @param ${param} \n`)
+      .map((param) => `* @param ${param} \n`)
       .toString()
       .replace(/,/gim, "")}` +
-    `* @return ${returnType} \n` +
-    "**/"
+    (returnType === "void" ? "" : `* @return ${returnType} `) +
+    "\n**/"
   );
 }
