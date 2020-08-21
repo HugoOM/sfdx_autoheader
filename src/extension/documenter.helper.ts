@@ -59,19 +59,19 @@ export default {
   },
 
   /**
-   * Get a date formatted according to the format set in the extension's settings under DateFormat.
+   * Get a date formatted according to the format set in the extension's settings under Locale and DateTimeFormat.
    */
-  getFormattedDate(): string {
+  getFormattedDateTime(): string {
     const currentDate = new Date();
-
-    const dateFormat = workspace
-      .getConfiguration("SFDoc")
-      .get("DateFormat", "MM-DD-YYYY");
-
-    return dateFormat
-      .replace("DD", `${currentDate.getDate()}`.padStart(2, "0"))
-      .replace("MM", `${currentDate.getMonth() + 1}`.padStart(2, "0"))
-      .replace("YYYY", `${currentDate.getFullYear()}`);
+    const locale: string = workspace.getConfiguration("SFDoc").get("Locale", "en-US");
+    const dateTimeFormatOptions = workspace.getConfiguration("SFDoc").get("DateTimeFormat", {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+    const dateTimeFormat = new Intl.DateTimeFormat(locale, dateTimeFormatOptions);
+    return dateTimeFormat.format(currentDate);
   },
 
   getConfiguredUsername(): string {

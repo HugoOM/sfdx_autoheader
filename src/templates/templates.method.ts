@@ -13,7 +13,7 @@ export function getMethodHeaderFromTemplate(
   return (
     "/**\n" +
     "* @description \n" +
-    `* @author ${helper.getConfiguredUsername()} | ${helper.getFormattedDate()} \n` +
+    `* @author ${helper.getConfiguredUsername()} | ${helper.getFormattedDateTime()} \n` +
     `${parameters
       .map((param) => `* @param ${param} \n`)
       .toString()
