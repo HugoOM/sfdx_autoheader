@@ -324,7 +324,7 @@ export default class FileDocumenter {
 
       const re = RegExp(`^(\\s*[\\*\\s]*@${name}\\s*:).*`, "gim");
 
-      fileContent = fileContent.replace(re, `$1 ${helper.getFormattedDate()}`);
+      fileContent = fileContent.replace(re, `$1 ${helper.getFormattedDateTime()}`);
     });
 
     return fileContent;

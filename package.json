@@ -157,12 +157,42 @@
           ],
           "description": "Array of properties for the generated File Headers in the format: {name: String, defaultValue?: string}"
         },
-        "SFDoc.DateFormat": {
+        "SFDoc.Locale": {
           "type": "string",
-          "default": "MM-DD-YYYY",
-          "description": "The format in which SFDoc will output dates. Needs to include [DD, MM, YYYY] in the desired order and with the desired separators.",
-          "pattern": "(?=.*(M|MM))(?=.*(D|DD))(?=.*YYYY)",
-          "patternErrorMessage": "Date format should contain DD, MM, and YYYY"
+          "default": "en-us",
+          "description": "Locale identifier consists of at least a language code and a country/region code.",
+          "enum": [
+            "zh-cn",
+            "en-gb",
+            "en-us",
+            "fr-fr",
+            "de-de",
+            "it-it",
+            "ja",
+            "ru",
+            "es-es"
+          ],
+          "enumDescriptions": [
+            "Chinese - China",
+            "English - Great Britain",
+            "English - United States",
+            "French - France",
+            "German - Germany",
+            "Italian - Italy",
+            "Japanese",
+            "Russian",
+            "Spanish - Spain"
+          ]
+        },
+        "SFDoc.DateTimeFormat": {
+          "type": "object",
+          "default": {
+            "weekday": "short",
+            "year": "numeric",
+            "month": "short",
+            "day": "numeric"
+          },
+          "description": "Object containings date format."
         },
         "SFDoc.EnableForApex": {
           "type": "boolean",
