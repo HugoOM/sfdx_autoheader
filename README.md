@@ -40,9 +40,10 @@ Through these means, code becomes easier to understand, maintain, and evolve.
 | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | SFDoc.username                          | Username that will appear in File and Method headers.                                                                             |
 | SFDoc.DateFormat                        | The format in which SFDoc will output dates. Needs to include [DD, MM, YYYY] in the desired order and with the desired separator. |
-| SFDoc.FileHeaderProperties              | Array of properties to be added to the File Headers. Format of entries is : `{name: string, defaultValue?: string}`               |
-| SFDoc.EnableForApex                     | Enable automatic on-save file header insertion and update for Apex classes                                                        |
-| SFDoc.EnableForVisualforce              | Enable automatic on-save file header insertion and update for Visualforce pages                                                   |
-| SFDoc.EnableForLightningMarkup          | Enable automatic on-save file header insertion and update for Lightning Markup files                                              |
-| SFDoc.EnableForLightningJavascript      | Enable automatic on-save file header insertion and update for Lightning JavaScript files                                          |
-| SFDoc.IncludParameterTypeInMethodHeader | Include Parameters' Type in method header                                                                                         |
+| SFDoc.FileHeaderProperties              | Array of properties to be added to the File Headers. Format of entries is : `{name: string, defaultValue?: string}`.              |
+| SFDoc.EnableForApex                     | Enable automatic on-save file header insertion and update for Apex classes.                                                       |
+| SFDoc.EnableForVisualforce              | Enable automatic on-save file header insertion and update for Visualforce pages.                                                  |
+| SFDoc.EnableForLightningMarkup          | Enable automatic on-save file header insertion and update for Lightning Markup files.                                             |
+| SFDoc.EnableForLightningJavascript      | Enable automatic on-save file header insertion and update for Lightning JavaScript files.                                         |
+| SFDoc.AlwaysUpdateFileHeaderOnSave      | Specifies whether a file header should always be updated on Save, when one is detected, regardless of the language setting.       |
+| SFDoc.IncludParameterTypeInMethodHeader | Include Parameters' Type in method header.                                                                                        |
