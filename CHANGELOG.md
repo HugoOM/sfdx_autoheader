@@ -2,10 +2,15 @@
 
 ## [Future]
 
-- Code refactoring and cleanup for release [0.7.0] features
+- Code refactoring and cleanup for release [0.7.1] features
 - Full re-do of the extension's unit tests
 - File-wide method header injection
 - Finer grain tuning of the method header tags through settings
+
+## [0.7.1]
+
+- Fixed a bug where the @author property of a file header would get updated on Save.
+- Added a new settings flag to specify whether a File Header should always be updated on Save.
 
 ## [0.7.0]
 

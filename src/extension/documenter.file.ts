@@ -92,8 +92,15 @@ export default class FileDocumenter {
       this,
       (event: TextDocumentWillSaveEvent) => {
         if (!event.document.isDirty) return;
+
+        const isUpdateAndShouldAlwaysUpdateOnSave: Boolean =
+          this.isHeaderPresentOnDoc(event.document) &&
+          workspace
+            .getConfiguration("SFDoc")
+            .get("AlwaysUpdateFileHeaderOnSave", true);
+
         if (
-          !this.isHeaderPresentOnDoc(event.document) &&
+          !isUpdateAndShouldAlwaysUpdateOnSave &&
           !this.isValidLanguage(event.document)
         )
           return;
@@ -292,16 +299,19 @@ export default class FileDocumenter {
    * @param documentText The content of the active document as text.
    */
   private updateHeaderLastModifiedByAndDate(documentText: string): string {
-    return this.updateLastModifiedDate(this.updateLastModifiedBy(documentText));
+    return this.updateLastModifiedDate(this.updateUsername(documentText));
   }
 
   /**
    * Update the "Last Modified By" value in the current header.
    * @param fileContent The content of the active document as text.
    */
-  private updateLastModifiedBy(fileContent: string): string {
+  private updateUsername(fileContent: string): string {
     helper.getFileHeaderRawProperties().forEach(({ name, defaultValue }) => {
-      if (defaultValue != "$username") return;
+      // TODO: Build into a configurable and extensible solution
+      if (name === "author") return;
+
+      if (defaultValue !== "$username") return;
 
       const re = RegExp(`^(\\s*[\\*\\s]*@${name}\\s*:).*`, "gim");
 

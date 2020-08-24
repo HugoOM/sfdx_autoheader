@@ -2,7 +2,7 @@
   "name": "sfdx-autoheader",
   "displayName": "Salesforce Documenter",
   "description": "Automated Code Documentation Generation for Salesforce",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "publisher": "HugoOM",
   "license": "MIT",
   "badges": [
@@ -183,6 +183,11 @@
           "type": "boolean",
           "default": false,
           "description": "Enable On-Save File Headers on Lightning Javascript Files (Aura & LWC)"
+        },
+        "SFDoc.AlwaysUpdateFileHeaderOnSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Always update the File Header on Save, when one is present, regarldess of the EnableForApex setting."
         },
         "SFDoc.IncludParameterTypeInMethodHeader": {
           "type": "boolean",
