@@ -433,7 +433,7 @@ suite("Salesforce Documenter - Extension Suite", function () {
   test("Testing updateLastModifiedBy", (done) => {
     const testModByString = "* @Last Modified By: NotHugoOM@GitHub.com";
     assert.notStrictEqual(
-      fileDocumenter.updateLastModifiedBy(testModByString),
+      fileDocumenter.updateUsername(testModByString),
       testModByString
     );
     done();
