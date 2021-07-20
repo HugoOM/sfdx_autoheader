@@ -2,10 +2,15 @@
 
 ## [Future]
 
-- Code refactoring and cleanup for release [0.7.1] features
+- Code refactoring and cleanup for release [0.7.2] features
 - Full re-do of the extension's unit tests
 - File-wide method header injection
 - Finer grain tuning of the method header tags through settings
+
+## [0.7.2]
+
+- Fixed an issue when calculating a File Header's height (lines) which would cause the curor repositioning to get below the initial position by a few lines.
+- Added a new configuration setting "IncludeModificationLogScaffoldInFileHeader", so that the "Modifications Log" section of the File Header isn't enabled by default.
 
 ## [0.7.1]
 

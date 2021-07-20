@@ -98,4 +98,26 @@ export default {
 
     return "";
   },
+
+  /**
+   * Get the height of the file header that would be inserted based on the
+   *  current settings, by computing the number of file header properties,
+   * as well as the length of the modification log (if enabled).
+   * @returns The height of the file header in number of rows (lines)
+   */
+  getFileHeaderRowsCount(): number {
+    const configurations = workspace.getConfiguration("SFDoc");
+
+    const fileHeaderPropertiesCount = configurations.get(
+      "FileHeaderProperties",
+      []
+    ).length;
+
+    const isModificationsLogEnabled = configurations.get(
+      "IncludeModificationLogScaffoldInFileHeader",
+      false
+    );
+
+    return 2 + fileHeaderPropertiesCount + (isModificationsLogEnabled ? 3 : 0);
+  },
 };
