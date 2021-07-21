@@ -20,7 +20,6 @@ import { getFileHeaderFromTemplate } from "../templates/templates.file";
  */
 export default class FileDocumenter {
   private cursorPositions: { [fileURI: string]: Position } = {};
-  private readonly HEADER_LENGTH_LINES: number = 13;
   private isHeaderBeingInserted: boolean = false;
 
   /**
@@ -88,26 +87,27 @@ export default class FileDocumenter {
    * @param context Framework-provided Extension Context
    */
   private setListenerOnPreSave(context: ExtensionContext): void {
-    const preSaveHookListener: Disposable = workspace.onWillSaveTextDocument.call(
-      this,
-      (event: TextDocumentWillSaveEvent) => {
-        if (!event.document.isDirty) return;
+    const preSaveHookListener: Disposable =
+      workspace.onWillSaveTextDocument.call(
+        this,
+        (event: TextDocumentWillSaveEvent) => {
+          if (!event.document.isDirty) return;
 
-        const isUpdateAndShouldAlwaysUpdateOnSave: Boolean =
-          this.isHeaderPresentOnDoc(event.document) &&
-          workspace
-            .getConfiguration("SFDoc")
-            .get("AlwaysUpdateFileHeaderOnSave", true);
+          const isUpdateAndShouldAlwaysUpdateOnSave: Boolean =
+            this.isHeaderPresentOnDoc(event.document) &&
+            workspace
+              .getConfiguration("SFDoc")
+              .get("AlwaysUpdateFileHeaderOnSave", true);
 
-        if (
-          !isUpdateAndShouldAlwaysUpdateOnSave &&
-          !this.isValidLanguage(event.document)
-        )
-          return;
+          if (
+            !isUpdateAndShouldAlwaysUpdateOnSave &&
+            !this.isValidLanguage(event.document)
+          )
+            return;
 
-        event.waitUntil(this.insertOrUpdateHeader(event.document));
-      }
-    );
+          event.waitUntil(this.insertOrUpdateHeader(event.document));
+        }
+      );
     context.subscriptions.push(preSaveHookListener);
   }
 
@@ -169,13 +169,13 @@ export default class FileDocumenter {
   private getLastSavedCursorPosition(documentURI: string): Position {
     if (!this.cursorPositions[documentURI])
       return new Position(
-        this.isHeaderBeingInserted ? 0 : this.HEADER_LENGTH_LINES,
+        this.isHeaderBeingInserted ? 0 : helper.getFileHeaderRowsCount(),
         0
       );
 
     return new Position(
       this.cursorPositions[documentURI].line +
-        (this.isHeaderBeingInserted ? 0 : this.HEADER_LENGTH_LINES),
+        (this.isHeaderBeingInserted ? 0 : helper.getFileHeaderRowsCount()),
       this.cursorPositions[documentURI].character
     );
   }
@@ -261,9 +261,8 @@ export default class FileDocumenter {
     const folderName = pathTokens[pathTokens.length - 2];
     const parentFolderName =
       pathTokens.length >= 3 ? pathTokens[pathTokens.length - 3] : null;
-    const [fileName, fileExtension] = pathTokens[pathTokens.length - 1].split(
-      "."
-    );
+    const [fileName, fileExtension] =
+      pathTokens[pathTokens.length - 1].split(".");
     const lightningJavaScriptFileRegex = /Controller|Helper/gi;
     const folderNameMatchRegex = new RegExp(`^${folderName}$`);
     const processedFileName =

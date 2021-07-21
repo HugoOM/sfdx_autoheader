@@ -1,4 +1,5 @@
 import helper from "../extension/documenter.helper";
+import { workspace } from "vscode";
 
 /**
  * Generates and returns a file header, based on the language of the current file,
@@ -19,14 +20,28 @@ export function getFileHeaderFromTemplate(languageId: string) {
     blockEnd = "-->";
   }
 
-  return `${blockStart}
-${helper.getFormattedFileHeaderProperties(lineStart, username, formattedDate)}
-${lineStart} Modifications Log 
+  let fileHeaderString = blockStart + "\n";
+  fileHeaderString += helper.getFormattedFileHeaderProperties(
+    lineStart,
+    username,
+    formattedDate
+  );
+
+  if (
+    workspace
+      .getConfiguration("SFDoc")
+      .get("IncludeModificationLogScaffoldInFileHeader", false)
+  ) {
+    fileHeaderString += ` 
+${lineStart} Modifications Log
 ${lineStart} Ver   ${"Date".padEnd(
-    formattedDate.length,
-    " "
-  )}   ${"Author".padEnd(username.length, " ")}   Modification
-${lineStart} 1.0   ${formattedDate}   ${username}   Initial Version
-${blockEnd}
-`;
+      formattedDate.length,
+      " "
+    )}   ${"Author".padEnd(username.length, " ")}   Modification
+${lineStart} 1.0   ${formattedDate}   ${username}   Initial Version`;
+  }
+
+  fileHeaderString += "\n" + blockEnd + "\n";
+
+  return fileHeaderString;
 }
