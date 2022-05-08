@@ -1,6 +1,6 @@
 import { workspace, TextDocument } from "vscode";
 
-type FileHeaderProperty = {
+type HeaderProperty = {
   name: string;
   defaultValue?: string;
 };
@@ -22,10 +22,53 @@ export default {
   /**
    * Get an array of all File Header properties configured in the extension's settings.
    */
-  getFileHeaderRawProperties(): Array<FileHeaderProperty> {
+  getFileHeaderRawProperties(): Array<HeaderProperty> {
     return workspace.getConfiguration("SFDoc").get("FileHeaderProperties", []);
   },
 
+  /**
+   * Get a Header-suitable formatted string of all given Header properties.
+   */
+  getFormattedHeaderProperties(
+    lineStartChar: string,
+    username: string,
+    date: string,
+	propertyName: string
+  ): string {
+    const rawProperties: Array<HeaderProperty> = workspace
+      .getConfiguration("SFDoc")
+      .get(propertyName, []);
+	const separator: string = workspace
+		  .getConfiguration("SFDoc")
+		  .get(propertyName+"Separator", "");
+    const paddingSize =
+      Math.max(...rawProperties.map(({ name }) => name.length)) + 2;
+	
+	const alignLeft: boolean = workspace
+      .getConfiguration("SFDoc")
+      .get(propertyName+"AlignLeft", false)
+	  
+    return rawProperties
+      .map(({ name, defaultValue = "" }, index) => {
+		
+		var propertyNameValue: string = name;		
+		if(alignLeft) {
+			propertyNameValue = propertyNameValue.padEnd(paddingSize, " ");
+		}
+		var content: string = (separator == "")?`${lineStartChar} @${propertyNameValue} ${defaultValue
+          .replace(/\$username/gi, username)
+          .replace(/\$date/gi, date)}`:`${lineStartChar} @${propertyNameValue} ${separator} ${defaultValue
+          .replace(/\$username/gi, username)
+          .replace(/\$date/gi, date)}`;
+		
+        if (index != rawProperties.length - 1) content += "\n";
+
+        return content;
+      })
+      .toString()
+      .replace(/\,/gm, "");
+  },
+  
   /**
    * Get a File-Header-suitable formatted string of all configured File Header properties.
    */
@@ -34,28 +77,17 @@ export default {
     username: string,
     date: string
   ): string {
-    const rawProperties: Array<FileHeaderProperty> = workspace
-      .getConfiguration("SFDoc")
-      .get("FileHeaderProperties", []);
+    return this.getFormattedHeaderProperties(lineStartChar, username, date, "FileHeaderProperties");
+  },
 
-    const paddingSize =
-      Math.max(...rawProperties.map(({ name }) => name.length)) + 2;
-
-    return rawProperties
-      .map(({ name, defaultValue = "" }, index) => {
-        let content: string = `${lineStartChar} @${name.padEnd(
-          paddingSize,
-          " "
-        )}: ${defaultValue
-          .replace(/^\$username$/, username)
-          .replace(/^\$date$/, date)}`;
-
-        if (index != rawProperties.length - 1) content += "\n";
-
-        return content;
-      })
-      .toString()
-      .replace(/\,/gm, "");
+  /**
+   * Get a Method-Header-suitable formatted string of all configured Method Header properties.
+   */
+  getFormattedMethodHeaderProperties(
+	username: string,
+    date: string
+  ): string {
+    return this.getFormattedHeaderProperties(" *",username,date, "MethodHeaderProperties");
   },
 
   /**

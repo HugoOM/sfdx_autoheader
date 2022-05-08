@@ -41,6 +41,11 @@ Through these means, code becomes easier to understand, maintain, and evolve.
 | SFDoc.username                          | Username that will appear in File and Method headers.                                                                             |
 | SFDoc.DateFormat                        | The format in which SFDoc will output dates. Needs to include [DD, MM, YYYY] in the desired order and with the desired separator. |
 | SFDoc.FileHeaderProperties              | Array of properties to be added to the File Headers. Format of entries is : `{name: string, defaultValue?: string}`.              |
+| SFDoc.FileHeaderPropertiesSeparator     | Caracter added after a file header properties name. Default value ":".                                                            |
+| SFDoc.FileHeaderPropertiesAlignLeft     | Align file header properties value to the left. Default value true.                                                               |
+| SFDoc.MethodHeaderProperties            | Array of properties to be added to the Method Headers. Format of entries is : `{name: string, defaultValue?: string}`.            |
+| SFDoc.MethodHeaderPropertiesSeparator   | Caracter added after a method header properties name. Default value "".                                                          |
+| SFDoc.MethodHeaderPropertiesAlignLeft   | Align method header properties value to the left. Default value false.                                                             |
 | SFDoc.EnableForApex                     | Enable automatic on-save file header insertion and update for Apex classes.                                                       |
 | SFDoc.EnableForVisualforce              | Enable automatic on-save file header insertion and update for Visualforce pages.                                                  |
 | SFDoc.EnableForLightningMarkup          | Enable automatic on-save file header insertion and update for Lightning Markup files.                                             |

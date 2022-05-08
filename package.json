@@ -157,6 +157,39 @@
           ],
           "description": "Array of properties for the generated File Headers in the format: {name: String, defaultValue?: string}"
         },
+		"SFDoc.FileHeaderPropertiesSeparator": {
+          "type": "string",
+          "default": ":",
+          "description": "Caracter added after a file header properties name."
+        },
+		"SFDoc.FileHeaderPropertiesAlignLeft": {
+          "type": "boolean",
+          "default": true,
+          "description": "Align file header properties value to the left."
+        },
+        "SFDoc.MethodHeaderProperties": {
+          "type": "array",
+          "default": [
+            {
+              "name": "description"
+            },
+            {
+              "name": "author",
+              "defaultValue": "$username | $date"
+            }
+          ],
+          "description": "Array of properties for the generated Method Headers in the format: {name: String, defaultValue?: string}"
+        },
+		"SFDoc.MethodHeaderPropertiesSeparator": {
+          "type": "string",
+          "default": "",
+          "description": "Caracter added after a method header properties name."
+        },
+		"SFDoc.MethodHeaderPropertiesAlignLeft": {
+          "type": "boolean",
+          "default": false,
+          "description": "Align method header properties value to the left."
+        },
         "SFDoc.DateFormat": {
           "type": "string",
           "default": "MM-DD-YYYY",

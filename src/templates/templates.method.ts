@@ -10,15 +10,18 @@ export function getMethodHeaderFromTemplate(
   parameters: string[],
   returnType: string
 ) {
+	const formattedDate = helper.getFormattedDate();
+  const username = helper.getConfiguredUsername();
   return (
-    "/**\n" +
-    "* @description \n" +
-    `* @author ${helper.getConfiguredUsername()} | ${helper.getFormattedDate()} \n` +
+    "/**\n" +helper.getFormattedMethodHeaderProperties(
+    username,
+    formattedDate
+  )+"\n"+
     `${parameters
-      .map((param) => `* @param ${param} \n`)
-      .toString()
+      .map((param) => ` * @param ${param} \n`)
+      .toString()	
       .replace(/,/gim, "")}` +
-    (returnType === "void" ? "" : `* @return ${returnType} `) +
+    (returnType === "void" ? "" : ` * @return ${returnType} `) +
     "\n**/"
   );
 }
