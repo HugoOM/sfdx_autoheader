@@ -1,5 +1,11 @@
 # Change Log
 
+## [EOL]
+
+- Updated the repo's README and status.
+
+---
+
 ## [Future]
 
 - Code refactoring and cleanup for release [0.7.2] features

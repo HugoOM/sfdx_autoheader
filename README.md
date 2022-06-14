@@ -1,9 +1,23 @@
-# ️️☁️ Salesforce Documenter ~ Beta ☁️
+# ️️☁️ Salesforce Documenter ~ Unmaintained ☁️
 
 [![Build Status](https://dev.azure.com/HugoOM/Salesforce%20Documenter/_apis/build/status/HugoOM.sfdx_autoheader?branchName=master)](https://dev.azure.com/HugoOM/Salesforce%20Documenter/_build/latest?definitionId=2&branchName=master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/64c16d2180411eb66da5/maintainability)](https://codeclimate.com/github/HugoOM/sfdx_autoheader/maintainability)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![marketplace](https://vsmarketplacebadge.apphb.com/version/hugoom.sfdx-autoheader.svg?color=blue&style=?style=for-the-badge&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=HugoOM.sfdx-autoheader)
+
+# End of Life
+
+This extension is now unmaintained and the underlying repository has been archived.
+
+Thanks to everyone who invested their interest and their time in this project over the years.
+
+Please feel free to fork the source repository and publish an extension of your own if you so wish.
+
+## Alternative
+
+For those who are looking for a comment-generation solution, [ApexDox VS Code](https://marketplace.visualstudio.com/items?itemName=PeterWeinberg.apexdox-vs-code) looks like a very promising alternative with much richer functionalities, more organic interactions with the editor, and better integration with the modern VSCode Extensions API.
+
+---
 
 ## **Important**
 
